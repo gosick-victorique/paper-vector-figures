@@ -2,7 +2,7 @@
 name: paper-vector-figures
 description: 根据论文与具体配图需求，设计可编辑矢量方法图、架构图、概念图、空间关系图、实验设置图和定性对比图。按内容组合二维与三维表示，按目标版面构图，由四位独立评委评分并驱动迭代。实验数值图使用科学绘图工具。
 metadata:
-  version: "0.12.1"
+  version: "0.12.2"
 ---
 
 # Paper Vector Figures

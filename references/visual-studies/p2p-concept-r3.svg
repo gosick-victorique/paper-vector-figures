@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="85mm" height="87.5mm" viewBox="0 0 680 700" role="img" aria-labelledby="title desc">
+<title id="title">Token pruning versus P2P computation bypass</title><desc id="desc">Original conceptual schematic. Token pruning removes visual tokens B and C and shortens the sequence. P2P retains A, B, C and text token T at every depth. Side markers denote computed projections or cached early and late means. The bottom detail c selects a late-layer MLP down projection: its multiplication is skipped and its cached output enters the residual addition for token A. Counts and layer spans are illustrative.</desc>
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#637384"/></marker></defs>
+<rect x="0" y="0" width="680" height="700" rx="0" fill="#FFFFFF"/>
+<text x="22" y="31" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" text-anchor="start">a  Token pruning</text>
+<text x="365" y="31" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" text-anchor="start">b  P2P</text>
+<text x="22" y="61" fill="#637384" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start">Remove tokens</text>
+<text x="365" y="61" fill="#637384" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start">Bypass computation</text>
+<line x1="53" y1="117" x2="53" y2="361" stroke="#147E82" stroke-width="2.1"/>
+<line x1="113" y1="117" x2="113" y2="197" stroke="#147E82" stroke-width="2.1"/>
+<line x1="173" y1="117" x2="173" y2="197" stroke="#147E82" stroke-width="2.1"/>
+<line x1="247" y1="117" x2="247" y2="361" stroke="#75569B" stroke-width="2.1"/>
+<line x1="394" y1="117" x2="394" y2="392" stroke="#147E82" stroke-width="2.1"/>
+<line x1="458" y1="117" x2="458" y2="392" stroke="#147E82" stroke-width="2.1"/>
+<line x1="522" y1="117" x2="522" y2="392" stroke="#147E82" stroke-width="2.1"/>
+<line x1="603" y1="117" x2="603" y2="392" stroke="#75569B" stroke-width="2.1"/>
+<rect x="31" y="131" width="260" height="52" rx="5" fill="#F3F6F8"/>
+<rect x="376" y="131" width="278" height="52" rx="5" fill="#F3F6F8"/>
+<text x="334" y="165" fill="#637384" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" text-anchor="middle">Early</text>
+<rect x="31" y="227" width="260" height="52" rx="5" fill="#F3F6F8"/>
+<rect x="376" y="227" width="278" height="52" rx="5" fill="#F3F6F8"/>
+<text x="334" y="261" fill="#637384" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" text-anchor="middle">Middle</text>
+<rect x="31" y="309" width="260" height="52" rx="5" fill="#F3F6F8"/>
+<rect x="376" y="309" width="278" height="52" rx="5" fill="#F3F6F8"/>
+<text x="334" y="343" fill="#637384" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" text-anchor="middle">Late</text>
+<line x1="53" y1="117" x2="53" y2="361" stroke="#147E82" stroke-width="2.1"/>
+<line x1="113" y1="117" x2="113" y2="193" stroke="#147E82" stroke-width="2.1"/>
+<line x1="173" y1="117" x2="173" y2="193" stroke="#147E82" stroke-width="2.1"/>
+<line x1="247" y1="117" x2="247" y2="361" stroke="#75569B" stroke-width="2.1"/>
+<rect x="36" y="83" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="53" y="108" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">A</text>
+<rect x="96" y="83" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="113" y="108" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">B</text>
+<rect x="156" y="83" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="173" y="108" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">C</text>
+<rect x="230" y="83" width="34" height="34" rx="3" fill="#EEE8F6" stroke="#75569B" stroke-width="1.8"/>
+<text x="247" y="108" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">T</text>
+<line x1="53" y1="157" x2="63" y2="157" stroke="#147E82" stroke-width="1.8"/>
+<rect x="64" y="143" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="79" y="165" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="113" y1="157" x2="123" y2="157" stroke="#147E82" stroke-width="1.8"/>
+<rect x="124" y="143" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="139" y="165" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="173" y1="157" x2="183" y2="157" stroke="#147E82" stroke-width="1.8"/>
+<rect x="184" y="143" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="199" y="165" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="247" y1="157" x2="257" y2="157" stroke="#75569B" stroke-width="1.8"/>
+<rect x="258" y="143" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#75569B" stroke-width="2"/>
+<text x="273" y="165" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="53" y1="253" x2="63" y2="253" stroke="#147E82" stroke-width="1.8"/>
+<rect x="64" y="239" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="79" y="261" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="247" y1="253" x2="257" y2="253" stroke="#75569B" stroke-width="1.8"/>
+<rect x="258" y="239" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#75569B" stroke-width="2"/>
+<text x="273" y="261" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="53" y1="335" x2="63" y2="335" stroke="#147E82" stroke-width="1.8"/>
+<rect x="64" y="321" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="79" y="343" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="247" y1="335" x2="257" y2="335" stroke="#75569B" stroke-width="1.8"/>
+<rect x="258" y="321" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#75569B" stroke-width="2"/>
+<text x="273" y="343" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="394" y1="117" x2="394" y2="392" stroke="#147E82" stroke-width="2.1"/>
+<line x1="458" y1="117" x2="458" y2="392" stroke="#147E82" stroke-width="2.1"/>
+<line x1="522" y1="117" x2="522" y2="392" stroke="#147E82" stroke-width="2.1"/>
+<line x1="603" y1="117" x2="603" y2="392" stroke="#75569B" stroke-width="2.1"/>
+<rect x="377" y="83" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="394" y="108" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">A</text>
+<rect x="441" y="83" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="458" y="108" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">B</text>
+<rect x="505" y="83" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="522" y="108" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">C</text>
+<rect x="586" y="83" width="34" height="34" rx="3" fill="#EEE8F6" stroke="#75569B" stroke-width="1.8"/>
+<text x="603" y="108" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">T</text>
+<line x1="394" y1="157" x2="404" y2="157" stroke="#147E82" stroke-width="1.8"/>
+<rect x="399" y="140" width="44" height="34" rx="9" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="421" y="165" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µE</text>
+<line x1="458" y1="157" x2="468" y2="157" stroke="#147E82" stroke-width="1.8"/>
+<rect x="463" y="140" width="44" height="34" rx="9" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="485" y="165" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µE</text>
+<line x1="522" y1="157" x2="532" y2="157" stroke="#147E82" stroke-width="1.8"/>
+<rect x="527" y="140" width="44" height="34" rx="9" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="549" y="165" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µE</text>
+<line x1="603" y1="157" x2="613" y2="157" stroke="#75569B" stroke-width="1.8"/>
+<rect x="614" y="143" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#75569B" stroke-width="2"/>
+<text x="629" y="165" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="394" y1="253" x2="404" y2="253" stroke="#147E82" stroke-width="1.8"/>
+<rect x="405" y="239" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="420" y="261" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="458" y1="253" x2="468" y2="253" stroke="#147E82" stroke-width="1.8"/>
+<rect x="469" y="239" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="484" y="261" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="522" y1="253" x2="532" y2="253" stroke="#147E82" stroke-width="1.8"/>
+<rect x="533" y="239" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="548" y="261" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="603" y1="253" x2="613" y2="253" stroke="#75569B" stroke-width="1.8"/>
+<rect x="614" y="239" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#75569B" stroke-width="2"/>
+<text x="629" y="261" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="394" y1="335" x2="404" y2="335" stroke="#147E82" stroke-width="1.8"/>
+<rect x="399" y="318" width="44" height="34" rx="9" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="421" y="343" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µL</text>
+<line x1="458" y1="335" x2="468" y2="335" stroke="#147E82" stroke-width="1.8"/>
+<rect x="463" y="318" width="44" height="34" rx="9" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="485" y="343" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µL</text>
+<line x1="522" y1="335" x2="532" y2="335" stroke="#147E82" stroke-width="1.8"/>
+<rect x="527" y="318" width="44" height="34" rx="9" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="549" y="343" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µL</text>
+<line x1="603" y1="335" x2="613" y2="335" stroke="#75569B" stroke-width="1.8"/>
+<rect x="614" y="321" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#75569B" stroke-width="2"/>
+<text x="629" y="343" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<line x1="105" y1="194" x2="121" y2="210" stroke="#B15F42" stroke-width="3"/>
+<line x1="105" y1="210" x2="121" y2="194" stroke="#B15F42" stroke-width="3"/>
+<line x1="165" y1="194" x2="181" y2="210" stroke="#B15F42" stroke-width="3"/>
+<line x1="165" y1="210" x2="181" y2="194" stroke="#B15F42" stroke-width="3"/>
+<text x="150" y="232" fill="#B15F42" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" text-anchor="middle">removed</text>
+<path d="M53,361 L53,375 L125,392" fill="none" stroke="#147E82" stroke-width="2.1"/>
+<path d="M247,361 L247,375 L180,392" fill="none" stroke="#75569B" stroke-width="2.1"/>
+<rect x="108" y="392" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="125" y="417" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">A</text>
+<rect x="163" y="392" width="34" height="34" rx="3" fill="#EEE8F6" stroke="#75569B" stroke-width="1.8"/>
+<text x="180" y="417" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">T</text>
+<rect x="377" y="392" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="394" y="417" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">A</text>
+<rect x="441" y="392" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="458" y="417" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">B</text>
+<rect x="505" y="392" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="522" y="417" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">C</text>
+<rect x="586" y="392" width="34" height="34" rx="3" fill="#EEE8F6" stroke="#75569B" stroke-width="1.8"/>
+<text x="603" y="417" fill="#75569B" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">T</text>
+<text x="157" y="451" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600" text-anchor="middle">Shorter sequence</text>
+<text x="505" y="451" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600" text-anchor="middle">Positions retained</text>
+<circle cx="421" cy="295" r="13" fill="#FFFFFF" stroke="#233446" stroke-width="1.8"/>
+<text x="421" y="302" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="600" text-anchor="middle">1</text>
+<line x1="421" y1="308" x2="421" y2="317" stroke="#147E82" stroke-width="1.5"/>
+<line x1="22" y1="467" x2="658" y2="467" stroke="#AAB6C1" stroke-width="1"/>
+<rect x="23" y="476" width="30" height="28" rx="2" fill="#FFFFFF" stroke="#147E82" stroke-width="2"/>
+<text x="38" y="498" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="500" text-anchor="middle">W</text>
+<text x="62" y="498" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start">Compute</text>
+<rect x="210" y="473" width="44" height="34" rx="9" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="232" y="498" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µ</text>
+<text x="260" y="498" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start">Use proxy</text>
+<line x1="443" y1="482" x2="459" y2="498" stroke="#B15F42" stroke-width="3"/>
+<line x1="443" y1="498" x2="459" y2="482" stroke="#B15F42" stroke-width="3"/>
+<text x="473" y="498" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start">Removed</text>
+<rect x="22" y="520" width="636" height="148" rx="5" fill="#F3F6F8"/>
+<circle cx="45" cy="541" r="13" fill="#FFFFFF" stroke="#233446" stroke-width="1.8"/>
+<text x="45" y="548" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="600" text-anchor="middle">1</text>
+<text x="67" y="549" fill="#233446" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="600" text-anchor="start">Late layer · MLP down output</text>
+<rect x="48" y="565" width="34" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="65" y="590" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">A</text>
+<line x1="82" y1="582" x2="561" y2="582" stroke="#147E82" stroke-width="2.4"/>
+<text x="302" y="573" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" text-anchor="middle">Residual state</text>
+<circle cx="580" cy="582" r="18" fill="#FFFFFF" stroke="#147E82" stroke-width="1.8"/>
+<text x="580" y="590" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="400" text-anchor="middle">+</text>
+<path d="M598,582 L621,582" fill="none" stroke="#147E82" stroke-width="2.4" marker-end="url(#arrow)"/>
+<rect x="626" y="565" width="28" height="34" rx="3" fill="#E2F2F0" stroke="#147E82" stroke-width="1.8"/>
+<text x="640" y="590" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="middle">A′</text>
+<rect x="130" y="600" width="180" height="28" rx="3" fill="#FFFFFF" stroke="#AAB6C1" stroke-width="2"/>
+<text x="220" y="621" fill="#637384" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">Down proj.</text>
+<text x="38" y="621" fill="#B15F42" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" text-anchor="start">Skipped</text>
+<line x1="310" y1="614" x2="580" y2="614" stroke="#AAB6C1" stroke-width="1.8" stroke-dasharray="5 5"/>
+<line x1="327" y1="606" x2="343" y2="622" stroke="#B15F42" stroke-width="3"/>
+<line x1="327" y1="622" x2="343" y2="606" stroke="#B15F42" stroke-width="3"/>
+<rect x="130" y="637" width="180" height="28" rx="5" fill="#E2F2F0" stroke="#147E82" stroke-width="2"/>
+<text x="220" y="658" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="middle">µL · cached</text>
+<path d="M310,651 L580,651 L580,602" fill="none" stroke="#147E82" stroke-width="2.4" marker-end="url(#arrow)"/>
+<text x="445" y="641" fill="#147E82" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" text-anchor="middle">shared A–C</text>
+<text x="22" y="692" fill="#637384" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" text-anchor="start">Original schematic · token counts and depths illustrative</text>
+</svg>
