@@ -1,0 +1,5 @@
+interface:
+  display_name: "论文矢量配图"
+  short_description: "设计二维与三维混合论文矢量图，由四位独立评委评分并驱动优化迭代"
+  default_prompt: "使用 $paper-vector-figures，根据论文设计二维与三维混合矢量图，启动四位独立评委评估美观、专业、方法解释和丰富程度，综合意见改图并复评。"
+
