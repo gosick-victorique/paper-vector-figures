@@ -1,0 +1,1328 @@
+[
+  {
+    "id": "foundation-straight",
+    "key": "straight",
+    "name": "单向箭头",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "局部前向关系；端点需手动对齐。",
+    "tags": "连接与关系 straight",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-elbow",
+    "key": "elbow",
+    "name": "直角连接",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "绕开对象的正交路径。",
+    "tags": "连接与关系 elbow",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-curve",
+    "key": "curve",
+    "name": "弧形连接",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "局部绕行；曲率不代表关系强度。",
+    "tags": "连接与关系 curve",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-bidirectional",
+    "key": "bidirectional",
+    "name": "双向箭头",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "仅在两个方向都成立时使用。",
+    "tags": "连接与关系 bidirectional",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-fork",
+    "key": "fork",
+    "name": "一分多连接",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "一个来源分送到多个目标。",
+    "tags": "连接与关系 fork",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-merge",
+    "key": "merge",
+    "name": "多入一连接",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "多路汇入一个目标；不预设具体运算。",
+    "tags": "连接与关系 merge",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-local-loop",
+    "key": "local-loop",
+    "name": "局部反馈回路",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "就近表达反馈，不环绕整张图。",
+    "tags": "连接与关系 local-loop",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-inhibit",
+    "key": "inhibit",
+    "name": "抑制端线",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "横杠端点表示抑制，需明确图例。",
+    "tags": "连接与关系 inhibit",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-association",
+    "key": "association",
+    "name": "无向关联",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "关联关系；不自动表示数据流。",
+    "tags": "连接与关系 association",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-leader",
+    "key": "leader",
+    "name": "说明引线",
+    "kind": "foundation",
+    "category": "f-connect",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "把说明关联到局部位置。",
+    "tags": "连接与关系 leader",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-rectangle",
+    "key": "rectangle",
+    "name": "矩形容器",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "通用分区边界。",
+    "tags": "形状与分区 rectangle",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-rounded",
+    "key": "rounded",
+    "name": "圆角容器",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "容纳同一组对象；不要给每个细节套框。",
+    "tags": "形状与分区 rounded",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-capsule",
+    "key": "capsule",
+    "name": "胶囊形",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "短状态或操作标签。",
+    "tags": "形状与分区 capsule",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-ellipse",
+    "key": "ellipse",
+    "name": "椭圆区域",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "集合、局部范围或对象外轮廓。",
+    "tags": "形状与分区 ellipse",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-diamond",
+    "key": "diamond",
+    "name": "菱形",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "条件或分支判断，需有真实判据。",
+    "tags": "形状与分区 diamond",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-hexagon",
+    "key": "hexagon",
+    "name": "六边形",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "需要区别于普通框的对象。",
+    "tags": "形状与分区 hexagon",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-bracket-group",
+    "key": "bracket-group",
+    "name": "开口分组框",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "只包围相关对象的三个边，降低边框密度。",
+    "tags": "形状与分区 bracket-group",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-corner-frame",
+    "key": "corner-frame",
+    "name": "角标定位框",
+    "kind": "foundation",
+    "category": "f-container",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "聚焦局部选区而不过度遮挡内容。",
+    "tags": "形状与分区 corner-frame",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-cuboid",
+    "key": "cuboid",
+    "name": "长方体",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "维度含义由当前任务定义。",
+    "tags": "空间基础体 cuboid",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-cylinder",
+    "key": "cylinder",
+    "name": "圆柱体",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "圆柱对象或存储外形；不是通用网络默认形状。",
+    "tags": "空间基础体 cylinder",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-cone",
+    "key": "cone",
+    "name": "圆锥体",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "锥形范围或几何对象。",
+    "tags": "空间基础体 cone",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-sphere",
+    "key": "sphere",
+    "name": "球体",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "空间点对象或材质承载体。",
+    "tags": "空间基础体 sphere",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-plane",
+    "key": "plane",
+    "name": "倾斜平面",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "图像、截面或空间基面。",
+    "tags": "空间基础体 plane",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-frustum",
+    "key": "frustum",
+    "name": "视锥体",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "视点与观测范围，核实近远面。",
+    "tags": "空间基础体 frustum",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-ellipsoid",
+    "key": "ellipsoid",
+    "name": "透明椭球",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "不确定性或高斯基元；轴长为示意。",
+    "tags": "空间基础体 ellipsoid",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-axes3d",
+    "key": "axes3d",
+    "name": "三维坐标轴",
+    "kind": "foundation",
+    "category": "f-space",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "坐标方向需要与对象视角一致。",
+    "tags": "空间基础体 axes3d",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-square-grid",
+    "key": "square-grid",
+    "name": "方格网",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "二维位置索引，不代表计算值。",
+    "tags": "网格与表面 square-grid",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-triangle-mesh",
+    "key": "triangle-mesh",
+    "name": "三角网格",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "表面连接关系；三角形不对应真实网格数据。",
+    "tags": "网格与表面 triangle-mesh",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-voxel-grid",
+    "key": "voxel-grid",
+    "name": "透明体素网格",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "三维空间离散，核实深度轴含义。",
+    "tags": "网格与表面 voxel-grid",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-matrix-cells",
+    "key": "matrix-cells",
+    "name": "矩阵单元",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "行列容器，不携带虚构权重。",
+    "tags": "网格与表面 matrix-cells",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-point-cloud",
+    "key": "point-cloud",
+    "name": "空间点集",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "几何点集示意，不是采集数据。",
+    "tags": "网格与表面 point-cloud",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-contours",
+    "key": "contours",
+    "name": "等值轮廓",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "同心层次表达；实测等值线应从数据生成。",
+    "tags": "网格与表面 contours",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-hatching",
+    "key": "hatching",
+    "name": "剖面排线",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "表示截面、未知区或禁用区域，需要图例。",
+    "tags": "网格与表面 hatching",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-surface-mesh",
+    "key": "surface-mesh",
+    "name": "曲面网格",
+    "kind": "foundation",
+    "category": "f-grid",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "连续空间表面示意；不是实测损失景观。",
+    "tags": "网格与表面 surface-mesh",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-caption",
+    "key": "caption",
+    "name": "文字标签",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "Label",
+    "hint": "只放必要的对象名或操作名。",
+    "tags": "标注与定位 caption",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-panel-badge",
+    "key": "panel-badge",
+    "name": "子图编号",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "a",
+    "hint": "用于 (a)、(b) 等子图导航。",
+    "tags": "标注与定位 panel-badge",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-step-badge",
+    "key": "step-badge",
+    "name": "步骤编号",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "1",
+    "hint": "只有真实顺序需要编号。",
+    "tags": "标注与定位 step-badge",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-callout",
+    "key": "callout",
+    "name": "气泡注释",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "Note",
+    "hint": "局部说明；避免长句占据主图。",
+    "tags": "标注与定位 callout",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-brace",
+    "key": "brace",
+    "name": "集合花括号",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "将多个项视作同一集合或范围。",
+    "tags": "标注与定位 brace",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-dimension",
+    "key": "dimension",
+    "name": "尺寸标注",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "d",
+    "hint": "端点与测量范围对齐；数值需有依据。",
+    "tags": "标注与定位 dimension",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-scale-bar",
+    "key": "scale-bar",
+    "name": "比例尺",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "scale",
+    "hint": "插图缩放后必须同步核对物理尺度。",
+    "tags": "标注与定位 scale-bar",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  },
+  {
+    "id": "foundation-magnifier",
+    "key": "magnifier",
+    "name": "局部放大标记",
+    "kind": "foundation",
+    "category": "f-note",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "标明被放大的区域；内容必须同源。",
+    "tags": "标注与定位 magnifier",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-camera",
+    "key": "camera",
+    "name": "相机",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "采集设备或视点。",
+    "tags": "设备与工具 camera",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-robot-arm",
+    "key": "robot-arm",
+    "name": "机械臂",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "关节结构示意，末端和物体关系另行配置。",
+    "tags": "设备与工具 robot-arm",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-processor",
+    "key": "processor",
+    "name": "处理芯片",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "计算硬件或处理单元。",
+    "tags": "设备与工具 processor",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-server",
+    "key": "server",
+    "name": "服务器",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "计算设备，不默认意味着云端。",
+    "tags": "设备与工具 server",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-database",
+    "key": "database",
+    "name": "数据存储",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "持久化或数据集存储。",
+    "tags": "设备与工具 database",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-cloud",
+    "key": "cloud",
+    "name": "云端",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "远程服务或共享资源。",
+    "tags": "设备与工具 cloud",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-lens",
+    "key": "lens",
+    "name": "光学透镜",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "光路或成像器件。",
+    "tags": "设备与工具 lens",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-monitor",
+    "key": "monitor",
+    "name": "显示器",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "显示界面或图像输出。",
+    "tags": "设备与工具 monitor",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-satellite",
+    "key": "satellite",
+    "name": "卫星",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "遥感采集设备。",
+    "tags": "设备与工具 satellite",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-hand",
+    "key": "hand",
+    "name": "手部轮廓",
+    "kind": "foundation",
+    "category": "f-device",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "操作、交互或接触主体。",
+    "tags": "设备与工具 hand",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-person",
+    "key": "person",
+    "name": "人物",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "人员主体或交互参与者。",
+    "tags": "对象与场景 person",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-face",
+    "key": "face",
+    "name": "人脸轮廓",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "身份、视觉任务的示意对象，不替代真实样本。",
+    "tags": "对象与场景 face",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-eye",
+    "key": "eye",
+    "name": "眼睛",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "观察、视线或视觉输入。",
+    "tags": "对象与场景 eye",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-brain",
+    "key": "brain",
+    "name": "脑部轮廓",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "仅表示研究对象；不默认代表所有 AI 网络。",
+    "tags": "对象与场景 brain",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-vehicle",
+    "key": "vehicle",
+    "name": "车辆",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "交通场景主体，非检测结果。",
+    "tags": "对象与场景 vehicle",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-tree",
+    "key": "tree",
+    "name": "树木",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "自然场景对象。",
+    "tags": "对象与场景 tree",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-building",
+    "key": "building",
+    "name": "建筑",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "场景实体或空间参照。",
+    "tags": "对象与场景 building",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-globe",
+    "key": "globe",
+    "name": "地球",
+    "kind": "foundation",
+    "category": "f-object",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "地理范围或全球数据。",
+    "tags": "对象与场景 globe",
+    "preferredSize": {
+      "w": 80,
+      "h": 85
+    }
+  },
+  {
+    "id": "foundation-plus",
+    "key": "plus",
+    "name": "加法节点",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "相加或汇合必须在图例中区分。",
+    "tags": "运算与状态符号 plus",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-multiply",
+    "key": "multiply",
+    "name": "乘法节点",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "点乘、矩阵乘与元素乘需依语义标明。",
+    "tags": "运算与状态符号 multiply",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-concatenate",
+    "key": "concatenate",
+    "name": "拼接符号",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "拼接顺序与维度需由方法指定。",
+    "tags": "运算与状态符号 concatenate",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-split-op",
+    "key": "split-op",
+    "name": "拆分符号",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "拆分不是复制。",
+    "tags": "运算与状态符号 split-op",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-lock",
+    "key": "lock",
+    "name": "冻结锁",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "表示冻结或不可修改，需区分参数与位置。",
+    "tags": "运算与状态符号 lock",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-flame",
+    "key": "flame",
+    "name": "训练火焰",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "只用于可训练状态并配图例。",
+    "tags": "运算与状态符号 flame",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-check",
+    "key": "check",
+    "name": "通过标记",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "表达已满足的条件。",
+    "tags": "运算与状态符号 check",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-cross",
+    "key": "cross",
+    "name": "否定标记",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "失败、禁用或移除需在上下文区分。",
+    "tags": "运算与状态符号 cross",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-warning",
+    "key": "warning",
+    "name": "提示标记",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "指出读者确需关注的限定。",
+    "tags": "运算与状态符号 warning",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-ellipsis",
+    "key": "ellipsis",
+    "name": "省略标记",
+    "kind": "foundation",
+    "category": "f-symbol",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "省略同类项；不代表数量为零。",
+    "tags": "运算与状态符号 ellipsis",
+    "preferredSize": {
+      "w": 36,
+      "h": 36
+    }
+  },
+  {
+    "id": "foundation-axes2d",
+    "key": "axes2d",
+    "name": "二维坐标轴",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "轴标签与单位由当前内容补充。",
+    "tags": "读数与图例骨架 axes2d",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-axis-break",
+    "key": "axis-break",
+    "name": "坐标断轴",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "明确显示截断；不要掩盖数值差异。",
+    "tags": "读数与图例骨架 axis-break",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-error-bar",
+    "key": "error-bar",
+    "name": "误差区间骨架",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "仅供构图；区间含义和数值来自实际分析。",
+    "tags": "读数与图例骨架 error-bar",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-legend",
+    "key": "legend",
+    "name": "离散图例",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "颜色应与图中对象语义一致。",
+    "tags": "读数与图例骨架 legend",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-line-legend",
+    "key": "line-legend",
+    "name": "线型图例",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "不同关系用不同线型并保持一致。",
+    "tags": "读数与图例骨架 line-legend",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-colorbar",
+    "key": "colorbar",
+    "name": "连续色标",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "色标范围和映射需与真实数据一致。",
+    "tags": "读数与图例骨架 colorbar",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-distribution",
+    "key": "distribution",
+    "name": "分布曲线骨架",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "示意分布；不能当作测量数据。",
+    "tags": "读数与图例骨架 distribution",
+    "preferredSize": {
+      "w": 140,
+      "h": 110
+    }
+  },
+  {
+    "id": "foundation-timeline",
+    "key": "timeline",
+    "name": "时间轴",
+    "kind": "foundation",
+    "category": "f-chart",
+    "ref": "基础图形要素",
+    "semanticType": "foundation",
+    "depth": false,
+    "label": "",
+    "hint": "事件位置与时距含义需要明确。",
+    "tags": "读数与图例骨架 timeline",
+    "preferredSize": {
+      "w": 130,
+      "h": 70
+    }
+  }
+]

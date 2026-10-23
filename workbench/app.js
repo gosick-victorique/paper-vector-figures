@@ -1,0 +1,74 @@
+(() => {
+'use strict';
+const $=s=>document.querySelector(s), ns='http://www.w3.org/2000/svg';
+const modules=[
+ {id:'condition',name:'条件攻击路径',desc:'原始输入、CLIP 投影与 UNet 中层注意力之间的关系。',box:[26,68,725,190]},
+ {id:'projection',name:'投影特征',desc:'对齐展示扰动前后的投影差异，作为机制示意。',box:[28,270,265,155]},
+ {id:'attention',name:'注意力机制',desc:'在原始低方差行上施加选择，突出保护后注意力分布的变化。',box:[326,268,423,155]},
+ {id:'detector',name:'人脸检测',desc:'多尺度输入作用于 P-Net，人脸概率读数为示意。',box:[805,108,365,145]},
+ {id:'identity',name:'身份特征',desc:'ArcFace 骨干集成与身份特征方向的偏离。',box:[805,279,365,145]},
+ {id:'update',name:'共享扰动更新',desc:'共同梯度经选择性模糊与频率约束，形成有界扰动。',box:[18,438,1154,253]}
+];
+const palettes=[{name:'蓝灰 · 陶土',main:'#416f89',accent:'#ce713a',light:'#dfeaf0',pale:'#f7e8dc'}, {name:'松绿 · 琥珀',main:'#4d7360',accent:'#ba8746',light:'#e1ebe1',pale:'#f6eddb'}, {name:'靛蓝 · 玫瑰',main:'#636a94',accent:'#b96b7a',light:'#e8e9f2',pale:'#f5e5ea'}];
+const base={selected:'attention',palette:0,purpose:'方法总览 · Overview',modules:Object.fromEntries(modules.map(m=>[m.id,{dx:0,dy:0,scale:100,locked:false,variant:0,note:''}]))};
+const clone=v=>JSON.parse(JSON.stringify(v));
+let state=clone(base),versions=[],undo=[],redo=[],zoom=1,drag=null,slideBefore=null;
+const key='figure-studio-prototype-1';
+try {const saved=JSON.parse(localStorage.getItem(key));if(saved?.state?.modules?.attention){state=saved.state;versions=saved.versions||[];}}catch{}
+$('#stage').innerHTML=window.FIGURE_SOURCE;
+const svg=$('#stage svg');svg.removeAttribute('width');svg.removeAttribute('height');svg.setAttribute('aria-label','FaceShield 可编辑模块画板');
+const original=svg.querySelector('g'),groups={},originals={};
+const el=(tag,attrs={},parent)=>{const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));if(parent)parent.append(n);return n;};
+modules.forEach(m=>{groups[m.id]=el('g',{'data-module':m.id,'font-family':'Arial, Helvetica, sans-serif','stroke-linejoin':'round','stroke-linecap':'round'},svg);});
+// Import the existing vector marks into six semantic groups, keeping their geometry.
+[...original.children].forEach(node=>{const b=node.getBBox(),cx=b.x+b.width/2,cy=b.y+b.height/2;let id=null;
+ if(cy>=430&&cy<700)id='update';
+ else if(cy>=105&&cy<430&&cx>=800)id=cy<264?'detector':'identity';
+ else if(cy>=65&&cy<430&&cx<770)id=cy<265?'condition':cx<310?'projection':'attention';
+ if(id)groups[id].append(node);
+});
+modules.forEach(m=>originals[m.id]=groups[m.id].innerHTML);
+const overlay=el('g',{'data-editor':'selection'},svg);
+const txt=(x,y,text,size=18,color='#23313c')=>`<text x="${x}" y="${y}" font-size="${size}" fill="${color}">${text}</text>`;
+function matrix(x,y,changed,depth=0){let s='';for(let d=depth;d>0;d--)s+=`<rect x="${x+d*7}" y="${y-d*5}" width="108" height="64" fill="#eef3f5" stroke="#bbc8cf"/>`;for(let r=0;r<4;r++){for(let c=0;c<6;c++){const chosen=r===1||r===3;const value=changed&&chosen?(c===(r+1)%6?.9:.08):chosen?.25:((c+r)%5+1)/7;s+=`<rect x="${x+c*18}" y="${y+r*16}" width="16" height="14" fill="${changed&&chosen&&value>.5?'#ce713a':'#416f89'}" opacity="${value}"/>`;}if(r===1||r===3)s+=`<rect x="${x-2}" y="${y+r*16-2}" width="110" height="18" fill="none" stroke="#ce713a" stroke-width="1.7"/>`;}return s;}
+function attentionVariant(v){if(!v)return originals.attention;let s=txt(330,282,'Selected attention rows',20);if(v===1){s+=matrix(367,318,false,3)+matrix(614,318,true,3);s+=txt(380,303,'Heads',15,'#65717b')+txt(628,303,'Heads',15,'#65717b');}else{s+=matrix(360,312,false)+matrix(616,312,true);s+=txt(378,303,'K tokens',15,'#65717b')+txt(636,303,'K tokens',15,'#65717b');}
+ s+=`<path d="M490 349H595" stroke="#416f89" stroke-width="1.8" marker-end="url(#arr)"/>`+txt(519,329,'Mᵥₐᵣ',18,'#ce713a')+txt(355,409,'clean: low variance',17)+txt(596,409,'protected: variance ↑',17);return s;}
+function thumb(v){return `<svg viewBox="0 0 80 48" aria-hidden="true"><g transform="translate(4 6)">${v===1?'<path d="M6 8L17 0H63V28L53 37" fill="#e3ebdf" stroke="#a4b29d"/><path d="M3 12L13 4H58V31" fill="#eff3e9" stroke="#a4b29d"/>':''}<rect x="2" y="10" width="50" height="30" fill="#ecf0e8" stroke="#8b9d82"/>${[0,1,2,3].map(r=>[0,1,2,3,4].map(c=>`<rect x="${5+c*9}" y="${13+r*6}" width="7" height="4" fill="${r===1||r===3?'#c58b55':'#7d9673'}" opacity="${.25+((r+c)%3)*.23}"/>`).join('')).join('')}${v===0?'<path d="M10 7H58V35M16 3H64V31" fill="none" stroke="#b5bfb0"/>':''}</g></svg>`;}
+function persist(){try{localStorage.setItem(key,JSON.stringify({state,versions}));$('#save-state').textContent='● 本地自动保存';}catch{$('#save-state').textContent='当前会话 · 无法持久保存';}}
+function checkpoint(before){undo.push(before||clone(state));if(undo.length>50)undo.shift();redo=[];}
+function change(fn){checkpoint();fn();render();persist();}
+function toast(message){$('#toast').textContent=message;$('#toast').classList.add('visible');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('visible'),2600);}
+function colorize(){const pal=palettes[state.palette];svg.querySelectorAll('[data-base-fill],[data-base-stroke]').forEach(n=>{for(const attr of ['fill','stroke'])if(n.hasAttribute('data-base-'+attr))n.setAttribute(attr,n.getAttribute('data-base-'+attr));});const mapping={'#416f89':pal.main,'#ce713a':pal.accent,'#dfeaf0':pal.light,'#f7e8dc':pal.pale};svg.querySelectorAll('[fill],[stroke]').forEach(n=>{if(overlay.contains(n))return;for(const attr of ['fill','stroke']){const value=n.getAttribute(attr);if(mapping[value]){n.setAttribute('data-base-'+attr,value);n.setAttribute(attr,mapping[value]);}}});}
+function drawCanvas(){groups.attention.innerHTML=attentionVariant(state.modules.attention.variant);modules.forEach(m=>{const a=state.modules[m.id],b=m.box;groups[m.id].setAttribute('transform',`translate(${a.dx+b[0]} ${a.dy+b[1]}) scale(${a.scale/100}) translate(${-b[0]} ${-b[1]})`);});colorize();overlay.innerHTML='';modules.forEach(m=>{const a=state.modules[m.id],b=m.box,s=a.scale/100,x=b[0]+a.dx,y=b[1]+a.dy,w=b[2]*s,h=b[3]*s;el('rect',{x,y,width:w,height:h,rx:3,class:`hit-box ${state.selected===m.id?'is-selected':''} ${a.locked?'locked':''}`,'data-id':m.id},overlay);if(state.selected===m.id)[[x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(([cx,cy])=>el('rect',{x:cx-3,y:cy-3,width:6,height:6,class:'selection-handle'},overlay));});}
+function render(){drawCanvas();$('#layers').innerHTML=modules.map((m,i)=>`<button class="layer ${state.selected===m.id?'selected':''}" data-id="${m.id}"><span class="index">${String(i+1).padStart(2,'0')}</span>${m.name}<span class="layer-lock">${state.modules[m.id].locked?'已锁定':''}</span></button>`).join('');
+ const m=modules.find(m=>m.id===state.selected),a=m&&state.modules[m.id];$('#selected-title').textContent=m?.name||'选择一个模块';$('#selected-desc').textContent=m?.desc||'点击画板或左侧图层，查看可调整的内容。';$('#lock').setAttribute('aria-checked',!!a?.locked);$('#lock').disabled=!m;
+ for(const [id,value]of [['position-x',m?Math.round(m.box[0]+a.dx):''],['position-y',m?Math.round(m.box[1]+a.dy):''],['scale',a?.scale||100]]){$('#'+id).value=value;$('#'+id).disabled=!m||a.locked;}
+ $('#scale-value').textContent=(a?.scale||100)+'%';$('#note').value=a?.note||'';$('#note').disabled=!m;
+ $('#variants').innerHTML=m?.id==='attention'?['层片对照','多头空间展开','正视矩阵对照'].map((name,i)=>`<button class="variant ${a.variant===i?'chosen':''}" data-variant="${i}">${thumb(i)}<span><strong>${name}</strong><small>${['原图表达 · 保留现有细节','强化深度 · 并列读数','降低深度 · 优先行对齐'][i]}</small></span>${a.variant===i?'<b>✓</b>':''}</button>`).join(''):'<div class="variant-unavailable">此模块保留原始表达。可调整位置、尺寸、锁定状态，并通过意见指定下一次重绘。</div>';
+ $('#palettes').innerHTML=palettes.map((p,i)=>`<button class="palette ${state.palette===i?'active':''}" data-palette="${i}" title="${p.name}" aria-label="${p.name}">${['#293930',p.main,p.accent].map(c=>`<i style="background:${c}"></i>`).join('')}</button>`).join('');
+ $('#purpose').value=state.purpose;$('#undo').disabled=!undo.length;$('#redo').disabled=!redo.length;$('#version-count').textContent=versions.length+1;$('#versions').innerHTML='<button class="version" data-version="initial">初始图稿 <span>已完成</span></button>'+versions.map((v,i)=>`<button class="version" data-version="${i}">画板版本 ${i+1}<span>${v.time}</span></button>`).reverse().join('');}
+function select(id){state.selected=id;render();persist();}
+function point(event){const p=new DOMPoint(event.clientX,event.clientY);return p.matrixTransform(svg.getScreenCTM().inverse());}
+overlay.addEventListener('pointerdown',e=>{const id=e.target.dataset.id;if(!id)return;const before=clone(state);select(id);if(state.modules[id].locked){toast('位置已锁定；解锁后可移动');return;}const p=point(e);drag={id,x:p.x,y:p.y,dx:state.modules[id].dx,dy:state.modules[id].dy,before,moved:false};svg.setPointerCapture(e.pointerId);});
+svg.addEventListener('pointermove',e=>{if(!drag)return;const p=point(e),m=modules.find(m=>m.id===drag.id),a=state.modules[m.id],b=m.box,s=a.scale/100;a.dx=Math.round(Math.max(-b[0]+4,Math.min(1196-b[0]-b[2]*s,drag.dx+p.x-drag.x)));a.dy=Math.round(Math.max(-b[1]+4,Math.min(736-b[1]-b[3]*s,drag.dy+p.y-drag.y)));drag.moved=drag.moved||Math.abs(a.dx-drag.dx)+Math.abs(a.dy-drag.dy)>1;drawCanvas();});
+function finishDrag(){if(!drag)return;if(drag.moved)checkpoint(drag.before);drag=null;render();persist();}svg.addEventListener('pointerup',finishDrag);svg.addEventListener('pointercancel',finishDrag);
+$('#layers').onclick=e=>{const b=e.target.closest('[data-id]');if(b)select(b.dataset.id);};
+$('#lock').onclick=()=>change(()=>state.modules[state.selected].locked=!state.modules[state.selected].locked);
+for(const [field,index,axis]of [['position-x',0,'dx'],['position-y',1,'dy']])$('#'+field).onchange=e=>{if(!state.selected)return;const m=modules.find(m=>m.id===state.selected),v=Number(e.target.value);if(!Number.isFinite(v))return;change(()=>{const a=state.modules[m.id],max=(axis==='dx'?1200:740)-m.box[index+2]*a.scale/100;a[axis]=Math.round(Math.max(0,Math.min(max,v))-m.box[index]);});};
+$('#scale').oninput=e=>{if(!slideBefore)slideBefore=clone(state);const m=modules.find(m=>m.id===state.selected),a=state.modules[m.id],limit=Math.floor(Math.min((1200-m.box[0]-a.dx)/m.box[2],(740-m.box[1]-a.dy)/m.box[3])*100);a.scale=Math.min(Number(e.target.value),limit);e.target.value=a.scale;drawCanvas();$('#scale-value').textContent=a.scale+'%';};$('#scale').onchange=()=>{if(slideBefore){checkpoint(slideBefore);slideBefore=null;render();persist();}};
+$('#variants').onclick=e=>{const b=e.target.closest('[data-variant]');if(!b)return;change(()=>state.modules.attention.variant=Number(b.dataset.variant));toast('已切换注意力表达，其他模块保持不变');};
+$('#palettes').onclick=e=>{const b=e.target.closest('[data-palette]');if(b)change(()=>state.palette=Number(b.dataset.palette));};
+let noteBefore=null;$('#note').onfocus=()=>noteBefore=clone(state);$('#note').oninput=e=>{state.modules[state.selected].note=e.target.value;persist();};$('#note').onchange=()=>{if(noteBefore){checkpoint(noteBefore);noteBefore=null;}$('#undo').disabled=!undo.length;};
+$('#purpose').onchange=e=>{change(()=>state.purpose=e.target.value);toast('已更新下一次绘制任务的职责；当前图稿保持不变');};
+function undoAction(){if(!undo.length)return;redo.push(clone(state));state=undo.pop();render();persist();}function redoAction(){if(!redo.length)return;undo.push(clone(state));state=redo.pop();render();persist();}$('#undo').onclick=undoAction;$('#redo').onclick=redoAction;
+document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select')||$('#task-dialog').open)return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redoAction():undoAction();return;}if(e.key==='Escape'){select(null);return;}const directions={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(directions[e.key]&&state.selected){e.preventDefault();const a=state.modules[state.selected];if(a.locked)return;const m=modules.find(m=>m.id===state.selected),step=e.shiftKey?10:1;change(()=>{a.dx=Math.max(-m.box[0],Math.min(1200-m.box[0]-m.box[2]*a.scale/100,a.dx+directions[e.key][0]*step));a.dy=Math.max(-m.box[1],Math.min(740-m.box[1]-m.box[3]*a.scale/100,a.dy+directions[e.key][1]*step));});}});
+function fit(){const width=$('#canvas-scroll').clientWidth-58;$('#stage-wrap').style.width=Math.max(280,width*zoom)+'px';$('#zoom-label').textContent=Math.round(zoom*100)+'%';}$('#zoom-in').onclick=()=>{zoom=Math.min(2,zoom+.15);fit();};$('#zoom-out').onclick=()=>{zoom=Math.max(.5,zoom-.15);fit();};$('#fit').onclick=()=>{zoom=1;fit();};window.addEventListener('resize',fit);
+$('#reset-view').onclick=()=>{change(()=>state=clone(base));toast('已恢复初始图稿，可撤销');};
+$('#save-version').onclick=()=>{versions.push({time:new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}),state:clone(state)});persist();render();toast('版本已保存在此浏览器');};$('#versions').onclick=e=>{const b=e.target.closest('[data-version]');if(!b)return;change(()=>state=b.dataset.version==='initial'?clone(base):clone(versions[Number(b.dataset.version)].state));toast('已恢复所选版本，可撤销');};
+function payload(){const selected=modules.find(m=>m.id===state.selected);return {schema:'paper-figure-workbench/0.1',skill:'paper-vector-figures',paper:'FaceShield: Defending Facial Image against Deepfake Threats (ICCV 2025)',source:'C:/test/paper-figure-tests/faceshield-independent-v0161/output/faceshield-r2.svg',paperText:'C:/test/paper-figure-tests/faceshield-independent-v0161/input/paper-text.txt',figurePurpose:state.purpose,canvas:{viewBox:[0,0,1200,740],widthMm:180,heightMm:111},scope:selected?.id||null,palette:palettes[state.palette],modules:modules.map(m=>({id:m.id,name:m.name,initialBounds:m.box,...state.modules[m.id],representation:m.id==='attention'?['原图层片对照','多头空间展开','正视矩阵对照'][state.modules[m.id].variant]:'保留原图'})),preserveUnselected:true,stage:'prepared_not_submitted',instructions:selected?`结合论文与 skill，只修改「${selected.name}」。${state.modules[selected.id].note||'根据已选表达优化局部视觉层次，保留方法含义。'} 保留所有未选中模块；尊重锁定的位置与尺寸；不得杜撰论文结果。若必要机制修正与锁定冲突，先报告冲突。`:'请先选择一个模块。'};}
+function showTask(){if(!state.selected){toast('请先选择要修改的模块');return;}const p=payload();$('#task-content').textContent=p.instructions+'\n\n'+JSON.stringify(p,null,2);$('#copy-status').textContent='';$('#task-dialog').showModal();}
+$('#make-task').onclick=showTask;$('#preview-task').onclick=showTask;$('#close-dialog').onclick=()=>$('#task-dialog').close();$('#task-dialog').onclick=e=>{if(e.target===$('#task-dialog'))$('#task-dialog').close();};
+$('#copy-task').onclick=async()=>{try{await navigator.clipboard.writeText($('#task-content').textContent);$('#copy-status').textContent='已复制';}catch{$('#copy-status').textContent='请选中文本后复制（浏览器未授权剪贴板）';}};
+$('#download-task').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(payload(),null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='faceshield-edit-task.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+render();fit();
+})();

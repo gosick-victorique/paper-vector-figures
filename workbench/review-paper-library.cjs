@@ -1,0 +1,13 @@
+const fs=require('node:fs'),path=require('node:path');
+const sharp=require('C:/Users/dell/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/sharp');
+require('./templates.js');require('./paper-library.js');require('./paper-renderer.js');require('./semantic-library.js');
+const T=FigureTemplates;
+const ids=['attn-conditioned','geo-camera','adv-identity','mem-prune','cmp-reconstruct','robot-contact','freq-patch'];
+const selected=ids.flatMap(id=>T.catalog.filter(t=>t.family===id));
+let content='<rect width="1328" height="1988" fill="#f4f6f0"/>';
+selected.forEach((t,i)=>{const x=10+(i%4)*330,y=12+Math.floor(i/4)*282;content+=`<rect x="${x}" y="${y}" width="320" height="272" rx="7" fill="white" stroke="#dbe2d6"/><text x="${x+9}" y="${y+20}" font-family="Arial" font-size="10" fill="#435a3d">${t.family} / ${t.view}</text><svg x="${x}" y="${y+28}" width="320" height="240" viewBox="0 0 320 240">${T.markup(t.id,{label:''}).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg>`;});
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1328" height="1988">${content}</svg>`;
+sharp(Buffer.from(svg)).png().toFile(path.join(__dirname,'paper-library-review.png')).then(()=>console.log('Rendered 28 samples covering seven relation types and four layouts.'));
+fs.writeFileSync(path.join(__dirname,'library-manifest.json'),JSON.stringify({counts:T.libraryStats(),sources:T.sources,recipes:T.recipes,templates:T.catalog.map(({recipe,...t})=>t)},null,2));
+const stats=T.libraryStats();
+fs.writeFileSync(path.join(__dirname,'library-sources.md'),`# 模板库语义与论文背景\n\n按独立条目统计：${stats.components} 个基础组件、${stats.mechanisms} 个机制或对象关系，共 ${stats.independent} 项。原有 100 个机制保留构图变体；变体不计为新增机制。\n\n其中 22 个基础对象从已有组合图中抽出，48 个基础操作另行绘制，36 个新增机制分别定义输入、输出和节点关系。通用机制不冒认某篇论文的贡献。\n\n\`direct\` 表示条目语义在已读材料中有依据；\`context\` 表示基于该研究方向的通用设计延伸；\`generic\` 表示没有绑定具体论文的通用机制。所有构图为原创示意，未逐项作完整论文方法验证或四评委评审。证据读取深度在下方逐项记录。\n\n`+Object.values(T.sources).map(s=>`## [${s.title}](${s.url})\n\n${s.venue} ${s.year} · ${s.read}\n\n${s.note}\n`).join('\n'));

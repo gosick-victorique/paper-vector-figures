@@ -1,0 +1,6 @@
+node_modules/
+.agent-jobs/
+agent-server*.log
+.env
+.dev-tools/
+agent/live-smoke-result.json

@@ -1,0 +1,14 @@
+{
+  "name": "paper-figure-workbench",
+  "version": "0.4.0",
+  "private": true,
+  "scripts": {
+    "start": "node agent/server.mjs",
+    "test:agent": "node --test agent/*.test.cjs agent/*.test.mjs"
+  },
+  "dependencies": {
+    "@openai/codex-sdk": "0.163.0",
+    "@xmldom/xmldom": "0.8.15",
+    "sharp": "0.35.5"
+  }
+}

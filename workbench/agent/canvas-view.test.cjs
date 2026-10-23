@@ -1,0 +1,4 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const V=require('../canvas-view.js');
+test('zoom keeps the canvas point underneath the pointer stationary',()=>{const before={x:80,y:-35,z:.6},pointer={x:350,y:200},after=V.zoomAt(before,2.4,pointer);assert.equal((pointer.x-before.x)/before.z,(pointer.x-after.x)/after.z);assert.equal((pointer.y-before.y)/before.z,(pointer.y-after.y)/after.z);assert.deepEqual(before,{x:80,y:-35,z:.6});});
+test('zoom has usable bounds and fit respects both viewport dimensions',()=>{assert.equal(V.zoomAt({x:0,y:0,z:1},99,{x:0,y:0}).z,8);assert.equal(V.zoomAt({x:0,y:0,z:1},.001,{x:0,y:0}).z,.1);for(const [w,h]of [[900,480],[420,800]]){const v=V.fitView(w,h);assert.ok(1200*v.z<=w-64+.001);assert.ok(740*v.z<=h-64+.001);assert.ok(v.x>=32-.001&&v.y>=32-.001);}});

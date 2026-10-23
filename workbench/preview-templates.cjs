@@ -1,0 +1,10 @@
+const fs=require('node:fs');
+const path=require('node:path');
+const sharp=require('C:/Users/dell/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/sharp');
+require('./templates.js');
+const T=FigureTemplates;
+let content='<rect width="1100" height="1480" fill="#f4f6f0"/><text x="24" y="34" font-family="Arial" font-size="21" fill="#34503b">Figure Studio / 40 component structures</text>';
+T.catalog.forEach((t,i)=>{const x=22+(i%5)*216,y=58+Math.floor(i/5)*175;content+=`<rect x="${x}" y="${y}" width="202" height="163" rx="8" fill="white" stroke="#dbe2d6"/><svg x="${x+20}" y="${y+4}" width="160" height="130" viewBox="0 0 160 130">${T.markup(t.id,{label:t.id==='label'?'Label':''}).replace(/^<svg[^>]*>|<\/svg>$/g,'')}</svg><text x="${x+10}" y="${y+151}" font-family="Arial" font-size="12" fill="#435a3d">${i+1}. ${t.id}</text>`;});
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1480">${content}</svg>`;
+fs.writeFileSync(path.join(__dirname,'template-gallery.svg'),svg);
+sharp(Buffer.from(svg)).png().toFile(path.join(__dirname,'template-gallery.png')).then(()=>process.stdout.write('Template gallery rendered for visual inspection.\n'));
