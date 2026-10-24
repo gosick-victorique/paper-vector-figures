@@ -12,9 +12,7 @@ window.FigureContextMenu={mount(api){
   for(const n of wrappers)s.nodes[n.id]=n;
   for(const id of all){const n=M.clone(source.nodes[id]);n.id=map[id];n.locked=false;n.parent=map[n.parent]||n.parent;if(roots.includes(id)){const w=M.world(source,id),p=parents.get(id)?M.world(s,parents.get(id)):{x:0,y:0,scale:1};n.parent=parents.get(id);n.x=(w.x-p.x)/p.scale;n.y=(w.y-p.y)/p.scale;n.scale=w.scale/p.scale;n.name+=' 副本';}s.nodes[n.id]=n;}
   s.selection=roots.map(id=>map[id]);M.move(s,s.selection,20,20);api.remapCopies(map);return true;});}
- function arrange(key){api.change(()=>{const s=api.read(),sel=ids();if(sel.length<2||!M.movable(s,sel))return false;const b=M.selectionBounds(s),boxes=sel.map(id=>({id,...M.bounds(s,id)}));
-  if(key==='distribute-x'||key==='distribute-y'){if(sel.length<3)return false;const axis=key.endsWith('x')?'x':'y',size=axis==='x'?'w':'h';boxes.sort((a,b)=>a[axis]-b[axis]);const gap=(b[size]-boxes.reduce((sum,a)=>sum+a[size],0))/(boxes.length-1);let cursor=boxes[0][axis];for(const a of boxes){M.move(s,[a.id],axis==='x'?cursor-a.x:0,axis==='y'?cursor-a.y:0);cursor+=a[size]+gap;}}
-  else for(const a of boxes){const dx=key==='left'?b.x-a.x:key==='center'?b.x+b.w/2-a.x-a.w/2:key==='right'?b.x+b.w-a.x-a.w:0,dy=key==='top'?b.y-a.y:key==='middle'?b.y+b.h/2-a.y-a.h/2:key==='bottom'?b.y+b.h-a.y-a.h:0;M.move(s,[a.id],dx,dy);}return true;});}
+ function arrange(key){api.change(()=>FigureArrange.arrange(api.read(),ids(),key));}
  function show(x,y){
   close();previousFocus=document.activeElement;const s=api.read(),sel=ids(),has=sel.length>0,all=E.scope(s,sel),editable=has&&!all.some(id=>M.locked(s,id)),transformable=E.canTransform(s,sel),hasWire=all.some(id=>s.nodes[id].connection),single=sel.length===1?s.nodes[sel[0]]:null;
   entries=[];menu.replaceChildren();destination=menu;const title=document.createElement('div');title.className='context-title';title.textContent=has?(sel.length===1?single.name:`${sel.length} 个对象`):'画板';menu.append(title);

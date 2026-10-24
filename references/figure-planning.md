@@ -1,132 +1,135 @@
-# 机制提炼与构图
+# Mechanism extraction and figure planning
 
-## 从论文结论到图上证据
+## From the paper's claim to visible evidence
 
-先读方法、公式与图注，直到能说清对象如何变化。画前 brief 可压成一段：
+Read the relevant method, equations, and captions until you can explain how the objects change. A compact drawing brief can be one paragraph:
 
-> 本图解释____；版面为____栏、____×____mm、主要字号____pt。读者通过____看见该关系。主对象____，关键操作____；普通流程____。图内保留____，图注/正文/细节图解释____；依据____。
+> This figure explains ____. Placement: ____ columns, ____ × ____ mm, main text ____ pt. Readers see the relationship through ____. Main object: ____; essential operation: ____; ordinary process: ____. The figure retains ____; the caption/text/detail figure explains ____. Evidence: ____.
 
-画前先读[图形主导与论文版面](visual-first-layout.md)。先确定可见对象和操作，再添加必要短标签；理解论文所需的公式不等于读图所需的公式。主图不以完整复述正文为目标。
+Read [visual-first layout](visual-first-layout.md) before drawing. Establish visible objects and operations before adding short labels. Equations needed to understand the paper are not automatically needed to read the figure. The main figure need not retell the text completely.
 
-“丰富、精美、三维”要转成画法：具体轮廓、内部操作、对应位置、比较方向、主次面积。仍只有模块名时继续读会改变画法的部分。
+Translate "rich, attractive, 3D" into concrete contours, internal operations, corresponding positions, comparison directions, and area hierarchy. If you still have only module names, read the material that would change the drawing.
 
-**主视觉要承担解释。** 先找最能体现论文差异的关系，再给它面积；物体复杂或占画面大，都不等于机制可见。场景、局部操作和精确读数各有职责：[Carrier](cases/carrier.md)的物体说明主体/载体，独立范数例解释归一化。数表完整但主要关系仍要逐项算时，可让关系本身成为图形：[IAU-FOA R4](cases/iau-foa.md)以同数据流带突出分配，保留矩阵读微小量。它使大关系更直接，但小量不可见、改序要按ID对应；不应把插画当梯度来源，也不因流带好看而夸大细线。
+**The main visual must explain.** Find the relationship that best reveals the paper's distinction and allocate area to it. A complex or large object does not necessarily expose the mechanism. Scene context, local operations, and precise readouts have different roles: [Carrier](cases/carrier.md) uses an object to identify subject/carrier and an independent norm example to explain normalization. If a full table still makes readers calculate every relationship, make the relationship graphical: [IAU-FOA R4](cases/iau-foa.md) uses same-data flow bands for allocation while retaining a matrix for tiny values. Large relationships become clearer, but small values may vanish and reordered entries require ID matching. Do not treat an illustration as a gradient source or exaggerate narrow bands for appearance.
 
-## 信息取舍与连线
+<a id="信息取舍与连线"></a>
+## Information selection and connections
 
-overview 的完整性以论文主张和关键因果为单位。先独立列出读者看完应能复述的主张，再选图元；不要先列所有模型、损失和算法步骤，再为每项分配一个框。一般步骤不因出现在算法中就取得主视觉地位，辅助机制也不因尺寸小就被删掉贡献。
+Judge overview completeness by paper claims and essential causality. Independently list what readers should be able to explain after viewing it, then choose marks. Do not first inventory every model, loss, and algorithm step and assign each a box. Ordinary steps do not become focal merely because they appear in an algorithm; small supporting mechanisms do not lose their contribution merely because they are small.
 
-先用一句话写清读者结合文章应记住什么，并指定首要视觉焦点。多项贡献可以并列，但并列不等于每项、每个子操作都同样醒目；通过共同对象、主次面积和层级形成清楚的阅读路径。图文分工写在已有brief中：图上突出什么，正文哪一节补哪些细节。缺少实现细节不等于overview不完整；只读图无法复现算法也不是缺陷。
+State in one sentence what the reader should remember when reading figure and paper together, and designate the first visual focus. Multiple contributions may be peers without making every sub-operation equally prominent. Shared objects, unequal area, and hierarchy establish a reading path. Record the figure/text division in the existing brief, with sections providing omitted detail. Missing implementation detail or inability to reconstruct the entire algorithm from the image alone is not an overview defect.
 
-brief 增加三层取舍，简短写明理由即可：
+Use three concise levels of selection, explaining why:
 
-- **主视觉：** 最能解释方法差异的对象、变化与关系，优先获得面积和对比。
-- **辅助机制：** 必须知道它的作用，但内部运算可概括；通过局部对象或短标签接回主体。
-- **图外细节：** 省略后仍能准确复述本图主张的步骤、参数或常规实现，交给图注、正文或算法。
+- **Main visual:** Objects, changes, and relationships that best explain the method's distinction; prioritize their area and contrast.
+- **Supporting mechanisms:** Their role is necessary but internals can be summarized; connect them back through local objects or short labels.
+- **Off-figure details:** Steps, parameters, or ordinary implementations whose omission still permits an accurate account of the claim; leave them to caption, text, or algorithm.
 
-逐个问候选组件：删去其独立小图后，哪条必要理解会丢失？没有具体损失时，合并、降级或移出主图；有损失时保留该关系，不一定保留整个模块外框。图元少不能靠省掉核心贡献取得，图元多也不自动意味着解释充分。绘制具体执行流程时，同样区分关键状态与常规操作，但不得丢失任务要求的执行条件。
+For every candidate component, ask what necessary understanding would disappear if its separate mini-diagram were removed. If none, merge, subordinate, or move it out. If something is lost, retain that relationship, not necessarily the whole container. Fewer elements must not be achieved by omitting core contributions; more elements do not prove sufficient explanation. Complete execution diagrams also distinguish key states from ordinary operations, but must retain execution conditions required by their task.
 
-箭头用于需要追踪的方向、传递或变化。归属可用包含与分组，对应可用对齐与一致标记，局部展开可用短引线；选哪种取决于真实关系。连线已经明确输入输出时，不再用装饰箭头重复表达。长总线和跨图回路默认省去：普通优化用局部回路、同名接口或就近迭代标记，并明确实际更新对象。只有跨区路径本身不可省、紧凑表达会丢失必要依赖时才保留长线，在brief写明理由；算法包含迭代不是充分理由。不得为减箭头伪造串行关系、共享输入或因果联系，也不设任意数量上限。
+Use arrows for direction, transfer, or change that readers must trace. Use enclosure for membership, alignment/consistent markers for correspondence, and short leaders for local expansion where these match the relationship. Do not duplicate clear input/output connections with decorative arrows. Omit long buses and whole-figure loops by default. Show ordinary optimization with local loops, matched interfaces, or nearby repetition markers tied to the actual updated object. Keep long cross-region paths only when essential dependencies would otherwise be lost, and record why. Iteration alone is insufficient justification. Reducing arrows must not invent serial ordering, shared inputs, or causality; there is no arbitrary arrow quota.
 
-多个关键模块无需突出执行顺序时，优先做成同级并列分区：每区围绕一个具体视觉主体组织，内部按需展开。共享条件可用统一标记或紧凑连接，不用一条长流水线把所有区串起来。分区可在同一行、网格或其他非阶段式布局中安排，不强制等宽等面积；并列呈现贡献不意味着它们在计算上独立或同时执行。确需传递中间结果的局部保留真实依赖，其余区域仍可并列。
+When execution order is not the key message, prefer peer regions around concrete visual subjects. Shared conditions can use common markers or compact links instead of one long pipeline. Regions may occupy rows, grids, or other non-stage layouts; equal width/area is optional. Peer contributions need not be computationally independent or concurrent. Retain local dependencies for intermediate results even when other regions are peers.
 
-若每块都带小标题、独立图形、箭头和一句解释，读者需要不断重新寻找入口，应把它视为碎片化。优先将相关机制归入同一对象或共同对照，保留核心展开，其余作为附属状态/接口或交给正文。不要仅删掉字句而留下同样多的孤立小图，也不要以继续添加连线补救分区过碎。
+A title, diagram, arrow, and explanatory sentence in every small region can force readers to repeatedly restart. Treat this as fragmentation. Unite related mechanisms through shared objects or comparisons, retaining core expansion while making other details subordinate states/interfaces or moving them into the text. Merely deleting sentences while keeping isolated mini-panels does not solve it; adding links is not a cure for excessive fragmentation.
 
-画完先遮住模块内部小字看整体：主视觉是否仍说明核心做法？若普通更新、外框或回路比贡献更醒目，应重新分面积和权重，而不是继续补全所有局部。无需把所有图画成相同的两区、三栏、中心辐射或前后对比模板。
+After drawing, hide small internal text and inspect the whole: does the main visual still reveal the central intervention? If generic updates, frames, or loops dominate contributions, reallocate area and emphasis rather than complete every local detail. There is no universal two-zone, three-column, radial, or before/after template.
 
-## 内容密度与组织密度
+<a id="内容密度与组织密度"></a>
+## Content density and organizational density
 
-减少碎片时先减少独立容器、重复入口和零散说明，保留有解释价值的对象与关系。主次可以通过分配面积、共享对象、嵌入局部及弱化上下文建立，不自动通过删去辅助机制建立；元素多但组织成整体可以成立，大片留白本身不加分。
+Reduce independent containers, repeated entry points, and scattered annotations before removing explanatory objects and relationships. Establish hierarchy with area, shared subjects, embedded details, and subdued context; do not automatically delete supporting mechanisms. Many elements can form a coherent whole. Large blank regions earn no inherent credit.
 
-方法overview同时检查“响应怎样改变”和“这种改变由何处、何种结构或操作产生”。若图只剩几组前后柱高、夹角或结果对照，而论文的关键作用位置、选择范围、模型组合或表示域转换都只能从文字补回，应补回最有解释价值的结构关系。不是逐项列全算法：在已有主体上显露被访问的层/区域、用共同对象承载多个受体、让同一局部贯穿必要变换，比另开微型面板更合适。
+A method overview should show both how a response changes and where, through what structure or operation, that change is produced. If only bar-height, angle, or output comparisons remain while intervention sites, selection ranges, model combinations, and domain transitions survive only in text, restore the most useful structural relationships. This need not become a complete algorithm inventory. Expose accessed layers/regions on existing subjects, let one object carry multiple recipients, and trace one local detail through necessary transformations rather than opening more tiny panels.
 
-在已有brief的三层取舍里区分：需要展开的机制、可以紧凑保留的结构上下文、交给正文的参数与推导。每项主要贡献应能找到相应视觉表达；不能因选择了一个主视觉，就把其他贡献缩成名称或通用结果符号。取舍理由除了“删掉是否误导”，还应考虑“保留是否帮助读者定位、联系或理解本方法的独特做法”。核心结构的解释收益大于占地时，应保留并组织好。
+In the brief, distinguish mechanisms needing expansion, structural context retained compactly, and parameters/derivations left to text. Each major contribution should have a corresponding visual expression; choosing one focal subject should not reduce the others to names or generic effect symbols. Ask not only whether omission misleads but whether retention helps readers locate, connect, or understand the method's distinctive action. Retain and organize structure when explanatory benefit exceeds its footprint.
 
-## 完整范围与代表实例
+## Full scope and representative examples
 
-整篇方法总览保留主要机制的关系、必要训练分支与出口，围绕核心创新展开代表性操作。普通模块可保留准确的输入输出，不要求逐一内部展开。长推导、次要参数和工程细节放图注/正文；需要额外图形解释的部分可另设细节图并明确引用。方法覆盖不等于所有细节必须挤进一张图。
+A whole-method overview retains relationships among main mechanisms, necessary training branches, and outputs, expanding representative operations around the innovation. Ordinary modules can keep accurate input/output interfaces without internal detail. Put derivations, secondary parameters, and engineering details in the caption/text. Give additional graphical explanations their own referenced detail figures. Coverage does not require every detail in one image.
 
-展开一处操作时，画清**输入 → 实际运算 → 返回对象**，接回发生的位置：评分接选择，更新接状态发布，逐样本运算在汇总之前。分支、融合和交替更新依论文确定，不能因版面顺手改成直线串联。完整展开可参考 [SmuDPatch](cases/smudpatch.md)、[AdvFractal](cases/advfractal.md)、[AD-SRF](cases/ad-srf.md)。
+For an expanded operation, expose **input → actual operation → returned object** and connect it to the intervention site: scoring to selection, updates to state publication, per-sample operations before aggregation. Branches, fusion, and alternating updates follow the paper, not the easiest straight-line layout. See [SmuDPatch](cases/smudpatch.md), [AdvFractal](cases/advfractal.md), and [AD-SRF](cases/ad-srf.md).
 
-选择能区分机制的实例：[PCTree](cases/pctree.md)停扩但入选；[ReMoE](cases/remoe.md)中心内外点对；[APC](cases/apc.md)索引相加与最近邻配对不同。示意数据用于说明操作，不替代模型结果；相同外形的变量按作用分别命名。
+Choose examples that distinguish mechanisms: [PCTree](cases/pctree.md) stops expansion yet remains selected; [ReMoE](cases/remoe.md) compares inside/outside-center points; [APC](cases/apc.md) distinguishes index addition from nearest-neighbor pairing. Illustrative data explains an operation and does not substitute for model results. Name similarly shaped variables according to their different roles.
 
-局部承担定量解释时，优先让总览、局部和读数取自同一对象。独立算例也可以使用，但说明其假设与场景的联系，不暗示未经计算的映射。先看[三种解释任务的图板](visual-entry.md#先选主视觉的解释任务)：ProAda以场景说明用途、另设几何例，Illusion of Depth贯穿同一信号，IAU-FOA直接把质量变成带宽。跨领域也可对照[AR-AWM同字形像素例](cases/ar-awm.md)与[Carrier独立范数例](cases/carrier.md)。
+For quantitative detail, prefer the overview, inset, and readout to share the same object. Independent worked examples are valid when assumptions and their relationship to the scene are clear; do not imply uncomputed mappings. See the [visual entry board](visual-entry.md#先选主视觉的解释任务): ProAda uses context plus a separate geometric example; Illusion of Depth follows one signal; IAU-FOA maps mass to band width. Compare [AR-AWM](cases/ar-awm.md), using the same glyph's pixels, and [Carrier](cases/carrier.md), using an independent norm example.
 
-### 迭代方法：首次赋值、当前观测与下一步状态
+### Iteration: initialization, current observation, next state
 
-本图确需解释迭代细节时，已有历史的一步算例不能冒充初始化；可以明确只画典型迭代，其余规则交给正文。若图同时展示首次赋值与后续递推，就近分清两条规则；历史估计也不要画成每步全量重测。同一观测驱动多项更新时，让已展示的分支连接实际写入对象；确需解释下一步读取时，可用局部回路或同名接口，不强求跨整图长回线。[SRIM](cases/srim.md)将首次r=d与后续EMA分开，观测d连接单槽记忆和共享扰动，正视状态表保留单槽变化与全体概率重算的区别。
+Only expand these details when the figure needs them. A worked step with history is not initialization; identify it as a typical iteration and leave other rules in the text. If both initialization and recurrence are shown, distinguish their rules locally. A historical estimate is not a full remeasurement at every step. When one observation drives several updates, connect shown branches to their actual write targets. Next-step reads may use local loops or matched interfaces without a whole-figure return arrow. [SRIM](cases/srim.md) separates initial r=d from subsequent EMA; observation d feeds a single-slot memory and a shared perturbation, with a front-facing state table distinguishing one-slot change from probability recomputation for all slots.
 
-实例优先选能区分相近规则的情况：SRIM中最高概率a3、本次抽中a5，能直接排除“按排名必选最弱”的误读。选择由方法允许的示意例，不伪造模型观测；用场景提供语境时，别让场景面积压过真正需要解释的状态变化。
+Choose illustrative cases that separate similar rules. In SRIM, a3 has highest probability while a5 is sampled, directly countering a deterministic ranking interpretation. Use examples permitted by the method rather than invented measurements. Contextual scenes must not crowd out the state changes that require explanation.
 
-### 把构造过程与作用解释分开判断
+### Assess construction and effect explanation separately
 
-若任务同时要求“怎样得到结果”和“为什么有效”，分别找图上可追踪的证据。一个漂亮、可手算的效果例可能只回答后者。[GCD首轮四评委](cases/gcd.md)均看懂了保持类别仍可翻转搜索决策，却无法从顶部复述替代分数如何构造；不能用下方的好例子掩盖上方的模块名与公式串。
+When asked both how an output is constructed and why it works, find traceable visual evidence for each. An attractive hand-computable effect example may answer only the latter. In [GCD's first review](cases/gcd.md), all four reviewers understood that preserving the class could still reverse the search decision, but could not reconstruct the surrogate score from the top region. A good example below does not excuse module names and formulas above.
 
-先找缺失的连接：哪个候选量经过何种映射，成为目标中比较的量，最后返回什么？输入、特征、logit、概率等不同表示中的运算应就近说明对应；近似在哪一步使用就标在哪一步。需要时展开关键映射并重新分配面积，不要求每张图增加矩阵公式或另画一套流程。独立解释例与方法输出没有计算关系时，不画直接生成箭头。
+Find missing transitions: which candidate quantity passes through which mapping, becomes which compared objective quantity, and returns what? Clarify operations in input, feature, logit, or probability space where they occur; identify approximations at their actual point of use. Expand essential mappings and redistribute area as needed, without requiring a matrix formula or second pipeline in every figure. Do not draw a generation arrow from an independent explanatory example to method output without a computational relationship.
 
-GCD R2展开上述连接后，四位复评认为构造更完整，方法解释均分75→86.75；代价是顶部面积与公式增加，方向关系仍需推读。补全机制和提高可读性是不同改动，应分别看证据；不能据分数上涨把更密的公式区推广为通用版式。 R3再把映射改为两行箭头，仍未完全解决目标的直观动机。替换表达时保留关键量的角色与操作目的：能看出“怎么映射”不代表已看出“为何选择”；不把更多图元当作解释完整。
+GCD R2 improved mean explanation scores from 75 to 86.75 after exposing those transitions, at the cost of more top-region space and formulas; directional interpretation still required inference. Mechanism coverage and readability are different changes and need separate evidence. This score increase does not justify formula-dense layouts universally. R3's two-row arrows still did not fully explain the objective's motivation. Preserve roles and purposes when replacing a representation: showing how a mapping works does not necessarily show why it is chosen. More marks do not establish completeness.
 
-原文局部存在歧义时，区分未知规则与仍可画清的确定关系。[P2P](cases/p2p.md)不补造停止算法，但仍让候选边界、前后缀和最终并集对应；初稿省略这段连接，四位评委都发现构造缺口。不能用“原文有歧义”代替其余已确定操作的解释。
+Where the paper is locally ambiguous, separate unknown rules from relationships that are still clear. [P2P](cases/p2p.md) does not invent a stopping algorithm, but does show correspondence among candidate boundaries, prefixes/suffixes, and the final union. All four reviewers identified the missing construction link in the initial drawing. Ambiguity in one rule does not excuse omitting known operations elsewhere.
 
-## 构图决策
+## Composition decisions
 
-需要直接看原论文如何分配主次时，选读[阶段、局部与多条件原图](hierarchy-references.md)：P2P提供阶段交接，StepPrune展开模块内部，Elastic以共同对象比较多预算。它们回答不同阅读任务，不组成统一模板；各图未展开的构造也需结合正文补齐。
+For original-paper hierarchy, consult [hierarchy references](hierarchy-references.md): P2P illustrates stage handoffs, StepPrune exposes internals, and Elastic compares multiple budgets on a shared object. They serve different reading tasks rather than one combined template; the paper text supplies construction details omitted in their figures.
 
-新图比较两种都能说明关系的组织，用一句话写保留什么、各自便于读什么、代价是什么，再直接推进。无需画完两张或等待审批；局部反馈沿已认可结构修改。排除错误机制不算构图比较。
+For a new figure, compare two valid organizations. State what each preserves, what each makes easy to read, and its cost, then proceed. Two completed drawings and prior approval are unnecessary. Local feedback should retain accepted structure. Rejecting an incorrect mechanism is not composition comparison.
 
-把论文中的动作落到对象上，再决定容器：
+Place actions on objects before choosing containers:
 
-| 读者要看什么 | 可采用的组织 | 已试画参考 |
+| Reader's question | Possible organization | Cases |
 |---|---|---|
-| 部件怎样构成或改变对象 | 对象占主位，参数/局部变化靠近作用处 | [SmuDPatch](cases/smudpatch.md)、[AdvFractal](cases/advfractal.md) |
-| 一个值怎样作用于多个受体 | 共享量画一次，连接各受体的运算 | [FeatureFool](cases/featurefool.md)、[APC](cases/apc.md) |
-| 几何或相似度意味着什么 | 空间对象配同实例的正视数值 | [SLASH](cases/slash.md)、[PA-Attack](cases/pa-attack.md) |
-| 同一状态被怎样读写 | 共同对象居中，操作靠近字段 | [RaG-Tree](cases/ragtree.md) |
-| 各阶段或索引有什么差异 | 稳定角色可设固定行列，前后状态沿另一轴比较；这是布局关系，不自动等于模型矩阵。复制与替换分开来源身份、接口角色和监督归属，标签不一定随内容迁移 | [NORP](cases/norp.md)、[AD²](cases/ad2.md)、[View Swap R4](cases/view-swap.md) |
+| How parts construct or alter an object | Dominant object, nearby parameters/local changes | [SmuDPatch](cases/smudpatch.md), [AdvFractal](cases/advfractal.md) |
+| How one quantity acts on several recipients | One shared quantity connected to actual recipient operations | [FeatureFool](cases/featurefool.md), [APC](cases/apc.md) |
+| What geometry or similarity means | Spatial object plus front-facing values from the same example | [SLASH](cases/slash.md), [PA-Attack](cases/pa-attack.md) |
+| How a shared state is read/written | Common object with operations near target fields | [RaG-Tree](cases/ragtree.md) |
+| How stages or indices differ | Stable roles in rows/columns; states compared along another axis | [NORP](cases/norp.md), [AD²](cases/ad2.md), [View Swap R4](cases/view-swap.md) |
 
-这些组织可组合。先匹配真实操作，再借布局或样式：固定输入、共享扰动和固定权重各有不同受体，不能仅凭“共享”或论文领域套图。不确定时先看[视觉入口](visual-entry.md)；[三种视觉对抗局部](adversarial-entry.md)可帮助区分候选、反馈与分配，选定后读[完整变体](design-guide.md)。不规定三栏、等宽模块或统一底部流程。
+In the last organization, a layout is not automatically a model matrix. For copying/replacement, distinguish source identity, interface role, and supervision ownership; labels need not move with contents. Combine organizations when appropriate. Match actual operations before borrowing layouts: a fixed input, shared perturbation, and fixed weights have different recipients. "Shared" or a common research field is insufficient grounds to reuse a figure. See [visual entry](visual-entry.md), [adversarial mechanisms](adversarial-entry.md), then the relevant [design variants](design-guide.md). No mandatory three columns, equal modules, or bottom pipeline.
 
-整图仍像几个同等分量的说明区时，按共同对象或变量组织主次：[Tetris3D](cases/tetris3d.md)从总览定位再展开同一对象；[Illusion of Depth R4](cases/illusion-depth.md)将选中视差作为像素代价与几何解释之间的明确读数，计算边接实际运算，几何对应另用引线。前者须分清辅助轮廓与真实输入，后者让完整曲线变窄；不要将这些选择固化为三栏。可对照[近期原图板的总览与展开提示](reference-atlas.md#待迁移的提示从同等分区转向总览与展开)，按当前关系选择。
+When equal-weight explanation regions still dominate, organize around shared objects/variables. [Tetris3D](cases/tetris3d.md) locates then expands the same object; [Illusion of Depth R4](cases/illusion-depth.md) uses selected disparity as an explicit readout between pixel costs and geometry, separating computational edges from geometric leaders. The former must distinguish auxiliary contours from real inputs; the latter narrows full curves. These choices are not universal three-column layouts. Compare [overview/expansion references](reference-atlas.md#待迁移的提示从同等分区转向总览与展开).
 
-## 把解释放回对象
+## Put explanation back on objects
 
-| 图面症状 | 优先尝试的改动 | 保留的关系 |
+| Symptom | Try first | Preserve or disclose |
 |---|---|---|
-| 场景很大，创新仍靠文字 | 把操作靠近实际作用对象，让输入、接口和输出相邻，再决定是否放大 | 保留可追踪的主路径；[RILA](cases/rila.md)将控制器、载板、相机与两帧输入邻接，训练参数单独按身份对应 |
-| 细节已有，但读不清 | 在既定纸面占位内重分面积，减少重复，用定位图配同源局部；仍不足时另设细节图 | 保留身份、取样、观察方向，并区分显示范围与运算范围。[MROP R4](cases/mrop.md)裁视图不裁损失；[TARA](cases/tara.md)保留原观察。不能靠增大整张画布或整体缩字解决 |
-| 重复文字和容器占面积 | 共享上下文；对象视图已完整承载对应时，可兼任独立表；重复操作可共用框 | 输入身份、独立路径和输出仍保留。[WebMirage R4](cases/webmirage.md)让页面承载候选映射；代价是失去竖直表扫描。共享框不表示把多次调用合成一个输入 |
-| 关系太密，找不到重点 | 保留弱化上下文，按同一 ID 展开有依据的局部运算 | 弱化不是筛选、置信度或数值透明度；背景可读性会下降，[Response Profiles](cases/response-profile.md) |
-| 公式堆叠，来源难追踪 | 将选择、分配、汇合画在作用对象上；移走推导，仅在必要时留短关系 | 保留权重来源与实际归约，不伪造定量图形；[SAWR](cases/sawr.md)、[CamoShift](cases/camoshift.md)可借对象归组，不照搬公式密度 |
-| 空间方向重合、透明层发脏 | 分开关键端点与边界；减少无信息内表面，保留正视读数 | 数据不因视角或好看而修改；详见[混合视觉语法](content-to-3d.md) |
+| Large scene, innovation still textual | Put operations next to their actual subjects; bring input, interface, and output together before enlarging | Traceable main path; [RILA](cases/rila.md) groups controller, carrier, camera, and two frames, matching training parameters separately by identity |
+| Detail exists but is unreadable | Reallocate the fixed paper footprint, remove repetition, combine a locator with same-source detail; split out a detail figure if needed | Identity, sampling, observation direction, display versus computation scope; [MROP R4](cases/mrop.md) crops a view, not the loss; [TARA](cases/tara.md) preserves observation geometry |
+| Repeated text/containers consume space | Share context; let an object view also carry a mapping table; share a frame for repeated operations | Preserve input identities, independent paths, and outputs; [WebMirage R4](cases/webmirage.md) gains integrated mapping but loses vertical table scanning; a shared frame does not merge separate calls into one input |
+| Dense relationships obscure the focus | Subdue context and expand a justified operation with consistent IDs | Subduing is not filtering, confidence, or numeric opacity; background legibility may decrease, as in [Response Profiles](cases/response-profile.md) |
+| Formula stacks obscure sources | Draw selection, allocation, and merging at their intervention sites; retain short relations only when useful | Weight provenance and actual reduction; [SAWR](cases/sawr.md) and [CamoShift](cases/camoshift.md) inform object grouping, not a universal formula density |
+| Spatial directions coincide or transparency becomes muddy | Separate critical endpoints/boundaries, remove uninformative interior faces, keep front-facing readouts | Do not modify data to improve the camera or appearance; see [mixed visual grammar](content-to-3d.md) |
 
-图内优先用短标签写身份、动作和改变判读的条件，仅留必要读数；生成设置、来源和长推导随图注。紧凑来自共享与对齐，不靠统一缩小字体。轮廓和部件建立辨识度，线条、色彩和留白建立主次；不要用等重外框把所有内容切成同等级卡片。
+Use short labels for identity, action, and conditions that change interpretation; retain necessary readouts. Put generation settings, provenance, and long derivations in the caption. Compactness comes from sharing and alignment, not uniform font reduction. Contours and parts provide recognition; line weight, color, and whitespace establish hierarchy. Avoid equally prominent frames partitioning everything into peer cards.
 
-展示相机可以调整，真实观测的相机是数据的一部分。前者可同组改视角分开几乎共线的方向；后者放大时保留透视和遮挡，另画正视解释须明确区分。空间维度具体表达什么、如何用透明体素与浅层展开，按[混合视觉语法](content-to-3d.md)选择。
+A display camera can change; a real observation camera is part of the data. Adjust the former to separate near-collinear directions. Preserve the latter's perspective and occlusion when enlarging, and identify any separate front-facing explanatory view. Use [mixed visual grammar](content-to-3d.md) for depth meaning, transparent voxels, and shallow exploded layers.
 
-## 比较时保留什么
+<a id="比较时保留什么"></a>
+## What comparisons must preserve
 
-| 改动 | 需要交代 | 可解释的取舍 |
+| Change | State explicitly | Explain the tradeoff |
 |---|---|---|
-| 布局/展示相机 | 同一对象、数据与机制是否保留 | 遮挡、对应和读数怎样改变 |
-| 造型/展开内容 | 新增或省略的内容、是否需重算 | 适合总览还是局部解释 |
-| 方法参数 | 固定输入和其他设置 | 参数如何改变对象 |
+| Layout/display camera | Whether objects, data, and mechanism remain the same | Occlusion, correspondence, and readout changes |
+| Shape/expanded content | Added/omitted content and any recomputation | Suitability for overview versus detail |
+| Method parameters | Fixed input and other settings | How parameters change the object |
 
-新增视图、换源字形、重绘场景并重算，都不等于固定内容的纯排版对照。画布更小、文字更少也不自动证明阅读更快。
+A new view, different source glyph, or redrawn/recomputed scene is not a pure layout comparison with fixed content. Smaller canvases and fewer words do not automatically demonstrate faster reading.
 
-## 可直接使用的提示段
+## Reusable prompt passages
 
-### 初稿
+### Initial figure
 
-> 理解方法，用短brief确定读者结合文章应记住的核心主张、首要焦点、图文分工、目标宽高与最终字号。比较两个成立的组织，只展开帮助核心理解的关系，先用对象变化和对应画出重点，再加必要短标签与读数。非必要步骤和连续解释交给正文；局部草图可合并或舍弃，不把每个模块变成独立分区。借用参考中适用的关系，按论文版面比例看图并结合原文独立评审，不做导出检查。
+> Understand the method. In a short brief, define the central claim readers should remember with the paper, the first visual focus, figure/text responsibilities, target dimensions, and final text size. Compare two valid organizations, expanding only relationships that support the core explanation. Show transformations and correspondence first, then add short labels and readouts. Leave unnecessary steps and continuous explanation to the text. Merge or omit local sketches rather than make every module a region. Borrow applicable relationships from references, inspect at paper-layout proportions, and review independently with the source text. Do not run export checks.
 
-### “太简单”
+### Too simple
 
-> 先区分缺机制、缺辨识度还是缺主次：将核心模块名展开成可见操作；泛化外形补能辨认的轮廓与部件；等重模块重分面积、线条和对比。在既定占位内放大关键局部，删去重复或另设细节图，不自动加大整图。新增细节应解释关系；改变源内容时重算依赖数据并说明变化。
+> Distinguish a missing mechanism, weak recognition, and weak hierarchy. Expand central module names into visible operations; add recognizable contours/parts to generic subjects; redistribute area, line weight, and contrast among equal-weight modules. Enlarge the critical detail within the established footprint, remove repetition, or create a separate detail figure instead of automatically enlarging the whole figure. Added detail must explain a relationship. Recompute dependent data and disclose changes if source content changes.
 
-### “太乱／文字太多”
+### Too cluttered or too much text
 
-> 先检查重点是否被多个同等醒目的局部与短说明切碎，再决定合并、降级或交给正文的内容。把长说明和推导移出图，用同对象前后变化、对齐、选择和汇合承载核心解释，保留必要短标签。合并重复上下文，按依赖邻接已展示的操作，保留避免误读的条件与出口。若主机制仍无法在目标尺寸读清，重组总览与独立细节图；不要只删字却保留同样多的孤立小图，也不要缩小所有字、堆缩写或只扩大画布。
+> Check whether equally prominent details and short snippets fragment the focus. Decide what to merge, subordinate, or leave to the paper. Move long explanations and derivations out; use matched object states, alignment, selection, and convergence for the core explanation, with necessary short labels. Share repeated context, place operations by dependency, and retain conditions/outputs that prevent misreading. If the core remains unreadable at target size, reorganize overview and separate detail. Do not merely delete words while keeping isolated mini-diagrams, shrink all text, pile on abbreviations, or enlarge the canvas alone.
 
-### “三维不够／太重”
+### Not enough 3D or overly heavy 3D
 
-> 先选空间要解释的关系，再改模型或相机。物理顺序用装配；索引分组可浅层展开；算子允许时可用低维向量几何。透明用于读内部，遮挡和轮廓用于辨层次。展示相机要分开关键方向；度量保留正视数值，数据色保持原含义。详见[混合视觉语法](content-to-3d.md)。
+> Choose the relationship depth should explain before changing models or cameras. Use assembly for physical ordering, shallow explosion for index groups, and low-dimensional vector geometry when justified by the operator. Transparency reveals interiors; occlusion and silhouettes distinguish layers. Separate critical directions with the display camera. Keep metrics front-facing and data colors semantically intact. Consult the mixed visual grammar.

@@ -1,71 +1,76 @@
 ---
 name: paper-vector-figures
-description: 根据论文与具体配图需求，设计可编辑矢量方法总览、架构图、概念图、空间关系图、实验设置图和定性对比图。优先三维表达，结合二维读数；按目标版面构图，由四位独立评委评分并驱动迭代。实验数值图使用科学绘图工具。
+description: Design editable vector figures from research papers and figure-specific requirements, including method overviews, architectures, concepts, spatial relationships, experimental setups, and qualitative comparisons. Prefer meaningful 3D structures with precise 2D readouts, compose for the target publication layout, and iterate through four independent reviewers. Use scientific plotting tools for numerical results.
 metadata:
-  version: "0.16.1"
+  version: "0.17.0"
 ---
 
 # Paper Vector Figures
 
-根据论文机制设计可编辑矢量图，让读者通过图形看懂对象如何变化、关键关系为何成立。默认优先考虑三维图形，包括浅立体、层片、透明体、空间向量与局部展开；当三维明显损害准确性、可读性或观感时，改用二维。文字、图例和精确读数可保持正视二维，不规定立体比例；文字和公式辅助解释。文本本身是研究对象时，可以展示必要的文本实例。
+Design editable vector figures that make a paper's objects, transformations, and essential relationships visible. Prefer 3D representations: shallow relief, separated layers, transparent volumes, spatial vectors, and local exploded views. Use 2D when 3D materially harms accuracy, readability, or appearance. Labels, legends, and precise readouts can remain front-facing; there is no required proportion of 3D content. Text and formulas support the graphics. When text itself is the research object, show the necessary text examples.
 
-矢量结构可结合真实图像与计算结果，不为追求全矢量而把研究对象全部替换成图标。画前按[素材与对象表达](references/material-and-representation.md)判断哪些内容需要真实外观、数据证据或抽象示意；位图素材与三维组织可以结合。
+Vector structures may incorporate real images and computed results. Do not replace every research object with an icon merely to keep everything vector-based. Before drawing, use [materials and representation](references/material-and-representation.md) to decide where realistic appearance, data evidence, or a schematic is appropriate. Raster materials and spatial organization can coexist.
 
-## 工作方式
+## Instruction and output languages
 
-默认做可直接看的 SVG/HTML 图稿和短 brief。设计研究、试风格及快速迭代时不运行导出检查、不生成 PDF 套件、不打包；看图用于设计批评。仅在明确需要投稿成品或指定文件时使用 [工具与导出](references/tooling.md)。
+Use English for core design instructions and internally authored layout/component prompts. Preserve the user's request and paper evidence in their original language; translate terminology only when it helps accurate interpretation. English instructions do not imply English-only output. Follow the requested language for figure labels and captions; when unspecified, use the paper's language for a new figure and preserve the existing label language during edits. Answer the user in their language. Keep established technical names and symbols consistent across languages.
 
-每次根据当前输入确定配图任务、图型和使用位置，不把某篇论文的栏数、尺寸或构图沿用为通用默认。先按[图形主导与版面约束](references/visual-first-layout.md)选择适合解释任务的表示，再确定单栏/跨栏或其他目标版面、宽高和最终字号。优先读取已有要求；信息不足时给出可调整的假设，仅在缺失信息会改变关键设计时询问。不能把所有配图套成流程图，也不靠扩大画布或整体缩字解决拥挤。
+## Working modes
 
-整篇方法的 overview 先回答研究对象、核心做法与作用，用贡献之间的关系组织画面。用户说“流程图”不自动意味着逐行展开算法；根据其阅读目的决定详略，明确要求执行细节时再完整展开。画前按[信息取舍与连线](references/figure-planning.md#信息取舍与连线)确定主视觉、辅助机制和图外细节；概览评审同时检查不必要的展开，不能把模块清单直接变成必画清单。
+By default, deliver a viewable SVG/HTML figure and a short brief. During design research, style exploration, and rapid iteration, use image inspection for design critique; do not run export checks, produce submission PDF suites, or package files. Use [tooling and export](references/tooling.md) only when submission-ready output or a specific file format is requested.
 
-默认按**与正文、图注配合阅读的论文插图**设计，明确图帮助读者抓住的核心主张及阅读焦点。正文负责推导、精确定义与次要实现，图负责突出有价值的组织、变化和对照；图不必独立重讲全文。方法overview仍应保留使贡献成立的关键结构、作用位置及必要衔接，不能只剩效果对照。按[内容密度与组织密度](references/figure-planning.md#内容密度与组织密度)区分应收拢的碎片和被删掉的解释机会。只有用户要求独立讲解图、教学图或完整执行图时才提高自包含程度。图内关系仍须准确，省略不能造成错误含义。
+Determine the task, figure type, and placement from the current input. Do not turn one paper's column count, dimensions, or composition into universal defaults. Use [visual-first layout](references/visual-first-layout.md) to choose the representation, then the single-column, double-column, or other target placement, width, height, and final text size. Read existing requirements first. State adjustable assumptions when information is missing; ask only when the missing fact changes a key design decision. Do not turn every figure into a flowchart or solve congestion by enlarging the canvas or shrinking all text.
 
-用户负责指定图片和评价最终结果时，独立完成内部绘制、四评委与迭代；不将“用户参与”自行解释成暂停流程。明确要求中间草稿或省略评审时按用户范围执行。
+For a method overview, show the research object, central intervention, and its role through relationships among contributions. A request for a "flowchart" does not automatically require a line-by-line algorithm trace. Match detail to the reading purpose; fully expand execution details when explicitly requested. Use [information selection and connections](references/figure-planning.md#information-selection-and-connections) to identify the main visual, supporting mechanisms, and off-figure details. Review unnecessary expansion as well as omissions; a module inventory is not a drawing checklist.
 
-用户要求全新上下文的独立重绘或技能测试时，使用不继承对话的绘图代理，只传当前任务、论文原始证据、必要素材与本技能；不传旧图、旧生成器、旧评审、旧布局偏好或预期答案。先完成独立产出再与旧版对照，不为了外观不同强制改结构。记录实际输入与读取范围；无法启动独立代理时如实说明，不能由带有旧上下文的主代理作画后声称完成独立测试。普通续改仍保留用户认可的结构。
+Design a paper figure to be read together with its text and caption. Establish the central claim and first visual focus. The paper carries derivations, exact definitions, and secondary implementation details; the figure highlights useful organization, transformations, and comparisons. It need not retell the whole paper independently. A method overview must still retain the essential structures, intervention sites, and interfaces that make its contributions work; outcome comparisons alone are insufficient. Use [content density and organizational density](references/figure-planning.md#content-density-and-organizational-density) to distinguish fragmentation from lost explanatory opportunities. Increase self-containment for explicitly requested standalone explanations, teaching diagrams, or complete execution diagrams. Omissions must not imply false relationships.
 
-构图默认采用以下优先顺序，具体输入有明确要求时优先遵从：
+When the user specifies the figure and evaluates the final result, complete drawing, four-reviewer evaluation, and iteration internally. User involvement does not imply pausing between internal stages. Honor explicit requests for intermediate drafts or omitted review. When embedded in a workbench, follow the execution mode provided by the host: a quick-generation executor may use the design knowledge without running the complete review workflow, and must report that distinction accurately.
 
-- **非必要的长箭头不画。** 迭代存在不等于需要环绕整图的回路；先用局部回环、同名接口或就近迭代标记表达。仅当跨区路径本身是必要机制、紧凑表达会造成误读时才保留长线，并在brief说明原因。
-- **无关键顺序时，关键模块并列分区。** 每区有自己的视觉主体与局部解释，共享输入或目标可紧凑表示。并列是贡献层级，不强制等宽、横向一排或计算并发；真实必要依赖仍保留，避免用阶段编号暗示不存在的顺序。
-- **主对象优先三维，并实际探索。** 按[模块空间方案探索](references/spatial-exploration.md)逐个识别可空间化的模块，比较结构不同的候选并绘制局部草图，再选择适合整图的表达。浅立体也应作用于内容对象，不能只给外框加阴影。深度含义与退回条件见[混合视觉语法](references/content-to-3d.md)。
-- **配色少而有职责。** 默认以中性色、一个主色和一个强调色建立层级，避免每个分区各用一种等重颜色。按[基础配色约束](references/visual-first-layout.md#基础配色约束)分配颜色与面积；当前图片提示词可调整色系、数量和风格，保留语义一致与可读性。
+For an explicitly requested independent redraw or fresh-context skill test, use a drawing agent without inherited conversation. Pass only the current task, primary paper evidence, necessary assets, and this skill. Exclude previous figures, generators, reviews, layout preferences, and expected answers. Finish the independent result before comparing it with earlier work; do not force a different structure merely for novelty. Record the actual inputs and reading scope. If an independent agent is unavailable, disclose that limitation rather than claiming an independent test from the current context. Ordinary edits preserve the structure the user has accepted.
 
-## 设计流程
+Unless the current request specifies otherwise, apply these composition priorities:
 
-下列机制提炼按本图职责执行：概念、实验设置或对比图应读对应章节，提取关系、条件或差异证据；只有任务涉及运算流程时才展开算法与更新链。
+- **Omit unnecessary long arrows.** Iteration alone does not justify a loop around the whole figure. Prefer local loops, matching interfaces, or a nearby iteration marker. Keep a long path only when the cross-region dependency itself is essential and a compact representation would mislead; explain that choice in the brief.
+- **Use peer regions when order is not the point.** Give each key module a visual subject and local explanation; represent shared inputs or goals compactly. Peer presentation describes contribution hierarchy, not necessarily equal widths, a horizontal row, computational independence, or concurrency. Preserve necessary dependencies and avoid stage numbers that invent an order.
+- **Explore spatial representations of the actual objects.** For each suitable mechanism, use [spatial exploration](references/spatial-exploration.md) to compare structurally different candidates and inspect local sketches. Even shallow relief should reveal something about the content, not merely add a shadow to its container. See [mixed visual grammar](references/content-to-3d.md) for depth semantics and fallback criteria.
+- **Give colors distinct jobs.** Start with neutrals, one primary hue, and one accent; avoid equally strong colors for every region. Use [basic color constraints](references/visual-first-layout.md#basic-color-constraints) for semantic roles and area hierarchy. A figure-specific prompt may change the palette, number of hues, or style while preserving consistent meaning and readability.
 
-1. **读懂方法，确定视觉重点与图文分工。** 读方法、公式和图注，写短brief：读者应记住的核心主张、最先看的对象/关系、辅助内容与留在正文的细节及对应章节，另记版面与依据。区分论文事实、原创示意和未知信息。按本图职责理解到足以画准的操作层；只展开帮助表达核心的变化，不把读懂的每个模块、公式或边界条件变成独立小图。主次不清时先取舍，再探索造型。
-2. **选择论证、素材与表示。** 先明确“读者通过什么看懂什么”，再比较两种成立的组织，选一项直接推进；无需预先审批或画完两张，排除错误机制不算构图比较。为关键对象选择真实样本、可追溯计算结果或机制示意，在brief简记来源/生成方式与解释职责；不把已画的占位图标自动当作最终素材。区分场景语境、同源计算与独立解释例，按阅读任务分配主视觉、支撑读数、普通流程与图注。实例实际体现差异，空间视角分开关键方向，读数保持正视。参考需实际看图，提取其对象表示与解释关系；不直接把原图布局、模块清单变成当前任务要求。裁图保留足以说明所借关系的内容，省略范围交代清楚。近期方法优先，不按原图是否三维筛选。
-   需要构建大体架构时，从[整图框架提示词](references/framework-prompts.md)按真实关系选候选，将适用提示改写成包含本文对象、主次与依赖的一段 `layout_prompt`，记入已有brief；用户给定或已认可的框架优先，无合适条目时自拟。按保留的机制选读[常用组件知识](references/component-recipes.md)，核实作用域、接口和易错语义，再选择画法，不把组件清单变成必画清单。
-   对已确定需要展开、且有空间表达可能的不同模块，在精绘前执行[空间方案探索](references/spatial-exploration.md)：用结构候选与实际局部草图检验；框架与组件库提供候选起点，不替代探索。相同机制可复用已经比较过的表示。探索过的模块仍可在整图中合并或省略，不能因已有草图就全部展示。
-3. **围绕核心组织图形与标签。** 先画对象、变化和对应，再添加必要的对象名、操作名、符号及限定；相关解释贴近同一视觉主体，不为每个小组件各建标题、图例和效果句。只保留直接帮助判读的公式，长解释放图注/正文。图内确需显示迭代时区分首次赋值、递推与下一步读取；身份、状态、地址及颜色角色保持一致。复制保留同一内容，变换显示变化，原创数据就近标示意。按目标物理尺寸查看图稿，判断主视觉是否突出、局部是否过碎。
-4. **四位独立评委结合论文看图。** 按[四评委评审协议](references/jury-review.md)启动视觉总监、领域审稿人、论文图编辑、跨领域读者。先在目标版面观察焦点和阅读路径，再读正文/图注并回看图，评价图对文章理解的帮助；不以脱离正文复原全部方法为标准。四维仍为美观、专业、方法解释、丰富程度。缺乏焦点、碎片化说明或局部挤占核心应作为整体问题处理；合理的图文分工不视为遗漏。四份结果独立产生，不能查看图像/原文的维度明确缺证。
-5. **按瓶颈选择改图幅度，再独立复评。** 综合分数与意见，区分知识缺口、局部表达和构图问题，优先纠正机制错误，每轮选最重要的3–5项。反复出现的主次、密度或连线问题应试结构重绘，不只继续加注释。按[重绘预算与停止条件](references/jury-review.md#5-重绘预算策略切换与停止条件)安排轮数；四位重新看新版，记录改善、退步和未解决问题，保留最适合任务的版本。分数达标不自动停止，最新也不自动最好；不靠堆元素、缩小职责或刷分达标。
+## Design workflow
 
-## 按当前问题选读
+Extract mechanisms according to this figure's responsibility. Concept diagrams, experimental setups, and comparisons need the relevant relationships, conditions, or evidence; unfold algorithms and update chains only when computation is part of the explanatory task.
 
-不必每次加载全部参考。下面各文件有不同用途，选会改变当前决策的部分。
+1. **Understand the method and allocate the work between figure and text.** Read the relevant methods, equations, and captions. Write a short brief: central claim, first object or relationship to notice, supporting content, details left to named paper sections, target layout, and evidence. Distinguish paper facts, original schematics, and unknowns. Understand operations deeply enough to draw them accurately, but expand only changes that help explain the core claim. Reading a module, formula, or boundary condition does not oblige you to give it a separate panel. Resolve hierarchy before exploring shapes.
+2. **Choose the visual argument, materials, and representation.** State what readers will understand through what visible evidence. Compare two valid organizations and proceed with one; prior approval and two fully finished figures are unnecessary. Rejecting an incorrect mechanism does not count as comparing compositions. For key objects, choose real samples, traceable computations, or mechanism schematics; briefly record provenance or construction and explanatory purpose. Existing placeholder icons are not automatically final assets. Distinguish scene context, same-source computations, and independent explanatory examples. Allocate main visuals, supporting readouts, ordinary process, and captions accordingly. Examples must actually reveal the relevant difference; separate critical spatial directions and keep readouts front-facing. Inspect reference images before borrowing relationships or representations. Their layout and module inventory do not become requirements for this task. Crops must retain enough context to explain the borrowed relationship and disclose omissions. Prefer recent methods without filtering for whether their original figures are 3D.
 
-| 当前问题 | 选读 |
+   When an overall architecture is needed, select a relationship-appropriate candidate from [framework prompts](references/framework-prompts.md), rewrite it into a paper-specific `layout_prompt` with objects, hierarchy, and dependencies, and include it in the existing brief. A user-supplied or accepted framework takes priority; invent an appropriate one if none fits. Consult [component recipes](references/component-recipes.md) only for retained mechanisms, checking scope, interfaces, and common semantic errors before choosing a representation.
+
+   Before detailed rendering, apply [spatial exploration](references/spatial-exploration.md) to distinct retained mechanisms with spatial potential. Frameworks and component recipes seed candidates; they do not replace structural comparison and actual local sketches. Reuse previously compared representations for the same mechanism. Sketches may still be merged or omitted in the final composition; prior effort does not justify displaying every fragment.
+3. **Build objects and relationships before labels.** Draw objects, changes, and correspondences first, then add needed object names, operation names, symbols, and qualifiers. Keep related explanation close to a shared subject instead of giving every small component its own title, legend, and effect sentence. Retain only formulas that directly help interpretation; put long explanation in the caption or paper. If iteration is shown, distinguish initialization, recurrence, and next-step reads. Keep identity, state, address, and color roles consistent. Copies preserve content; transformations visibly change it; label invented explanatory data as schematic. Inspect at the intended physical placement to judge prominence and fragmentation.
+4. **Have four independent reviewers inspect the figure with the paper.** Follow the [jury protocol](references/jury-review.md): visual director, domain reviewer, paper figure editor, and cross-domain reader. Each first inspects the focal point and reading path at target placement, then reads the text/caption and revisits the figure. Evaluate how the figure helps the paper, not whether it independently reconstructs the whole method. Score aesthetics, professionalism, method explanation, and visual richness. Treat weak focus, fragmented annotations, and details crowding out the core as overall design problems. Appropriate division of work with the text is not an omission. Produce four independent reviews; mark dimensions lacking image or source evidence.
+5. **Choose the scale of revision from the bottleneck, then review independently again.** Synthesize scores and comments, distinguishing knowledge gaps, local representation problems, and composition problems. Correct mechanism errors first and select the most important 3–5 changes per round. Repeated hierarchy, density, or connection problems call for a structural redraw, not more annotations. Use the [redraw budget and stopping rules](references/jury-review.md#5-重绘预算策略切换与停止条件). Have all four reviewers inspect the new version; record gains, regressions, and unresolved issues, and retain the version that best serves the task. Neither a threshold score nor being the latest version establishes the winner. Do not inflate scores by adding objects or narrowing the figure's intended responsibility.
+
+## Read references for the current decision
+
+Load only material that will change the current decision.
+
+| Need | Reference |
 |---|---|
-| 需要可直接改写的大体架构提示词 | [整图框架提示词](references/framework-prompts.md)：按真实关系选型，生成一段本文专用的布局提示 |
-| 常用组件不知道怎样画、内部语义容易混淆 | [常用组件知识](references/component-recipes.md)：核实对象、比较空间画法、保留接口与避免误画 |
-| 文字公式太多、画布过大、不确定能否放进论文 | [图形主导与版面约束](references/visual-first-layout.md)：画前选尺寸、图内外分工及按版面看图 |
-| 素材像占位图、对象都画成色块、需要结合真实图片 | [素材与对象表达](references/material-and-representation.md)：按解释职责选择素材，区分样本、计算结果和示意 |
-| 想先比较具体画法，不知道从哪张参考开始 | [视觉入口图板](references/visual-entry.md)：先选解释任务，再看局部画法与完整案例；视觉对抗可看[候选、反馈与共享权重](references/adversarial-entry.md) |
-| brief 空泛、构图没有主次、迭代状态难追踪 | [机制提炼与构图](references/figure-planning.md) |
-| 不知道何处用 2D/3D、深度可能误导 | [混合视觉语法](references/content-to-3d.md) |
-| 需要探索各模块的三维画法、总停留在堆叠卡片 | [模块空间方案探索](references/spatial-exploration.md)：结构候选、局部草图、版面选择与整图协调 |
-| 需要近期原论文的组织方法 | 主次与展开看[阶段、局部与多条件原图](references/hierarchy-references.md)；其他任务看[跨领域图谱](references/reference-atlas.md)，几何专门看[空间参考](references/paper-references.md) |
-| 想看从正文到具体图稿的设计推理 | [按设计问题选案例](references/worked-mechanisms.md) |
-| 新图按关系选构图；已有图按主体、深度、机制或拥挤问题借用具体变体 | [构图选择与空间细节](references/design-guide.md) |
-| 图稿已生成，需要评分、综合意见与迭代 | [四评委评审协议](references/jury-review.md)；[自我批评](references/design-critique.md)用于主绘图代理预检，不能替代独立评委；实际改法看[三组前后对照](references/visual-entry.md#已有图稿比较修改的收益与代价) |
+| An adaptable whole-figure architecture prompt | [Framework prompts](references/framework-prompts.md): select by actual relationship and write a task-specific layout prompt |
+| How to draw a common component accurately | [Component recipes](references/component-recipes.md): objects, spatial candidates, interfaces, and semantic pitfalls |
+| Too much text, excessive size, uncertain paper placement | [Visual-first layout](references/visual-first-layout.md): dimensions, division of explanation, and placement preview |
+| Placeholder-like imagery or a need for real samples | [Materials and representation](references/material-and-representation.md): samples, computed evidence, and schematics |
+| Where to start comparing concrete representations | [Visual entry board](references/visual-entry.md); for visual adversarial work, [candidates, feedback, and shared weights](references/adversarial-entry.md) |
+| Vague brief, weak hierarchy, unclear iterative states | [Mechanism extraction and planning](references/figure-planning.md) |
+| Choosing 2D/3D or checking depth semantics | [Mixed visual grammar](references/content-to-3d.md) |
+| Spatial design remains limited to stacked cards | [Spatial exploration](references/spatial-exploration.md) |
+| Organization from recent original figures | [Hierarchy references](references/hierarchy-references.md), [cross-domain atlas](references/reference-atlas.md), and [spatial references](references/paper-references.md) |
+| Reasoning from paper text to concrete drawings | [Worked mechanisms](references/worked-mechanisms.md) |
+| Composition choices or variants for depth, crowding, and mechanisms | [Design guide](references/design-guide.md) |
+| Scoring and iterative revision | [Jury protocol](references/jury-review.md); [self-critique](references/design-critique.md) is the drawing agent's precheck, not a substitute for independent reviewers; [visual comparisons](references/visual-entry.md#已有图稿比较修改的收益与代价) illustrate revision tradeoffs |
 
-[vector3d.py](scripts/vector3d.py) 和 [concept3d.py](scripts/concept3d.py) 是可选局部组件，不是整图模板。持续优化时将失败、修订依据和迁移结果记入项目日志；只有实际试用支持的经验才写回技能。
+[vector3d.py](scripts/vector3d.py) and [concept3d.py](scripts/concept3d.py) are optional local component helpers, not whole-figure templates. During ongoing improvement, log failures, evidence for revisions, and transfer results in the project. Write lessons back into the skill only when actual use supports them.
 
-## 交付
+## Delivery
 
-给出图稿预览、可编辑源文件与简短说明：展开了哪个机制、采用什么构图、还有什么不足。标明建议插入宽×高、单栏/跨栏、按该尺寸的主要字号；提供版面比例预览，模板未知时明确尺寸为暂定。附四评委分数、前后对照及剩余问题；未执行的评审明确标注。随图提供图注；长来源和假设放 brief。局部反馈先修改对应部分，保留已认可的结构。
-
+Provide a preview, editable source, and a brief explanation of the mechanism expanded, composition chosen, and remaining limitations. State suggested insertion width and height, column placement where relevant, and principal text sizes at that placement. Include a relative page-layout preview; mark dimensions provisional when the template is unknown. Include reviewer scores, before/after comparisons, and remaining issues when those stages were run; explicitly identify omitted review. Supply a caption, with lengthy provenance and assumptions in the brief. Apply local feedback to the relevant part while retaining accepted structure.

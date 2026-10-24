@@ -4,3 +4,6 @@ agent-server*.log
 .env
 .dev-tools/
 agent/live-smoke-result.json
+
+.desktop-resources/
+desktop-dist/

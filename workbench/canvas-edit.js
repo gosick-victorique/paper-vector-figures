@@ -2,14 +2,14 @@
 window.FigureCanvasEdit={mount(api){
  'use strict';
  const M=FigureModel,E=FigureDirectEdit,svg=api.svg,viewport=document.querySelector('#canvas-scroll'),NS='http://www.w3.org/2000/svg';
- let gesture=null,editor=null,panel='',lastSelection='',pointerText=null,primitive=null;
+ let gesture=null,editor=null,panel='',lastSelection='',pointerText=null,primitive=null,manualPosition=null,toolbarDrag=null;
  const ui=document.createElement('div');ui.className='canvas-tools';ui.dataset.canvasUi='true';ui.hidden=true;
  ui.innerHTML=`<div class="canvas-tools-main" role="toolbar" aria-label="选区工具栏">
- <span class="canvas-tools-name"></span>
+ <button class="toolbar-grip" aria-label="拖动选区工具栏" title="拖动工具栏">⠿</button><button data-auto-position hidden title="恢复自动避让">自动</button><span class="canvas-tools-name"></span>
  <label title="填充颜色">填<input type="color" data-paint="fill" aria-label="选区填充颜色" value="#dfeaf0"></label>
  <label title="描边颜色">线<input type="color" data-paint="stroke" aria-label="选区描边颜色" value="#416f89"></label>
  <label title="文字颜色">字<input type="color" data-paint="textColor" aria-label="选区文字颜色" value="#23313c"></label>
- <button data-action="text" title="编辑文字">T</button><button data-panel="style" title="尺寸与样式">样式</button>
+ <button data-action="text" title="编辑文字">T</button><button data-panel="arrange" title="对齐与分布" hidden>对齐</button><button data-panel="style" title="尺寸与样式">样式</button>
  <button data-panel="comment" title="给选区添加修改意见">意见</button><button data-panel="more" aria-label="更多选区操作">•••</button></div>
  <div class="canvas-popover" data-popover="style" hidden>
  <div class="canvas-fields"><label>宽<input type="number" data-size="w" min="2" aria-label="选区宽度"></label><label>高<input type="number" data-size="h" min="2" aria-label="选区高度"></label>
@@ -17,21 +17,34 @@ window.FigureCanvasEdit={mount(api){
  <label>字号<input type="number" data-number="fontSize" min="1" max="300" value="16"></label><label>旋转增量 °<input type="number" data-rotate min="-360" max="360" value="0"></label></div>
  <div class="canvas-actions"><button data-action="no-fill">无填充</button><button data-action="no-stroke">无描边</button><button data-action="rotate">旋转 90°</button></div>
  <div class="canvas-wire" hidden><label>连线路径 <select data-route><option value="elbow">折线</option><option value="straight">直线</option></select></label><button data-action="reverse">反向</button></div></div>
- <div class="canvas-popover" data-popover="comment" hidden><textarea rows="3" aria-label="选区修改意见" placeholder="描述要修改的地方"></textarea><button class="primary" data-action="comment">保存意见</button></div>
+ <div class="canvas-popover" data-popover="arrange" hidden><div class="canvas-arrange-grid" role="group" aria-label="对齐与分布"><button data-align="left">左对齐</button><button data-align="center">水平居中</button><button data-align="right">右对齐</button><button data-align="top">顶对齐</button><button data-align="middle">垂直居中</button><button data-align="bottom">底对齐</button><button data-align="distribute-x">水平等距分布</button><button data-align="distribute-y">垂直等距分布</button></div></div><div class="canvas-popover" data-popover="comment" hidden><textarea rows="3" aria-label="选区修改意见" placeholder="描述要修改的地方"></textarea><button class="primary" data-action="comment">保存意见</button></div>
  <div class="canvas-popover" data-popover="more" hidden><div class="canvas-menu">
  <button data-action="duplicate">复制 <kbd>Ctrl D</kbd></button><button data-action="delete">删除 <kbd>Del</kbd></button>
  <button data-action="front">置于顶层</button><button data-action="back">置于底层</button>
  <button data-action="lock">锁定 / 解锁</button><button data-action="split">拆分图元</button>
- </div><div class="canvas-align" hidden><button data-align="left">左对齐</button><button data-align="center">水平居中</button><button data-align="top">顶对齐</button><button data-align="middle">垂直居中</button></div></div>`;
+ </div></div>`;
  viewport.append(ui);
  const q=s=>ui.querySelector(s),ids=()=>M.roots(api.read(),api.read().selection),point=e=>new DOMPoint(e.clientX,e.clientY).matrixTransform(svg.getScreenCTM().inverse());
  const zoom=()=>Math.hypot(svg.getScreenCTM().a,svg.getScreenCTM().b)||1;
  function element(tag,attrs){const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);api.overlay.append(e);return e;}
  function activeWire(){const s=api.read(),selected=ids();if(selected.length!==1)return null;return E.scope(s,selected).map(id=>s.nodes[id]).find(n=>n.connection);}
  function setPanel(next){panel=panel===next?'':next;ui.querySelectorAll('[data-popover]').forEach(e=>e.hidden=e.dataset.popover!==panel);ui.querySelectorAll('[data-panel]').forEach(e=>e.setAttribute('aria-expanded',String(e.dataset.panel===panel)));position();if(panel==='comment')q('textarea').focus();}
- function position(){if(ui.hidden)return;const s=api.read(),b=M.selectionBounds(s),m=svg.getScreenCTM(),r=viewport.getBoundingClientRect(),p=new DOMPoint(b.x+b.w/2,b.y).matrixTransform(m),bottom=new DOMPoint(b.x,b.y+b.h).matrixTransform(m);const width=ui.offsetWidth,height=ui.offsetHeight;let top=p.y-r.top-height-44;if(top<8)top=bottom.y-r.top+16;ui.style.left=Math.max(8,Math.min(viewport.clientWidth-width-8,p.x-r.left-width/2))+'px';ui.style.top=Math.max(8,Math.min(viewport.clientHeight-height-8,top))+'px';}
+ function position(){if(ui.hidden)return;const b=M.selectionBounds(api.read()),m=svg.getScreenCTM(),r=viewport.getBoundingClientRect(),p=new DOMPoint(b.x,b.y).matrixTransform(m),end=new DOMPoint(b.x+b.w,b.y+b.h).matrixTransform(m),width=ui.offsetWidth;
+  const left=p.x-r.left,right=end.x-r.left,top=p.y-r.top,bottom=end.y-r.top,vw=viewport.clientWidth,vh=viewport.clientHeight;
+  const freeHeight=Math.max(top-52,vh-bottom-24),sideRoom=left>=width+28||vw-right>=width+28;
+  ui.style.maxHeight=Math.max(100,!manualPosition&&!sideRoom&&freeHeight>=220?Math.min(vh-16,freeHeight):vh-16)+'px';
+  const height=ui.offsetHeight;
+  const clamp=pt=>({x:Math.max(8,Math.min(vw-width-8,pt.x)),y:Math.max(8,Math.min(vh-height-8,pt.y))});
+  const overlap=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+  const obstacles=[{x:left-8,y:top-38,w:right-left+16,h:bottom-top+46,weight:4}];
+  const drawTools=viewport.querySelector('.draw-tools');if(drawTools){const d=drawTools.getBoundingClientRect();obstacles.push({x:d.left-r.left-6,y:d.top-r.top-6,w:d.width+12,h:d.height+12,weight:8});}
+  const candidates=[{x:(left+right-width)/2,y:top-height-44},{x:(left+right-width)/2,y:bottom+16},{x:left-width-20,y:top},{x:right+20,y:top},{x:8,y:vh-height-8},{x:vw-width-8,y:vh-height-8},{x:vw-width-8,y:8}].map(clamp);
+  const score=a=>obstacles.reduce((n,o)=>n+overlap({...a,w:width,h:height},o)*o.weight,0);
+  const best=manualPosition?clamp(manualPosition):candidates.reduce((a,b)=>score(b)<score(a)?b:a);
+  ui.style.left=best.x+'px';ui.style.top=best.y+'px';
+ }
  function refresh(){
-  const s=api.read(),sel=ids(),signature=sel.join('|');if(signature!==lastSelection){panel='';ui.querySelectorAll('[data-popover]').forEach(e=>e.hidden=true);q('textarea').value='';q('[data-rotate]').value=0;ui.querySelectorAll('[data-panel]').forEach(e=>e.setAttribute('aria-expanded','false'));lastSelection=signature;}
+  const s=api.read(),sel=ids(),signature=sel.join('|');if(signature!==lastSelection){manualPosition=null;q('[data-auto-position]').hidden=true;panel='';ui.querySelectorAll('[data-popover]').forEach(e=>e.hidden=true);q('textarea').value='';q('[data-rotate]').value=0;ui.querySelectorAll('[data-panel]').forEach(e=>e.setAttribute('aria-expanded','false'));lastSelection=signature;}
   ui.hidden=!sel.length||!!gesture||!!editor;if(ui.hidden)return;
   const editable=!E.scope(s,sel).some(id=>M.locked(s,id)),transformable=E.canTransform(s,sel),b=M.selectionBounds(s);
   q('.canvas-tools-name').textContent=sel.length>1?`${sel.length} 项`:s.nodes[sel[0]].type==='leaf'?'图元':s.nodes[sel[0]].type==='section'?'分组':'组件';
@@ -47,7 +60,7 @@ window.FigureCanvasEdit={mount(api){
   const wire=activeWire();q('.canvas-wire').hidden=!wire;if(wire)q('[data-route]').value=wire.connection.route;
   if(shape&&document.activeElement!==q('[data-number="strokeWidth"]'))q('[data-number="strokeWidth"]').value=parseFloat(getComputedStyle(shape).strokeWidth)||0;
   const painted=leaves.map(g=>g.querySelector('[data-object-paint]')).find(Boolean);if(document.activeElement!==q('[data-number="opacity"]'))q('[data-number="opacity"]').value=Math.round((painted?Number(painted.getAttribute('opacity')??1):1)*100);
-  q('.canvas-align').hidden=sel.length<2;q('[data-action="split"]').disabled=sel.length!==1||s.nodes[sel[0]].type!=='leaf'||!editable;
+  q('[data-panel="arrange"]').hidden=sel.length<2;ui.querySelectorAll('[data-align]').forEach(e=>e.disabled=!transformable||sel.length<(e.dataset.align.startsWith('distribute')?3:2));q('[data-action="split"]').disabled=sel.length!==1||s.nodes[sel[0]].type!=='leaf'||!editable;
   position();
  }
  function handles(){
@@ -73,7 +86,7 @@ window.FigureCanvasEdit={mount(api){
   const index=[...leaf.querySelectorAll('text')].indexOf(target);api.select([id],'primitive');const fresh=api.dom(id).querySelectorAll('text')[index];if(!fresh)return;
   const r=fresh.getBoundingClientRect(),v=viewport.getBoundingClientRect(),style=getComputedStyle(fresh),matrix=fresh.getScreenCTM(),original=FigureCanvasText.read(fresh),visibility=fresh.style.visibility;
   fresh.style.visibility='hidden';
-  editor=FigureCanvasText.mount({viewport,anchor:{x:r.left-v.left-6,y:r.top-v.top-6},value:original,minWidth:Math.max(64,r.width+16),fontSize:parseFloat(style.fontSize)*(Math.hypot(matrix.c,matrix.d)||1),fontFamily:style.fontFamily,fontWeight:style.fontWeight,fontStyle:style.fontStyle,color:style.fill,
+  editor=FigureCanvasText.mount({viewport,anchor:{x:r.left-v.left-6,y:r.top-v.top-6},value:original,minWidth:Math.max(64,r.width+16),fontSize:parseFloat(style.fontSize)*(Math.hypot(matrix.c,matrix.d)||1),fontFamily:style.fontFamily,fontWeight:style.fontWeight,fontStyle:style.fontStyle,lineHeight:Number(fresh.getAttribute('data-line-height'))||1.2,color:style.fill,
    onClose:()=>{editor=null;fresh.style.visibility=visibility;update();},
    onCommit:value=>{if(original!==value)api.text(id,index,value);update();}
   });update();
@@ -83,6 +96,15 @@ window.FigureCanvasEdit={mount(api){
  svg.addEventListener('pointerdown',e=>{if(!e.altKey||e.button!==0)return;const leaf=e.target.closest('[data-type="leaf"]');if(leaf){api.select([leaf.dataset.id],'primitive');}},true);
 
  ui.addEventListener('pointerdown',e=>e.stopPropagation());
+ const grip=q('.toolbar-grip');
+ grip.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();toolbarDrag={id:e.pointerId,x:e.clientX,y:e.clientY,left:ui.offsetLeft,top:ui.offsetTop,before:manualPosition};grip.setPointerCapture(e.pointerId);});
+ grip.addEventListener('pointermove',e=>{if(!toolbarDrag||e.pointerId!==toolbarDrag.id)return;manualPosition={x:toolbarDrag.left+e.clientX-toolbarDrag.x,y:toolbarDrag.top+e.clientY-toolbarDrag.y};q('[data-auto-position]').hidden=false;position();});
+ function endToolbarDrag(cancel=false){if(!toolbarDrag)return;const d=toolbarDrag;toolbarDrag=null;if(cancel)manualPosition=d.before;if(grip.hasPointerCapture(d.id))grip.releasePointerCapture(d.id);q('[data-auto-position]').hidden=!manualPosition;position();}
+ grip.addEventListener('pointerup',()=>endToolbarDrag());grip.addEventListener('pointercancel',()=>endToolbarDrag(true));grip.addEventListener('lostpointercapture',()=>endToolbarDrag(true));window.addEventListener('blur',()=>endToolbarDrag(true));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&toolbarDrag){e.preventDefault();e.stopImmediatePropagation();endToolbarDrag(true);}},true);
+ grip.addEventListener('keydown',e=>{if(e.key==='Escape'){endToolbarDrag(true);return;}if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();e.stopPropagation();manualPosition={x:ui.offsetLeft+(e.key==='ArrowLeft'?-10:e.key==='ArrowRight'?10:0),y:ui.offsetTop+(e.key==='ArrowUp'?-10:e.key==='ArrowDown'?10:0)};q('[data-auto-position]').hidden=false;position();});
+ q('[data-auto-position]').onclick=()=>{manualPosition=null;q('[data-auto-position]').hidden=true;position();};
+ new ResizeObserver(position).observe(ui);
  function commitControl(el){if(el.dataset.paint)api.paint({[el.dataset.paint]:el.value});
   if(el.hasAttribute('data-size')){const b=M.selectionBounds(api.read());transform((s,sel)=>E.resizeBox(s,sel,{...b,[el.dataset.size]:Number(el.value)},api.markup));}
   if(el.hasAttribute('data-number')){const key=el.dataset.number,value=Number(el.value);if(!Number.isFinite(value)||value<Number(el.min)||value>Number(el.max)){refresh();return;}if(key==='fontSize')api.fontSize(value);else api.paint({[key]:key==='opacity'?value/100:value});}
@@ -100,7 +122,7 @@ window.FigureCanvasEdit={mount(api){
   comment(){const value=q('textarea').value.trim();if(!value)return;transaction(s=>!!M.addComment(s,ids(),value));q('textarea').value='';setPanel('');},
   reverse(){const n=activeWire();if(n)api.connection(n.id,{...n.connection,from:n.connection.to,to:n.connection.from});}
  };
- ui.addEventListener('click',e=>{const button=e.target.closest('button');if(!button)return;if(button.dataset.panel)setPanel(button.dataset.panel);if(button.dataset.action)actions[button.dataset.action]?.();if(button.dataset.align){const key=button.dataset.align;transaction(s=>{const sel=ids();if(!E.canTransform(s,sel))return false;const b=M.selectionBounds(s);for(const id of sel){const a=M.bounds(s,id);M.move(s,[id],key==='left'?b.x-a.x:key==='center'?b.x+b.w/2-a.x-a.w/2:0,key==='top'?b.y-a.y:key==='middle'?b.y+b.h/2-a.y-a.h/2:0);}return true;});}});
+ ui.addEventListener('click',e=>{const button=e.target.closest('button');if(!button)return;if(button.dataset.panel)setPanel(button.dataset.panel);if(button.dataset.action)actions[button.dataset.action]?.();if(button.dataset.align){api.change(()=>FigureArrange.arrange(api.read(),ids(),button.dataset.align));}});
  document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable="true"],[role="menu"]')||document.querySelector('dialog[open]'))return;
   if(gesture){e.preventDefault();e.stopImmediatePropagation();if(e.key==='Escape')finish(null,true);return;}
   if(primitive?.busy())return;

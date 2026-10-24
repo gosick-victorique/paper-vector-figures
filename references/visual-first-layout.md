@@ -1,77 +1,78 @@
-# 图形主导与论文版面
+# Visual-first figures and publication layout
 
-论文配图让正文更容易理解。画前理解完整方法，图上按主张分配解释深度；主图不承担全文逐式复现。历史案例中的大屏高分、长公式和海报比例只适用于当时任务，不是新图的默认模板。
+A paper figure should make the text easier to understand. Understand the method before drawing, then allocate explanatory depth according to the figure's claim. The main figure need not reproduce every equation. Large-screen scores, long formulas, and poster proportions from historical cases are task-specific evidence, not defaults.
 
-## 先确定图将放在哪里
+## Establish the destination first
 
-逐次读取当前论文与用户需求，先确定这张图要支持的论点，不默认整篇方法流程。以下按解释任务选表示，可组合使用：
+Read the current paper and request to identify the claim this figure supports. Do not default to a complete method pipeline. Representations can be combined:
 
-| 解释任务 | 优先组织 |
+| Explanatory task | Preferred organization |
 |---|---|
-| 操作、依赖与更新 | 对象变化、必要流程、状态对照 |
-| 系统组成与接口 | 结构分层、拓扑、局部展开 |
-| 概念差异、动机与适用边界 | 并置对比、关系图、具体情境 |
-| 几何、空间与实验设置 | 场景、坐标、剖面、测量或交互关系 |
-| 定性结果与失败现象 | 同条件样例对齐、局部对比；保留真实结果，不绘造实验输出 |
+| Operations, dependencies, updates | Object transformations, essential flow, state comparisons |
+| System composition and interfaces | Structural hierarchy, topology, local expansion |
+| Conceptual differences, motivation, boundaries | Juxtaposed comparisons, relationship diagrams, concrete contexts |
+| Geometry, spatial relationships, experimental setups | Scenes, coordinates, cross-sections, measurements, interactions |
+| Qualitative results and failures | Aligned examples under matched conditions; real results rather than invented outputs |
 
-实验曲线、统计图等按真实数据使用科学绘图工具；混合图中可嵌入这些图表，不把数据关系强行转成三维示意。
+Use scientific plotting tools and real data for experimental curves and statistical charts. Embed them in mixed figures if appropriate; do not turn measured relationships into decorative 3D diagrams.
 
-从用户提供的模板、正文版心或已有插图读取栏宽和可用高度，优先采用真实尺寸。brief写清图的作用、图型、使用位置、单栏/跨栏（如适用）、目标宽×高、主要字体大小，并为图注留空间。同篇论文的不同图也可选择不同版式；无需每次同时交付两套。
+Read actual column widths and available height from the supplied template, text area, or existing figures. In the brief, record the figure's purpose, type, destination, column placement if relevant, target width × height, and main font size. Reserve caption space. Different figures in one paper may use different placements; do not automatically deliver two versions.
 
-没有模板时，结合对比对象数量、阅读方向和细节层级选择暂定版式；只有该选择会影响关键构图且无法合理推断时才询问。可将单栏约85 mm、跨栏约178 mm作为**可调整的宽度起点，而非会议规定或固定模板**；高度按本图任务和页面占位另定，不预设统一长宽比，也不因“方法复杂”就自动跨栏。字体可从最终8–10 pt起步，再依模板与字体调整。声明采用的假设，后续输入优先覆盖；非正文用途采用其实际展示空间。
+Without a template, choose a provisional layout from the number of compared objects, reading direction, and detail hierarchy. Ask only if this choice materially changes the composition and cannot reasonably be inferred. Rough starting widths of 85 mm for one column and 178 mm across two columns are adjustable assumptions, not conference specifications. Choose height for the task and page footprint; do not impose a universal aspect ratio or assume a complex method needs two columns. Begin with final text around 8–10 pt and adjust to the template and font. State assumptions and let subsequent requirements override them. For uses outside a paper, use the actual display area.
 
-固定的是纸面占位，不是SVG坐标数量。若viewBox宽为W、插入宽为w mm，逻辑字号s对应约`s × w/W × 72/25.4 pt`。例如1800宽的图在178 mm宽插入，20单位字号约5.6 pt；把画布像素加倍不会改善纸面阅读。
+Physical placement matters more than SVG coordinate count. For viewBox width W, insertion width w mm, and logical text size s, printed text size is approximately `s × w/W × 72/25.4 pt`. A 1,800-unit figure inserted at 178 mm turns 20-unit text into about 5.6 pt. Doubling canvas pixels does not improve print readability.
 
-比较压缩前后版面时，同时记录主要字号、最小必要标记和核心局部的可辨程度。高度减少若依赖缩小关键索引、选区或标签，应报告为占地与可读性的交换，不能只用缩小百分比宣称版面改进。优先收回重复标题、容器和说明的面积，再判断是否真正更紧凑。
+When comparing compact layouts, track the main font size, smallest necessary mark, and legibility of the critical detail. If reduced height depends on smaller indices, selections, or labels, report a footprint/readability tradeoff, not just a percentage improvement. Recover space from repeated headings, containers, and explanations first.
 
-空白过多时，先区分用于分区分隔、对象识别的必要留白与模块内部无解释作用的间距。优先靠近同一关系的对象和标签、收紧标题与主体间距、按内容收边，再调整容器比例；不因固定等高框或预设长宽比维持空区，也不用装饰元素填空。压缩后检查合流、局部展开和标签密集处；若开始拥塞，局部还回空间，不继续追求更低高度。
+For excessive whitespace, distinguish useful separation and object recognition from empty gaps within modules. Bring related objects and labels together, tighten title-to-subject gaps, crop regions to their content, then reconsider container proportions. Equal-height boxes and preset aspect ratios should not preserve empty regions; decorative elements should not fill them. Recheck joins, insets, and dense labels after compression. Restore local space when congestion appears.
 
-## 先画对象变化，再写说明
+## Draw object changes before explanations
 
-先画出中心对象及关键变化，读者应能顺着位置、轮廓、状态、选择边界和连线看出核心动作；再用短名词/动词、必要ID和图例消除歧义。不能把长句换成一串缩写来假装减字，也不能只剩漂亮但无信息的图标。
+First show the central objects and transformations. Position, contour, state, selection boundaries, and connections should carry the core action. Add short names or verbs, necessary IDs, and legends to resolve ambiguity. Replacing sentences with opaque abbreviations does not improve clarity; attractive icons without mechanism are also insufficient.
 
-| 想解释的内容 | 图上优先呈现 | 通常交给图注或正文 |
+| Meaning | Show graphically | Usually leave to caption or text |
 |---|---|---|
-| 选择/遮罩 | 同一候选集、选中边界、保留与排除、输出去向 | 完整判据推导与实现参数 |
-| 复制/共享 | 同一个来源连接多个实际受体，保留同ID/内容 | 重复的“共享同一…”句子 |
-| 融合/加权 | 多路输入在作用位置汇合，贡献用明确编码表达 | 展开的损失函数和逐项数值表 |
-| 更新/反馈 | 同一对象前后变化，回线落到被更新字段 | 优化器细节、一般性递推推导 |
-| 对齐/对应 | 同坐标、同ID或同实例的前后比较 | 多段解释“为什么需要对齐” |
+| Selection/masking | Same candidate set, selected boundary, retained/excluded items, destination | Full criterion derivation and implementation parameters |
+| Copying/sharing | One source connected to actual recipients, consistent IDs/content | Repeated sentences saying that a quantity is shared |
+| Fusion/weighting | Inputs meeting at the intervention site, contributions encoded explicitly | Expanded losses and full numerical tables |
+| Update/feedback | The same object before/after, feedback landing on the updated field | Optimizer details and generic recurrence derivations |
+| Alignment/correspondence | Shared coordinates, IDs, or the same example before/after | Lengthy motivation for alignment |
 
-数值、线宽和透明度若表示量，须有对应数据和读数依据；不能为了少字伪造数量关系。
+If numbers, line widths, or opacity encode magnitude, provide the underlying data and decoding basis. Do not invent quantitative relationships to reduce text.
 
-公式默认不放。确实需要区分核心算子时，可先尝试一条短关系，就近连接对象；若仍需多条，逐条说明其对读图的独特作用。公式数量不是硬门槛；不要为了形式限制删掉必要关系，也不要把完整推导放主图。长图题、主张段落、来源说明与实验设置放在图外。
+Omit formulas by default. If a central operator needs one, first try a short relation adjacent to its objects. If more are needed, identify each one's distinct interpretive role. There is no rigid formula quota: retain necessary relationships without moving a full derivation into the main figure. Long titles, claim paragraphs, source notes, and experimental settings belong outside it.
 
-检查同一主张是否被总标题、分区标题、操作句和效果句反复讲述。分区标题负责定位；操作及结果优先贴近发生变化的对象。删除或合并重复层级，把腾出的面积给机制主体，不用统一缩字。必要因果短语可以保留，但“改善、破坏、增强”等效果词只说明意图，不能替代图中作用对象和可见变化。
+Check whether the same claim appears in the overall title, region title, operation sentence, and effect sentence. Region titles locate content; operations and outcomes belong near changing objects. Merge repeated levels and give the recovered area to the mechanism rather than shrinking all type. Necessary causal phrases can remain, but words such as "improve," "disrupt," or "enhance" state intent and do not replace visible intervention and change.
 
-文字短也可能很碎。检查读者是否要在许多独立小句之间跳转，才能理解同一主张；优先把说明收束到共同对象/对照，保留辨认所需的名称和符号，把连续解释交给正文或精简图注。不要把正文搬入超长图注来维持自包含。判断标准是重点与阅读路径，不设机械字数上限。
+Short text can still be fragmented. If readers must hop between many separate snippets to assemble one claim, organize them around a common object or comparison. Keep names and symbols needed for identification; put continuous explanation in the text or a concise caption. Do not create an oversized caption to preserve complete self-containment. Judge focus and reading path, not a mechanical word limit.
 
-文本/代码本身是研究对象时，保留能体现变化的实际片段。矩阵是核心证据时可保留关键数值；这些例外不意味着允许说明段落成为全图主体。
+When text or code is the research object, keep examples that reveal the transformation. If a matrix is central evidence, retain relevant values. These exceptions do not justify explanatory prose dominating the figure.
 
-减少文字后，检查是否让同一个图元同时表示对象身份、当前状态和处理方式。身份保留不表示状态不变；必要时用贯穿轨迹表示位置，用旁侧标记表示计算方式，具体变化放在与该位置对应的局部。替换关系优先让旧来源与新来源对齐同一输出接口，停用支路与活动支路有区别，不把两者串联成“先算再覆盖”。删除对象与停用运算也应按作用对象解码。见[P2P单栏概念试验](cases/p2p-concept.md)，借其区分关系，不固化为轨迹模板。
+After reducing text, ensure a single mark is not ambiguously encoding identity, current state, and processing rule. Preserved identity does not imply unchanged state. A continuous trace may locate an object, a side marker may identify its computation, and a corresponding local view may show its change. For replacement, align old and new sources to the same output interface, distinguishing inactive and active paths; do not imply "compute, then overwrite" if that is false. Distinguish deleting an object from disabling an operation. See the [P2P single-column concept case](cases/p2p-concept.md) for these relationships, not a mandatory trace template.
 
-## 基础配色约束
+<a id="基础配色约束"></a>
+## Basic color constraints
 
-目标是整体协调、重点清楚，提供可调整的默认值，不追求唯一最优色板。当前图片提示词、用户指定色板与论文已有语义编码优先；没有指定时自行选择，无需询问或单独展开配色评审。
+Aim for coordination and a clear focal point, using adjustable defaults rather than seeking one perfect palette. The current prompt, user palette, and established paper color semantics take priority. Otherwise choose without a separate approval or palette review.
 
-- **先分职责再选色。** 默认白色/近白背景、深灰文字、中性灰辅助线；用一个主色支持主要对象，一个强调色标出关键变化、选区或对照。通常从两种有彩色开始，确需区分独立类别时再加；同色明暗不算新增类别，照片与真实数据色不受这个数量起点限制。在已有brief中简记颜色对应什么，无需另建配色文档。
-- **颜色面积有主次。** 大面积容器和辅助区域保持白色、中性或极浅底色；较强色彩集中在需要注意的内容对象上。不默认按分区铺蓝、紫、绿等不同底色，也不把标题、边框、箭头和对象一起染成同等醒目。重要性由面积、明暗对比与饱和度共同表达，不固定面积比例。
-- **控制饱和度，但保留清晰度。** 主体从中低饱和度起步，强调色小面积使用；避免多个鲜艳色争抢焦点，也避免所有元素都浅淡而缺少轮廓。文字及关键细线保持足够深，不能为统一色调改成难读的浅彩色。
-- **三维明暗留在同一色系。** 同一对象的顶面、侧面和阴影由基色派生，整图光照方向一致；不通过给每个面换色制造立体。渐变仅用于必要体积或连续数据表达，透明叠加后检查是否发脏、遮掉选区。颜色表示数据时保留原映射，不能让装饰性阴影改变读数。
-- **同义同色，关键差异有第二线索。** 同一对象跨模块保持颜色身份；强调色不随意兼任互不相关的类别、风险和选中状态。重要区别同时用轮廓、位置、纹理或短标签体现，避免仅凭红绿或细微色差判读。真实图像与结果不为配色统一而改色。
+- **Assign roles before colors.** Start with white/near-white, dark gray text, and neutral auxiliary lines. Use one primary hue for important objects and one accent for the key change, selection, or comparison. Begin with two chromatic hues; add more when independent categories require them. Shades of a hue are not new categories, and photographs or real data colors are not subject to this starting count. Record color meanings briefly in the existing brief.
+- **Establish area hierarchy.** Keep large containers and supporting regions white, neutral, or very pale. Concentrate stronger colors on content that deserves attention. Do not automatically give every region a different tinted background or make titles, borders, arrows, and objects equally conspicuous. Use area, lightness contrast, and saturation together without fixed area ratios.
+- **Moderate saturation without losing clarity.** Start with low-to-medium saturation for subjects and small accent areas. Avoid competing vivid colors and uniformly faint objects with unreadable contours. Text and critical fine lines must remain sufficiently dark.
+- **Shade 3D surfaces within one color family.** Derive top, side, and shadow from the object's base hue with consistent lighting. Different face colors are not a substitute for volume. Use gradients for justified volume or continuous data only. Check whether transparent overlaps become muddy or hide selections. Decorative shading must not alter a data colormap's meaning.
+- **Use consistent semantics and a second cue.** Preserve an object's color identity across modules. Do not reuse the accent indiscriminately for unrelated categories, risk, and selection. Also encode key differences with shape, position, texture, or a short label; avoid relying only on red/green or tiny hue changes. Do not recolor real images or results merely to match a palette.
 
-在正常整图观察中判断：强调色是否引向重点、各区是否协调、文字和选区是否清楚。出现具体问题再调整，不额外生成多套色板或增加重绘轮数；不同图片可以有不同色系，不自动沿用上一张图的配色。
+At normal whole-figure size, check whether the accent leads to the focus, regions feel coherent, and labels/selections remain clear. Adjust concrete problems without automatically generating palette variants or extra redraw rounds. Different figures may use different palettes.
 
-## 放不下时怎样改
+## When the figure does not fit
 
-按问题选择，不机械执行全部动作：合并重复对象和图例；用代表性局部展开替代整网重复；减少无信息容器与厚侧面；把次要模块收为有清楚输入输出的概览；将推导和工程细节移出主图。
+Choose actions appropriate to the problem: merge repeated objects and legends; replace repeated whole networks with representative details; remove uninformative containers and thick sides; summarize secondary modules with clear interfaces; move derivations and engineering details outside the main figure.
 
-主图保留核心创新、关键分支与出口，不必把每个模块都展开到实现级。仍放不下时，使用总览＋独立细节图，明确各图职责与引用；拆分保持方法覆盖，不是偷偷删去核心机制。优先避免把两张图缩成同一个小框。不能把提高整张图的纸面高度或缩小全部字体当作自动解决方案；确需改占位时说明代价。
+Retain core innovations, essential branches, and outputs without expanding every module to implementation level. If it still does not fit, use an overview plus a separately referenced detail figure with explicit responsibilities. Splitting must preserve coverage rather than silently remove a core mechanism. Avoid squeezing two complete figures into one small box. Increasing paper height or shrinking all text is not an automatic solution; disclose the tradeoff if placement must change.
 
-## 设计阶段按版面看图
+## Inspect at the intended placement during design
 
-展示一个按目标宽高放入单栏/跨栏的页面片段，配普通正文行与图注占位，以便判断比例。可用HTML/CSS的mm/pt或现有页面预览；声明模板来源，未知模板则标示意。屏幕缩放和设备DPI会影响物理大小，因此预览主要证明相对版面比例，不能承诺屏幕尺量等于印刷尺寸。
+Show a page fragment with the figure at its target single/double-column proportions, ordinary body-text lines, and caption space. HTML/CSS mm/pt units or an existing page preview are sufficient. Name the template source; mark an unknown template as schematic. Screen zoom and device DPI affect physical display, so this establishes relative page proportions, not guaranteed ruler-accurate print size on screen.
 
-评委先看统一页面片段，再放大局部查关系。记录哪些内容在版面中读不清；放大能辨认不能抹掉原尺寸的阅读问题。暂时略过解释长句与公式，观察能否仍指出对象、动作和去向；这个观察帮助定位文字依赖，不要求图在完全无标签时独立解释全部论文。
+Reviewers first inspect the same page fragment, then zoom into relationships. Record what is unreadable at placement size; zoomed readability does not erase that problem. Briefly ignore explanatory sentences and formulas to locate dependence on text: can one still identify the objects, actions, and destinations? This does not require an entirely label-free figure to explain the whole paper.
 
-这里只做设计可读性观察，不生成投稿PDF套件或执行导出、格式检查。未获得真实模板时，只能交付建议尺寸，不能声称已适配用户论文。
+This is a design readability check, not a submission-PDF suite or export/format audit. Without the actual template, provide suggested dimensions rather than claiming confirmed compatibility.

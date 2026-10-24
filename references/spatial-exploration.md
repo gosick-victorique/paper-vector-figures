@@ -1,65 +1,63 @@
-# 模块空间方案探索
+# Spatial exploration for modules
 
-用于把“三维优先”落实为设计动作。探索不同模块怎样通过空间结构解释内容，然后选择合适的方案；不是给已有平面框图统一加厚。沿用当前任务允许的参考范围和用户认可的结构。
+Turn the preference for 3D into concrete design work. Explore how spatial structure explains each suitable module, then choose an appropriate representation. Adding uniform thickness to a flat block diagram is insufficient. Respect the current reference restrictions and the structure already accepted by the user.
 
-## 1. 从关系识别可探索模块
+## 1. Identify spatial opportunities from relationships
 
-先按图的职责确定值得展开的模块，不为寻找三维机会把全文所有小组件都搬进主图。对保留的模块，写一条具体关系：什么对象、怎样操作、需要看见什么变化。寻找空间机会，例如层/通道、局部与整体、内部与外部、分块与拼接、索引对应、候选与选择、多视图与投影、聚合与分发。
+First decide which modules deserve expansion for this figure's purpose. Do not import every small component from the paper to find 3D opportunities. For each retained module, state the object, operation, and change readers need to see. Look for layers/channels, local/global relationships, interior/exterior, partitioning/concatenation, index correspondence, candidates/selection, views/projections, and aggregation/distribution.
 
-先确定视觉重点及图文分工，再决定探索对象。共同解释同一主张的子操作可以作为一个关系组探索；候选数量和模块数量不决定最终分区数。已经画过的局部仍可被合并、降级或移出主图，不让探索工作量成为保留碎片的理由。
+Set the focal point and division of work with the text before selecting exploration targets. Sub-operations supporting one claim can be explored together. The number of candidates or modules does not determine the number of final regions. Merge, subordinate, or remove sketched details when appropriate; exploration effort does not justify fragmentation.
 
-把深度的含义说清：物理坐标、数据维度、特征几何，或仅用于分组/展开的展示空间。抽象算法也可以用展示空间组织真实关系；不能据此虚构空间距离、曲面、轨迹或新维度。每个机制不同的候选模块都要得到判断，不能只探索一个最容易立体化的模块，其余自动套平面模板。简单标签、普通箭头和无需展开的小算子不单独探索。
+State what depth means: physical coordinates, data dimensions, feature geometry, or display space used only for grouping/exploding objects. Abstract algorithms can use display space to organize real relationships, but this does not authorize invented distances, surfaces, trajectories, or dimensions. Assess every retained mechanism with distinct spatial potential, not just the easiest one. Ordinary labels, arrows, and tiny operators need no independent exploration.
 
-在brief中紧凑记录：`模块 / 要解释的关系 / 深度含义 / 候选 / 草图位置 / 选择与代价`。无需额外长报告。
+Record compactly in the existing brief: `module / relationship / depth meaning / candidates / sketch location / choice and tradeoff`.
 
-## 2. 生成结构不同的候选
+## 2. Propose structurally different candidates
 
-每个可探索模块通常提出2–3种有依据的空间组织，再筛选。候选必须改变对象的组织或揭示关系的方式：同一叠层换颜色、厚度、圆角或相机角度，只算一个结构方案。不要用明显错误的方案充数，也不要把所有模块都默认为方块或层片。
+Usually propose 2–3 justified spatial organizations per suitable module, then screen them. Candidates must change object organization or how a relationship becomes visible. Changing the color, thickness, corner radius, or camera of the same stack is one structure, not several. Do not count obviously incorrect alternatives or default every module to cubes and sheets.
 
-候选比较保持**相同的必要语义**，不要求相同图元数量。若一种保留来源、作用位置或共享关系，另一种只画孤立几何，先用共享上下文或紧凑接口补齐再比较；不能把必要信息缺失算作某种几何的劣势。每个入选候选都应是能够完成当前解释任务的方案，草图数量不代表探索充分。
+Preserve the same necessary semantics across candidates, though element counts may differ. If one preserves provenance, intervention sites, or sharing and another shows isolated geometry, give the latter compact interfaces or shared context before comparing. Missing essential information is not evidence against its geometry. Each retained candidate must plausibly serve the explanatory task; sketch count alone does not establish exploration quality.
 
-检查候选是否真正探索了空间：若全部去掉厚度和透视后，关系仍原样可见，它们可能只是不同的平面排版。此时再尝试一种让深度承担对应、内部显露、分组或路径分离的结构，例如按来源/作用域分面、以切片显露选区或在共享对象周围组织局部。不得靠虚构数据维度达成；确实找不到有益的空间关系时记录这一结论，选择清楚的二维/浅立体方案，不能声称已经获得有效的空间解释。
+Ask whether depth contributes. If removing thickness and perspective leaves every relationship equally visible, the candidates may be flat layouts in disguise. Try a structure where depth reveals correspondence, interiors, grouping, or separated paths: source/scope facets, cutaways exposing selections, or operations organized around a shared object. Do not invent data dimensions. If no useful spatial relationship exists, record that conclusion and choose clear 2D or shallow relief without claiming a spatial explanatory gain.
 
-以下是探索起点，不是固定配方；按内容组合或提出其他结构：
-
-| 需要解释的关系 | 可比较的空间组织 | 需要保持的内容 |
+| Relationship | Spatial alternatives to compare | Preserve |
 |---|---|---|
-| 通道、层或多分辨率 | 对齐的展开层；共享基准的剖面；带局部抽出块的体结构 | 层的身份、尺寸/尺度变化、真正被访问的位置 |
-| 局部选择、掩膜与更新 | 半透明覆盖面与抬出的选块；切口中的内部单元；总览旁的对应展开局部 | 同一选区、未修改部分及更新前后对应 |
-| 分块、变换与重组 | 平面分块后局部展开；有索引的块阵列；配对源/目标平面间的对应结构 | 分块边界、转换范围、拼接轴；展示位移不等于算法搬移 |
-| 路由、集合与共享 | 分层索引网络；围绕共享对象的分支结构；来源/目标分面的连接布局 | 真实边、对象身份与地址区别；展示距离不表示权重 |
-| 多视图、投影与融合 | 视锥与共同对象；围绕共享坐标的观察面；对齐的切面与重投影 | 相机/坐标是否真实、对应位置、融合发生处 |
-| 特征约束与优化 | 有依据的向量/基面；约束体与截面；候选集合与选中状态的空间排列 | 算子支持的角度/距离/边界，不凭术语添加流形或训练轨迹 |
+| Channels, layers, multiple resolutions | Aligned exploded layers; shared-reference cross-sections; a volume with a pulled-out block | Layer identity, dimensions/scale changes, accessed location |
+| Local selection, masks, updates | Translucent overlay and raised selection; cutaway cells; overview plus corresponding detail | Same selection, unchanged region, before/after correspondence |
+| Partitioning, transforms, reassembly | Partitioned plane with local explosion; indexed block array; paired source/target planes | Block boundaries, transform scope, concatenation axis; display displacement is not algorithmic movement |
+| Routing, sets, sharing | Layered index network; branches around one shared object; source/target facets | Actual edges, identity versus address; display distance does not encode weight |
+| Multiple views, projection, fusion | Frusta and common object; observation planes around a common coordinate frame; aligned sections/reprojection | Whether cameras/coordinates are real, correspondence, fusion site |
+| Feature constraints and optimization | Justified vectors/basis planes; constraint volumes/sections; spatial candidates and selection states | Angles, distances, and boundaries supported by the operator; no invented manifold or trajectory |
 
-只有一种成立的空间结构时，说明其他候选为什么不适用，实际绘制这一结构并与紧凑二维表达比较；不要为数量捏造第二种。已有同机制草图可复用，但不同模块的标签相似不代表关系相同。
+If only one spatial structure is valid, explain why others are unsuitable, sketch it, and compare with a compact 2D representation. Do not invent a second valid candidate to meet a quota. Reuse sketches for genuinely identical mechanisms; similar labels alone do not establish identical relationships.
 
-## 3. 实际画局部草图再选择
+## 3. Draw local sketches before choosing
 
-对有不同可行候选的模块，至少把两种结构画成可查看的轻量局部草图。可合并成一页SVG/HTML草图板，无需完整成图、精细素材、独立代理或每个候选四评委。先画对象与关键变化，标签只需识别对象；用代表实例保留真实关系，示意数值不冒充实测。
+When multiple viable structures exist, draw at least two lightweight, viewable local sketches. A combined SVG/HTML sketch sheet is sufficient; no complete figures, polished materials, separate agents, or four-reviewer cycles are required per candidate. Draw objects and key changes first, with identification labels. Representative examples must preserve real relationships; illustrative numbers are not measurements.
 
-在**同一模块预计占地、同一内容与相近标注密度**下实际看图。草图可放大查几何，但选择必须回到整图中的预计尺寸。一次先改变结构；确定结构后再调视角、层间距和透明度。这样能区分结构收益和单纯渲染差异。
+Compare at the same expected module footprint, with the same content and similar annotation density. Zoom in to check geometry, but decide at the size the module will occupy in the whole figure. Change structure first; tune camera, layer spacing, and opacity after selecting it. This separates structural benefits from rendering differences.
 
-按以下问题比较，不为候选虚构精密分数：
+Compare using concrete questions rather than invented precise scores:
 
-- 关键对象、对应和变化能否直接看见？比平面或浅卡片表达多解释了什么？
-- 主要轮廓与内部结构是否清楚，体量、留白和视觉重心是否协调？
-- 重要区域是否被遮挡？深度是否造成不存在的因果、数量或几何含义？
-- 在预计占地内能否读清？需要的标签、连线及图例是否比表达收益更昂贵？
+- Are key objects, correspondences, and changes directly visible? What does this explain beyond a plane or shallow card?
+- Are silhouettes and interiors clear? Are volume, whitespace, and visual balance coherent?
+- Are important regions occluded? Does depth imply false causality, quantity, or geometry?
+- Is it readable at the intended footprint? Do required labels, connections, and legends cost more than the explanatory benefit?
 
-浅叠层若已足够准确、好看可以选用，但不能在没有比较其他成立结构时自动结束探索。候选效果不佳时，先根据具体问题改一次组织或展示视角；仍损害准确性、可读性或观感时再退回二维，保留实际理由。没有有意义的空间关系可直接保留二维，不要求硬造草图。
+A shallow stack can win when accurate and attractive, but should not automatically end exploration before other valid structures are compared. If a candidate performs poorly, correct a concrete organizational or camera problem once where useful; fall back to 2D if accuracy, readability, or appearance still suffers. When there is no meaningful spatial relationship, retain 2D directly rather than manufacturing sketches.
 
-淘汰时区分“结构不适合”与“当前画法没做好”。标签缺失、选区太淡或视角压缩通常可局部修正，不足以否定整类空间表达。抽象特征不是物理三维，也不是自动淘汰理由：可以明确使用概念展示空间并把精确读数放在正视面；只有误导仍无法消除或收益不足时才退回。无需挽救所有候选，只修正会改变选择结论的明显不公平条件。
+Distinguish an unsuitable structure from weak execution. Missing labels, faint selections, and foreshortening can often be repaired locally and do not invalidate an entire representation family. Abstract features are not physical 3D, but can still use explicitly conceptual display space with precise front-facing readouts. Fall back when misleading implications cannot be resolved or benefits are insufficient. Repair only obvious unfair conditions that could change the selection; do not rescue every candidate.
 
-## 4. 组合进整图并检查相互影响
+## 4. Integrate and inspect interactions
 
-局部最漂亮的候选不一定最适合整图。把选定结构放回已有分区，协调视觉尺度、展示角度、光照和颜色角色；不同模块可以采用不同几何，不必统一成同一种立体。实际数据视角和比较坐标优先于风格统一。
+The most attractive local candidate may not suit the whole figure. Place it in the existing regions and coordinate scale, display angle, lighting, and color roles. Modules can use different geometries. Actual observation viewpoints and comparison coordinates take precedence over stylistic uniformity.
 
-同一对象经过相邻操作时，把衔接本身纳入探索，可在现有草图上连画两步，不增加整套候选。追踪一个代表对象/选区：前一步改变什么，后一步接收哪个对象，是否换了表示域？来源、索引、选区或变换接口应足以建立联系；颜色相近和一支箭头不能独自证明同源。域变换后可以换图形与纹理，不强求外观相同；独立解释例则明确分开，不能连成同一次真实计算。这样避免把各自漂亮的小场景直接拼成方法图。
+Include transitions between adjacent operations in the exploration. Extend an existing sketch to show two steps rather than generating another full candidate set. Trace one representative object or selection: what changes, what is received next, and whether the representation domain changes. Provenance, indices, selections, or transform interfaces must establish correspondence; similar colors and an arrow alone do not. Domain changes may alter shape and texture. Separate independent explanatory examples rather than linking them as one real computation. This prevents a collage of attractive but disconnected scenes.
 
-为关键机制分配空间层次，普通操作保留简洁接口。优先利用深度区分关系或减少连线，不把每个模块扩成独立小场景；若组合后拥挤，收拢次要细节或重选候选，不默认扩大画布。用户已认可的整体结构以局部替换为主。
+Allocate spatial depth to key mechanisms and use simple interfaces for ordinary operations. Use depth to separate relationships or reduce connections, not to turn every module into a separate scene. If the composition becomes crowded, consolidate secondary detail or reconsider a candidate rather than enlarge the canvas by default. Favor local replacement within an accepted overall structure.
 
-保留草图与短取舍记录，选定方案进入正常绘制及四评委流程。评委先独立评价成图，不先接收绘图者的候选偏好或自评。若复评仍指出关键模块只是带标签的立体容器，主绘图者回到该模块的结构候选，尝试不同组织；不把加厚、增透明或换角度当成结构重绘。
+Keep sketches and concise choice notes. In the full skill workflow, the selected design proceeds to drawing and four-reviewer evaluation. Reviewers independently inspect the completed figure without receiving the designer's favored candidates or self-scores first. If review finds a key module is still merely a labeled 3D container, return to structural alternatives; added thickness, transparency, or a new angle alone is not a structural redraw.
 
-## 探索的完成条件
+## Completion criteria
 
-不同机制的候选模块都已得到判断；有可行替代结构的模块已有实际草图比较；选定方案在预期占地中保留关键关系；组合后的整图有协调的主次。达到这些条件便进入精绘，不穷举所有几何或每个相机角度。局部草图是设计工作，不新增审批、导出检查或固定评审轮数。
+Each distinct suitable mechanism has been assessed; viable structural alternatives have been compared in actual sketches; selected designs retain key relationships at their expected footprint; and the combined figure has coherent hierarchy. Then proceed to detailed drawing rather than enumerating every geometry or camera. Sketching is design work, not an extra approval gate, export check, or fixed review schedule. Respect a host executor's explicitly limited quick-generation mode.

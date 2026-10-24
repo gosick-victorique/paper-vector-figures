@@ -1,124 +1,124 @@
-# 常用组件的表达知识
+# Component representation knowledge
 
-这是机制到图形的速查库，既提供画法，也提醒哪些视觉含义必须核实。按本图需要选择条目，不加载整套组件、不逐项凑齐。整体布局见[框架提示词](framework-prompts.md)，通用空间语义见[混合视觉语法](content-to-3d.md)。
+Use this mechanism-to-graphics reference for both representations and visual meanings that require verification. Read only entries needed by the figure; do not load or instantiate the whole library. See [framework prompts](framework-prompts.md) for overall organization and [mixed visual grammar](content-to-3d.md) for spatial semantics.
 
-每个选中的组件只需在现有 brief 中明确 `论文对象与作用 / 输入输出或对应 / 深度含义 / 采用画法`。未说明的维度、层数、坐标或数值不从通用知识补成论文事实。尺寸不承担定量含义时可概括并在图注说明。下列“局部提示”替换占位项后可接入整图提示词；不是图中要显示的文案。
+For each selected component, briefly record `paper object and role / inputs, outputs, or correspondence / depth meaning / representation` in the existing brief. Do not turn unspecified dimensions, layer counts, coordinates, or values into paper facts using general knowledge. When size is nonquantitative, simplify it and explain that in the caption. Substitute the placeholders in local prompts before incorporating them into a figure prompt; these instructions are not text to print inside the figure.
 
-## 索引
+## Index
 
-| ID | 组件 | 主要解决的问题 |
+| ID | Component | Main concern |
 |---|---|---|
-| C1 | 图像、样本与状态对照 | 真实对象、身份一致、效果证据 |
-| C2 | 张量、特征图、token | 维度含义、层片对应、局部访问 |
-| C3 | 网络、编码解码与模型集合 | 作用位置、跳连、共享与冻结 |
-| C4 | 注意力与关联矩阵 | 查询、键、选择与统计的区别 |
-| C5 | 掩膜、筛选与局部作用 | 如何选、选了什么、哪里改变 |
-| C6 | 融合、拼接与路由 | 多个来源如何形成输出 |
-| C7 | 多尺度与金字塔 | 尺度和处理对象的对应 |
-| C8 | 特征、距离与约束 | 哪种几何能合法解释目标 |
-| C9 | 体素、点云与多视图 | 占据、对应和内部结构 |
-| C10 | 表示域变换与重建 | 域、索引和可见变化的衔接 |
-| C11 | 梯度、扰动与迭代更新 | 更新对象、范围和状态 |
-| C12 | 记忆、检索与图结构 | 地址、内容、边及读写关系 |
+| C1 | Images, samples, state comparisons | Real objects, consistent identity, evidence of effects |
+| C2 | Tensors, feature maps, tokens | Dimension semantics, layer correspondence, local access |
+| C3 | Networks, encoder/decoder, model sets | Intervention sites, skips, sharing, freezing |
+| C4 | Attention and association matrices | Queries, keys, selection, statistics |
+| C5 | Masks, filtering, local interventions | Selection rule, selected region, changed location |
+| C6 | Fusion, concatenation, routing | How sources form an output |
+| C7 | Multiple scales and pyramids | Scale and processed-object correspondence |
+| C8 | Features, distances, constraints | Geometry justified by the objective |
+| C9 | Voxels, point clouds, multiple views | Occupancy, correspondence, interiors |
+| C10 | Representation transforms and reconstruction | Domains, indices, visible transitions |
+| C11 | Gradients, perturbations, iterative updates | Updated object, scope, state |
+| C12 | Memory, retrieval, graph structures | Addresses, content, edges, reads/writes |
 
-## C1 图像、样本与状态对照
+## C1 Images, samples, and state comparisons
 
-- **先核实：** 原始/处理后是否同一样本，图像来自论文、数据、实际计算还是说明性素材；差异是否真的由所画方法产生。
-- **可比较画法：** 同裁剪的正视图像与共享局部放大；图像平面与对应掩膜/特征面分层；主体旁嵌入真实样本。图像内容通常保持正视，仅有助于层间对应时倾斜承载面。
-- **必要线索：** 身份、条件、同一局部位置；微小扰动不可见时可以另示放大扰动，但不能将放大版当实际输出。
-- **易错：** 用两个不同人物说明身份被修改；用自制热图冒充模型响应；把语境照片直接连成未经计算的特征输出。来源与说明例的区别见[素材与对象表达](material-and-representation.md)。
-- **局部提示：** “并置【同一样本的两个状态】，保持裁剪和尺度一致；在【同一位置】展开差异，将【真实结果/解释示意】的身份交代清楚。”
+- **Verify:** Whether original and processed views show the same sample; whether images come from the paper, data, actual computation, or illustrative material; whether the depicted method actually produced the difference.
+- **Compare:** Front-facing matched crops with a shared enlarged detail; an image plane paired with corresponding mask/feature planes; real examples next to a schematic subject. Usually keep image content front-facing, tilting a support plane only when it clarifies correspondence.
+- **Retain:** Identity, conditions, and matching local positions. Imperceptible perturbations may have a separate amplified view, but that view must not be presented as the actual output.
+- **Avoid:** Using different people to imply changed identity, presenting invented heatmaps as model responses, or connecting a contextual photo to an uncomputed feature output. See [materials](material-and-representation.md).
+- **Local prompt:** "Juxtapose [two states of the same sample] with matched crops and scale. Expand the difference at [the same position], identifying the views as [actual results / explanatory schematics]."
 
-## C2 张量、特征图、token
+## C2 Tensors, feature maps, and tokens
 
-- **先核实：** 轴表示空间、通道、序列、头还是批次；同形状不代表同一内容。没有真实维度时，画示意层而不标虚构尺寸。
-- **可比较画法：** 对齐特征平面的通道展开；体块中抽出被访问切片；序列/patch 网格和对应嵌入条带。空间布局若已丢失，不把 token 强行还原为像素位置。
-- **必要线索：** 本图涉及的轴和访问位置，前后对象的对应。只展开代表层时保留集合提示，不要求每层可数。
-- **易错：** 所有轴都画成 H×W×C；把网络层、通道和时间混为厚度；用随机纹理声称实测激活。
-- **局部提示：** “用【通道展开/局部剖面/序列条带】表示【张量】，突出【访问维度或位置】，其余层概括；使【输入与输出】的对应可追踪。”
+- **Verify:** Whether axes represent spatial dimensions, channels, sequence, heads, or batch. Equal shape does not imply equal content. Without known dimensions, show schematic layers without invented sizes.
+- **Compare:** Exploded aligned channel planes; an accessed slice pulled from a volume; a sequence or patch grid paired with embedding strips. Do not force tokens back into pixel locations after spatial organization has been lost.
+- **Retain:** Relevant axes, accessed locations, and input/output correspondence. Representative layers can imply a larger collection without making every layer countable.
+- **Avoid:** Labeling every tensor H×W×C, confusing network layers/channels/time as thickness, or claiming random textures are measured activations.
+- **Local prompt:** "Represent [tensor] through [exploded channels / a local section / sequence strips]. Highlight [accessed dimension or position], summarize other layers, and make [input/output] correspondence traceable."
 
-## C3 网络、编码解码与模型集合
+## C3 Networks, encoder/decoder structures, and model sets
 
-- **先核实：** 主干形状、作用层、是否存在跳连、多模型是否共享参数、冻结的究竟是什么。UNet 的具体连接不能仅凭名称补全。
-- **可比较画法：** 分辨率递变的编码/解码体块；低调网络轮廓中抽出目标层；围绕共同输入展开不同模型的响应。只有目标层重要时，其余层作为定位语境。
-- **必要线索：** 关键操作发生处、必要的跳连/出口、共享或不同模型的身份。共享参数可以用一个共享源或一致身份标记，无需复制整套权重图形。
-- **易错：** 锁符号暗示所有梯度都被截断；将 ensemble 画成串联；将并列网络默认为权重共享；泛化成任意沙漏。
-- **局部提示：** “以简化【主干】定位【目标层】，在邻近展开其操作；用【共享标记/不同身份】区分模型，只保留解释该作用所需的连接。”
+- **Verify:** Backbone structure, intervention layer, actual skip connections, parameter sharing, and precisely what is frozen. Do not infer detailed UNet wiring from its name alone.
+- **Compare:** Encoder/decoder volumes with actual resolution changes; a target layer extracted from a subdued network outline; different model responses around a shared input. If only one layer matters, use the rest as locating context.
+- **Retain:** Intervention sites, necessary skips/outputs, and shared versus distinct model identities. One common source or identity marker can communicate shared parameters without duplicating entire weight diagrams.
+- **Avoid:** A lock implying every gradient is blocked, a serial ensemble, parallel networks implying shared weights, or an arbitrary hourglass substituted for the architecture.
+- **Local prompt:** "Use a simplified [backbone] to locate [target layer], expanding its operation nearby. Distinguish models using [shared markers / separate identities] and retain connections needed to explain the intervention."
 
-## C4 注意力与关联矩阵
+## C4 Attention and association matrices
 
-- **先核实：** 是 self/cross attention，查询和键来自哪里，所画矩阵两轴是什么，统计量沿哪一轴聚合；是否有明确的归一化轴。
-- **可比较画法：** 查询/键两面与正视关联矩阵；抽出一个查询的 token 权重；查询网格上的统计图与同查询的权重条带配对。空间层帮助定位来源，密集矩阵保持正视。
-- **必要线索：** 同一查询在来源、矩阵行及展开条带上的标记；聚合统计与完整权重矩阵的区别。
-- **易错：** 将每查询的方差图画成 query×key 矩阵；把 attention 权重当特征相似度或模型实测；只靠颜色暗示同一查询。
-- **局部提示：** “从【查询来源】选出一个标记查询，对应到【键/token】上的权重；将【统计图】作为独立统计视图并保持同查询标记，不混淆矩阵轴。”
+- **Verify:** Self- versus cross-attention, query/key sources, both matrix axes, the reduction axis of statistics, and any specified normalization axis.
+- **Compare:** Query/key source planes with a front-facing association matrix; one query's token weights pulled out; a statistic on the query grid paired with weights for the same query. Depth can locate sources; dense matrices should remain front-facing.
+- **Retain:** A consistent query marker on the source, matrix row, and expanded strip; distinguish reduced statistics from the full weight matrix.
+- **Avoid:** Showing per-query variance as a query×key matrix, conflating attention with feature similarity or measured responses, or relying on color alone for query identity.
+- **Local prompt:** "Mark one query from [query source] and connect it to weights over [keys/tokens]. Show [statistic map] as a separate statistical view with the same query identity, keeping matrix axes explicit."
 
-## C5 掩膜、筛选与局部作用
+## C5 Masks, filtering, and local interventions
 
-- **先核实：** 掩膜生成依据、作用域、是否固定、选中项执行什么操作、未选项如何处理；它是输入权限、损失支持域还是更新范围。
-- **可比较画法：** 半透明掩膜覆盖同一对象；抬出选中单元并就近显示改变；体块剖面显露内部选区。三维有利于分离选择层与内容层，不能遮住边界。
-- **必要线索：** 同一选区前后一致，选中与未选中可区分；如生成规则是核心，则给出简洁的生成依据。
-- **易错：** 用任意矩形冒充边缘检测结果；掩膜外也发生视觉变化；将一个操作的掩膜扩展为全部损失的作用域。
-- **局部提示：** “在【对象】上显露由【依据】确定的【选区】，只对该处展示【操作】；未选部分保持对应，用同一局部连接前后状态。”
+- **Verify:** How the mask is generated, its scope, whether it is fixed, what happens to selected/unselected items, and whether it represents input access, loss support, or update scope.
+- **Compare:** A translucent mask on the same object; raised selected cells with a nearby change; a cutaway exposing an internal selection. Depth can separate selection and content layers without hiding boundaries.
+- **Retain:** The same selection before and after, a clear selected/unselected distinction, and a concise generation rule when it is central.
+- **Avoid:** An arbitrary rectangle presented as edge detection, changes outside the mask, or extending one operation's mask to every loss.
+- **Local prompt:** "Reveal [selection] on [object] according to [criterion], showing [operation] only there. Preserve correspondence in unselected regions and use the same local area to connect before/after states."
 
-## C6 融合、拼接与路由
+## C6 Fusion, concatenation, and routing
 
-- **先核实：** 是加和、加权和、拼接、注意力聚合还是选择一路；拼接发生在哪个轴，权重/路由从何处产生。
-- **可比较画法：** 沿实际轴拼接并保留来源边界；分面来源向一个聚合对象汇合；选中通路在分层网络中显露。输出内部结构要体现运算，不只是多箭头指向“Fusion”。
-- **必要线索：** 来源身份、操作类型、输出形状或组成变化。加权读数必要时放正视小条带，不用三维距离表达权重。
-- **易错：** concat 画成求和；通道拼接画成 token 数增加；所有路径同时高亮却声称选择单路；漏掉产生权重的来源。
-- **局部提示：** “让【各来源】的身份在【融合后对象】中可追踪，以【拼接边界/加权聚合/选中路径】直接显露操作，普通连接靠近合流点。”
+- **Verify:** Sum, weighted sum, concatenation, attention aggregation, or single-route selection; the concatenation axis and source of weights/routing decisions.
+- **Compare:** Concatenation along the actual axis with source boundaries retained; source facets converging on one aggregate; selected paths exposed in a layered network. Output structure should reveal the operation, rather than multiple arrows pointing to a box labeled "Fusion."
+- **Retain:** Source identities, operation type, and output shape/composition changes. If needed, put weight readouts on a front-facing strip; spatial distance should not encode weight.
+- **Avoid:** Drawing concatenation as addition, channel concatenation as more tokens, highlighting all paths while claiming single-route selection, or omitting the source of weights.
+- **Local prompt:** "Keep [source identities] traceable inside [combined output]. Expose the operation through [concatenation boundaries / weighted aggregation / selected paths], keeping ordinary links near the merge site."
 
-## C7 多尺度与金字塔
+## C7 Multiple scales and pyramids
 
-- **先核实：** 尺度改变的是输入图像、特征空间分辨率、感受野还是模型大小；各尺度独立处理还是跨层融合；选择或监督发生在哪层。
-- **可比较画法：** 对齐中心的多分辨率平面；共同场景的嵌套采样网格；主干旁抽出参与操作的尺度。只有实际对应成立时用同一位置标记跨尺度映射。
-- **必要线索：** 尺度顺序、被选择/融合的层及接收对象；层数过多可概括，但不能删掉关键跨尺度关系。
-- **易错：** 用透视远近代替分辨率变化；把多尺度输入误画为不同网络；未参与操作的尺度也被高亮。
-- **局部提示：** “用【对齐平面/嵌套网格】展示【实际尺度对象】，突出【参与尺度】与【操作位置】，其余尺度提供紧凑上下文。”
+- **Verify:** Whether scale changes input images, feature resolution, receptive fields, or model size; whether scales are processed independently or fused; where selection or supervision acts.
+- **Compare:** Center-aligned multiresolution planes; nested sampling grids on one scene; active scales extracted next to a backbone. Mark cross-scale locations only where genuine correspondence exists.
+- **Retain:** Scale ordering, selected/fused levels, and the receiving object. Summarize large layer counts without losing critical cross-scale relationships.
+- **Avoid:** Perspective distance substituting for resolution, multiple-scale input mistaken for different networks, or highlighting scales that do not participate.
+- **Local prompt:** "Use [aligned planes / nested grids] for [the actual scaled object]. Emphasize [participating scales] and [intervention site], with compact context for the rest."
 
-## C8 特征、距离与约束
+## C8 Features, distances, and constraints
 
-- **先核实：** 比较量是余弦、内积、L1/L2、分布差异或其他量；是否归一化；约束作用在输入还是特征。
-- **可比较画法：** 同基点向量配正视角度读数（适合有依据的角度关系）；坐标差异条带或位移配相应范数说明；约束集合及截面与候选点。高维概念投影不能冒充精确三维嵌入。
-- **必要线索：** 比较对象、方向/距离的含义、原始与改变后身份。使用真实投影时交代投影方法；解释示意不标伪造测量值。
-- **易错：** 所有损失都画夹角；随意添加流形和下降轨迹；以欧氏球表达任何范数限制；把特征距离等同图像像素差异。
-- **局部提示：** “根据【实际度量】选择【向量/差异条带/约束截面】，用同一对象的两种状态显露【变近/变远/约束内改变】，精确读数保持正视。”
+- **Verify:** Cosine, inner product, L1/L2, distribution discrepancy, or another measure; normalization; and whether constraints act on inputs or features.
+- **Compare:** Common-origin vectors with front-facing angular readouts when angles are justified; coordinate-difference strips or displacements paired with their norm; constraint sets/sections with candidate points. A conceptual projection of high-dimensional features is not a measured 3D embedding.
+- **Retain:** Compared objects, meaning of direction/distance, and original/modified identities. Name the projection method for actual projections; do not attach fabricated measurements to a schematic.
+- **Avoid:** Turning every loss into an angle, inventing manifolds/descent trajectories, representing every norm bound as a Euclidean sphere, or equating feature distance with pixel difference.
+- **Local prompt:** "Choose [vectors / difference strips / constraint sections] from [the actual metric]. Show [closer / farther / change within the constraint] using two states of the same object, keeping precise readouts front-facing."
 
-## C9 体素、点云与多视图
+## C9 Voxels, point clouds, and multiple views
 
-- **先核实：** 对象是占据、密度、特征体还是采样点；坐标、观测与实际几何是否已知；透明度是否承担数据编码。
-- **可比较画法：** 透明体中的重点体素与剖切面；局部抽出块配整体定位；点云与共同坐标中的观测面。切去遮挡比一味提高透明度更清楚，详细处理见[透明体素](design-guide.md#透明体素)。
-- **必要线索：** 选中位置与整体的对应、有效表面/空域区别、参与融合的观测。若透明度只为显露内部，不让它看起来像置信度图例。
-- **易错：** 用整齐实心立方体代替任意稀疏点云；画虚构物理坐标；用过多视线淹没主体；体素仅作装饰。
-- **局部提示：** “以【整体空间对象】定位【关键内部区域】，用【剖面/局部抽出/透明外层】显示其结构，保留与【观测或操作】的实际对应。”
+- **Verify:** Occupancy, density, feature volumes, or sampled points; known coordinates, observations, and geometry; whether opacity encodes data.
+- **Compare:** Emphasized voxels and cross-sections in a transparent volume; an extracted local block with global location; point clouds and observation planes in shared coordinates. Cutting away occluders can be clearer than increasing transparency. See [transparent voxels](design-guide.md#透明体素).
+- **Retain:** Local/global correspondence, valid surfaces versus empty space, and participating observations. If transparency only exposes interiors, do not make it resemble a confidence legend.
+- **Avoid:** Replacing an arbitrary sparse cloud with a solid regular cube, inventing physical coordinates, overwhelming the subject with sight lines, or using voxels as decoration.
+- **Local prompt:** "Locate [important internal region] within [the overall spatial object]. Reveal it through [a cross-section / extracted block / transparent shell], preserving its actual correspondence to [observations or operations]."
 
-## C10 表示域变换与重建
+## C10 Representation transforms and reconstruction
 
-- **先核实：** 变换类型、全局还是分块、是否分通道、系数排列、筛选范围及逆变换。DCT、FFT 与学习到的编码不能共用未经说明的频率布局。
-- **可比较画法：** 源平面、变换平面与返回平面紧凑相邻；同一块抽出后显露系数选择；变换层的剖面与正视系数网格。空间位移用于展示域切换，不暗示物理运动。
-- **必要线索：** 同一源块/通道、域名称、保留或抑制范围、输出返回对象。若展示具体数值变化，使用同源计算；独立算例明确标识。
-- **易错：** 将任意格子称为低频区；默认所有频谱中心是低频；画了筛选却重用未筛选输出；与前一步不是同一数据却连成真实计算链。
-- **局部提示：** “追踪【同一块/通道】从【源域】进入【变换域】，显露【实际保留范围】，再回到【输出域】；用纹理与索引区分表示，保持来源对应。”
+- **Verify:** Transform type, global/blockwise scope, channel handling, coefficient ordering, retained range, and inverse transform. DCT, FFT, and learned encodings cannot share an unexplained frequency layout.
+- **Compare:** Compact adjacent source, transformed, and reconstructed planes; a pulled-out source block revealing coefficient selection; a transform-layer section with a front-facing coefficient grid. Display displacement indicates a domain change, not physical motion.
+- **Retain:** Same source block/channel, domain names, retained/suppressed ranges, and receiving output. Use same-source computations for specific numerical changes; identify independent worked examples separately.
+- **Avoid:** Calling arbitrary cells low frequency, assuming every spectrum has low frequencies at the center, reusing unfiltered output after depicting filtering, or linking different data as one computation.
+- **Local prompt:** "Trace [the same block/channel] from [source domain] into [transform domain], reveal [the actual retained range], and return to [output domain]. Distinguish representations using texture and indices while preserving provenance."
 
-## C11 梯度、扰动与迭代更新
+## C11 Gradients, perturbations, and iterative updates
 
-- **先核实：** 优化输入、参数还是状态；多个目标如何汇合；梯度与前向结果的区别；约束、平滑、投影及更新的真实顺序。
-- **可比较画法：** 当前状态旁的局部改变量与下一状态；允许范围中的一步更新；共同目标通过短连接作用到同一扰动。只有文章真的研究轨迹时才展开多步轨迹。
-- **必要线索：** 被更新对象、主要约束和必要操作顺序；只画典型一步时交代重复，首次赋值不冒充递推。
-- **易错：** 绕整图一圈但无法找到写入点；目标直接连到无关变量；用冻结标记阻断仍存在的输入梯度；一支“+”声称完整优化。
-- **局部提示：** “在【更新对象】附近展示【当前状态→关键处理→下一状态】，保留【实际约束】；各目标就近汇入真实更新接口，重复以局部标记表示。”
+- **Verify:** Whether inputs, parameters, or states are optimized; how objectives combine; gradients versus forward outputs; and the actual order of constraints, smoothing, projection, and update.
+- **Compare:** A local increment and next state beside the current state; one step within an allowed region; objectives connected briefly to one shared perturbation. Expand multi-step trajectories only when the paper studies them.
+- **Retain:** The updated object, major constraints, and necessary operation order. Mark repetition when depicting one typical step; initialization is not recurrence.
+- **Avoid:** A whole-figure loop without a visible write target, objectives attached to unrelated variables, frozen-parameter symbols blocking valid input gradients, or a lone plus sign standing in for complete optimization.
+- **Local prompt:** "Near [updated object], show [current state → essential processing → next state], retaining [actual constraints]. Bring objectives into the true update interface through short links; indicate repetition locally."
 
-## C12 记忆、检索与图结构
+## C12 Memory, retrieval, and graph structures
 
-- **先核实：** 地址与内容的区别、读写对象、检索依据、选择规则、图边语义；是否有真实空间坐标或有序层级。
-- **可比较画法：** 索引槽位与抽出内容；分层索引配选中路径；共享节点周围局部展开邻域；读写前后的同一槽位对照。
-- **必要线索：** 相同 ID 贯穿查询、选择与返回；被修改的字段与保持不变的内容；真实图边与说明性引线分开。
-- **易错：** 最高分必然被选中（实际可能采样）；布局邻近冒充语义相似；改变内容时连地址一起改；每次读取画成重新生成整个库。
-- **局部提示：** “以【索引/共享结构】作为主体，跟踪【代表项】的【查询、选择、读取或写入】，局部展开其内容与真实邻接，保持 ID 和作用字段一致。”
+- **Verify:** Addresses versus contents, read/write targets, retrieval criteria, selection rules, edge semantics, and whether spatial coordinates or ordered levels are real.
+- **Compare:** Indexed slots with extracted content; a hierarchical index and selected path; an expanded neighborhood around a shared node; the same slot before/after a write.
+- **Retain:** Consistent IDs through query, selection, and return; changed fields versus unchanged contents; actual graph edges distinguished from explanatory leader lines.
+- **Avoid:** Assuming the highest score must be selected when selection is sampled, display proximity implying semantic similarity, changing addresses when contents change, or regenerating an entire memory bank on every read.
+- **Local prompt:** "Use [index/shared structure] as the main subject. Trace [a representative item's query, selection, read, or write], expanding its contents and actual neighbors locally while preserving IDs and target fields."
 
-## 组合时保留接口，而非堆图标
+## Combine through shared interfaces, not icon accumulation
 
-例如“多尺度特征经选择后融合”应由 C7 给出尺度身份、C5 显露选择范围、C6 显露融合方式，共用同一组特征对象；不必分别建立三个完整面板。组件间只有必要的输入输出发生变化才更换表示，布局和颜色相同不足以证明同源。
+For "select then fuse multiscale features," C7 establishes scale identities, C5 reveals selection, and C6 reveals fusion on the same feature objects. Three complete panels are unnecessary. Change representation only when actual input/output relationships require it; matching layout or color alone does not prove common provenance.
 
-库中候选是探索起点，不能跳过空间比较，也不必每条都试。新机制先从原文提炼，再补充条目；优先记录能迁移的对象关系与误画风险，不把某次作品的颜色、尺寸或固定构图固化为组件规则。
+These candidates begin exploration; they neither replace spatial comparison nor require trying every entry. Extract a new mechanism from the paper before adding a recipe. Capture transferable object relationships and semantic risks, not one previous drawing's colors, dimensions, or fixed composition.

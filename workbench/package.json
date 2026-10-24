@@ -1,14 +1,24 @@
 {
   "name": "paper-figure-workbench",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "start": "node agent/server.mjs",
-    "test:agent": "node --test agent/*.test.cjs agent/*.test.mjs"
+    "test:agent": "node --test agent/*.test.cjs agent/*.test.mjs",
+    "desktop:prepare": "node desktop/prepare.cjs",
+    "desktop:dev": "node desktop/prepare.cjs && electron .",
+    "desktop:build": "node desktop/prepare.cjs && electron-builder --config electron-builder.cjs --win portable --x64"
   },
   "dependencies": {
     "@openai/codex-sdk": "0.163.0",
     "@xmldom/xmldom": "0.8.15",
     "sharp": "0.35.5"
-  }
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.18.0"
+  },
+  "main": "desktop/main.cjs",
+  "description": "Editable research figure workbench",
+  "author": "Figure Studio"
 }

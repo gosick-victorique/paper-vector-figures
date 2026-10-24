@@ -2,6 +2,8 @@
 
 配套 [Figure Studio 工作台](workbench/README.md) 支持画板编辑、AI 生成和选区修改。安装与启动方式见工作台说明。
 
+[下载 Windows 桌面版](https://github.com/gosick-victorique/paper-vector-figures/releases/latest) · 免安装，无需另装 Node.js。新设备首次启动为空白画板，AI 服务需自行配置。
+
 根据论文机制设计信息丰富、技术准确、可编辑的矢量方法图。按内容组合二维与局部三维，通过四位独立评委的反馈优化图稿。
 
 面向计算机科学论文，可用于方法图、系统架构图、概念图、空间关系图、实验设置图和定性对比图。图型与单栏/跨栏版式根据每次输入选择；实验数值图应使用科学绘图工具。
