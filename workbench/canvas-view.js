@@ -4,7 +4,8 @@
  function fitView(width,height){const z=clamp(Math.min(Math.max(1,width-64)/1200,Math.max(1,height-64)/740));return{z,x:(width-1200*z)/2,y:(height-740*z)/2};}
  function mount(){
   const $=s=>document.querySelector(s),viewport=$('#canvas-scroll'),board=$('#stage-wrap');let view=fitView(viewport.clientWidth,viewport.clientHeight),panning=null,space=false,hand=false,fitted=true;
-  function draw(){board.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.z})`;$('#zoom-input').value=Math.round(view.z*100);$('#zoom-label').textContent=Math.round(view.z*100)+'%';viewport.classList.toggle('pan-ready',space||hand);viewport.classList.toggle('panning',!!panning);$('#pan-tool').setAttribute('aria-pressed',String(hand));window.dispatchEvent(new Event('figure-view-change'));}
+  // Resize the SVG viewport rather than magnifying a cached CSS compositor layer.
+  function draw(){board.style.width=1200*view.z+'px';board.style.height=740*view.z+'px';board.style.left=view.x+'px';board.style.top=view.y+'px';$('#zoom-input').value=Math.round(view.z*100);$('#zoom-label').textContent=Math.round(view.z*100)+'%';viewport.classList.toggle('pan-ready',space||hand);viewport.classList.toggle('panning',!!panning);$('#pan-tool').setAttribute('aria-pressed',String(hand));window.dispatchEvent(new Event('figure-view-change'));}
   const center=()=>({x:viewport.clientWidth/2,y:viewport.clientHeight/2});
   function zoom(scale,point=center()){if(!Number.isFinite(scale))return;view=zoomAt(view,scale,point);fitted=false;draw();}
   function fit(){view=fitView(viewport.clientWidth,viewport.clientHeight);fitted=true;draw();}

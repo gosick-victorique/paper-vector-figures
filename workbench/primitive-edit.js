@@ -1,8 +1,8 @@
 window.FigurePrimitiveEdit={mount(api,host){
  'use strict';
  const G=FigurePrimitiveGeometry,M=FigureModel,E=FigureDirectEdit,svg=api.svg,NS='http://www.w3.org/2000/svg',selector='rect,circle,ellipse,line,polygon,polyline,path,text,image';
- let active=false,selection='',index=0,current=null,gesture=null,advanced=null;
- const button=document.createElement('button');button.textContent='形状';button.dataset.primitiveToggle='true';button.title='编辑形状 · A';
+ let active=false,directMode=false,selection='',index=0,current=null,gesture=null,advanced=null;
+ const button=document.createElement('button');button.textContent='控制点';button.dataset.primitiveToggle='true';button.title='显示形状控制点';
  host.ui.querySelector('[data-panel="style"]').before(button);
  const panel=document.createElement('div');panel.className='canvas-popover primitive-properties';panel.hidden=true;host.ui.append(panel);
  const drawable=g=>[...(g?.querySelectorAll(selector)||[])].filter(e=>!e.closest('defs,clipPath,mask,marker,pattern')&&!e.hasAttribute('data-component-hit'));
@@ -23,7 +23,7 @@ window.FigurePrimitiveEdit={mount(api,host){
  function add(tag,a){const el=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(a))el.setAttribute(k,v);el.setAttribute('data-primitive-overlay','true');api.overlay.append(el);return el;}
  function draw(){
   api.overlay.querySelectorAll('[data-primitive-overlay]').forEach(e=>e.remove());current=target();const sig=api.read().selection.join('|');
-  if(selection!==sig){selection=sig;index=0;current=target();active=!!current&&api.read().nodes[sig]?.type==='leaf';panel.dataset.signature='';}
+  if(selection!==sig){selection=sig;index=0;current=target();const node=api.read().nodes[sig];active=!!current&&(directMode||node?.type==='leaf'||node?.template?.id?.startsWith('foundation-'));panel.dataset.signature='';}
   button.hidden=!current;button.disabled=!!current&&!M.movable(api.read(),[current.id]);button.setAttribute('aria-pressed',String(active));
   panel.hidden=!current||!active||host.editing()||!!gesture;
   const leaves=api.read().selection.flatMap(id=>[id,...M.descendants(api.read(),id)]).filter(id=>api.read().nodes[id]?.type==='leaf'),elements=leaves.flatMap(id=>drawable(api.dom(id)));
@@ -93,7 +93,10 @@ window.FigurePrimitiveEdit={mount(api,host){
  },true);
  function finish(e,cancel=false){if(!gesture)return;e?.stopImmediatePropagation();const g=gesture;gesture=null;if(cancel||!g.changed)api.restore(g.before);else api.commit(g.before);if(e&&svg.hasPointerCapture(e.pointerId))svg.releasePointerCapture(e.pointerId);host.update();draw();}
  svg.addEventListener('pointerup',e=>finish(e),true);svg.addEventListener('pointercancel',e=>finish(e,true),true);
- document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select')||document.querySelector('dialog[open]'))return;if(gesture){e.preventDefault();e.stopImmediatePropagation();if(e.key==='Escape')finish(null,true);return;}if(!e.ctrlKey&&!e.metaKey&&e.key.toLowerCase()==='a'&&current){e.preventDefault();button.click();}if(e.key.toLowerCase()==='v'&&active){active=false;host.update();draw();}},true);
+ window.addEventListener('figure-edit-tool',e=>{directMode=e.detail==='direct';active=directMode&&!!current;if(directMode&&current){api.select([current.id],'primitive');active=true;}host.update();draw();});
+ // In direct-selection mode, hit the actual SVG shape, including shapes sharing a leaf.
+ svg.addEventListener('pointerdown',e=>{if(!directMode||e.button!==0||e.target.closest('[data-editor]')||document.querySelector('.drawing-mode'))return;const el=e.target.closest(selector),leaf=el?.closest('[data-type="leaf"]');if(!leaf||!drawable(leaf).includes(el)||e.shiftKey)return;const id=leaf.dataset.id,part=drawable(leaf).indexOf(el);api.select([id],'primitive');index=part;active=true;draw();},true);
+ document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable="true"]')||document.querySelector('dialog[open]'))return;if(gesture){e.preventDefault();e.stopImmediatePropagation();if(e.key==='Escape')finish(null,true);return;}},true);
  panel.addEventListener('change',e=>{const el=e.target;if(el.dataset.primitivePart){index=Number(el.value);panel.dataset.signature='';draw();return;}if(el.dataset.primitiveField){const key=el.dataset.primitiveField,value=Number(el.value)/fieldScale(key);if(!Number.isFinite(value)||key!=='letter-spacing'&&value<0)return;const attrs={[key]:value};if(current.shape.tag==='rect')attrs[key]=Math.min(value,Number(current.shape.a[key==='rx'?'width':'height'])/2);el.dataset.initial=el.value;changeAttrs(attrs);}if(el.hasAttribute('data-line-pattern'))changeAttrs({'stroke-dasharray':el.value||'none'});if(el.hasAttribute('data-line-cap'))changeAttrs({'stroke-linecap':el.value});if(el.hasAttribute('data-text-align'))changeAttrs({'text-anchor':el.value});if(el.hasAttribute('data-image-fit'))changeAttrs({preserveAspectRatio:el.value});});
  panel.addEventListener('focusout',e=>{if(e.target.hasAttribute('data-primitive-field')&&e.target.value!==e.target.dataset.initial)e.target.dispatchEvent(new Event('change',{bubbles:true}));});
  panel.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();e.target.blur();}});

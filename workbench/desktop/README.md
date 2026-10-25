@@ -1,6 +1,6 @@
 # Figure Studio 桌面版
 
-Windows x64 免安装应用。双击 `Figure-Studio-0.5.0-Windows-x64.exe` 启动；无需另装 Node.js 或手动启动服务。
+Windows x64 免安装应用。双击 `Figure-Studio-0.5.1-Windows-x64.exe` 启动；无需另装 Node.js 或手动启动服务。
 
 ## 使用
 
