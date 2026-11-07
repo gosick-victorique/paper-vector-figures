@@ -24,9 +24,10 @@ window.FigureContextMenu={mount(api){
   if(has)add('添加修改意见…',()=>api.panel('comment'));
   sep();
   if(has){
-   add('编辑文字',action('text'),editable&&all.some(id=>api.dom(id)?.querySelector('text')),'Enter');
+   const formula=single?.equation||single?.equationContent;
+   add(formula?'编辑公式':single?.chart||single?.chartContent?'编辑图表':'编辑文字',formula?()=>window.dispatchEvent(new Event('figure-equation-edit')):action('text'),editable&&(!!formula||all.some(id=>api.dom(id)?.querySelector('text'))),'Enter');
    add('尺寸与样式…',()=>api.panel('style'),editable);
-   add('拆分图元',action('split'),editable&&single?.type==='leaf');
+   add('拆分图元',action('split'),editable&&single?.type==='leaf'&&!single.chartContent&&!single.equationContent);
    sep();
    add('剪切',()=>{if(copy())api.action('delete');},editable&&!hasWire,'Ctrl X');
    add('复制',copy,!hasWire,'Ctrl C');

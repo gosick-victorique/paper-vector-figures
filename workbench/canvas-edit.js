@@ -83,6 +83,7 @@ window.FigureCanvasEdit={mount(api){
  svg.addEventListener('pointerup',e=>finish(e),true);svg.addEventListener('pointercancel',e=>finish(e,true),true);
  function editText(target){
   const leaf=target.closest('[data-type="leaf"]'),id=leaf?.dataset.id;if(!id||M.locked(api.read(),id))return;
+  if(api.read().nodes[id]?.chartContent){window.dispatchEvent(new Event('figure-chart-edit'));return;}
   const index=[...leaf.querySelectorAll('text')].indexOf(target);api.select([id],'primitive');const fresh=api.dom(id).querySelectorAll('text')[index];if(!fresh)return;
   const r=fresh.getBoundingClientRect(),v=viewport.getBoundingClientRect(),style=getComputedStyle(fresh),matrix=fresh.getScreenCTM(),original=FigureCanvasText.read(fresh),visibility=fresh.style.visibility;
   fresh.style.visibility='hidden';
@@ -114,7 +115,7 @@ window.FigureCanvasEdit={mount(api){
  ui.addEventListener('change',e=>commitControl(e.target));
  ui.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input[type=number]')){e.preventDefault();e.target.blur();}});
  const actions={
-  text(){const text=ids().flatMap(id=>[...api.dom(id).querySelectorAll('text')])[0];if(text)editText(text);},
+  text(){const s=api.read(),sel=ids();if(sel.length===1&&(s.nodes[sel[0]].equation||s.nodes[sel[0]].equationContent)){window.dispatchEvent(new Event('figure-equation-edit'));return;}const text=sel.flatMap(id=>[...api.dom(id).querySelectorAll('text')])[0];if(text)editText(text);},
   duplicate(){transaction(s=>{const map=E.duplicate(s,ids());if(map)api.remapCopies(map);return !!map;});},
   delete(){transaction(s=>E.remove(s,ids()));},front(){transaction(s=>E.layer(s,ids(),true));},back(){transaction(s=>E.layer(s,ids(),false));},
   lock(){document.querySelector('#lock').click();},split(){document.querySelector('#object-split').click();},

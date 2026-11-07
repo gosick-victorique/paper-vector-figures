@@ -1,7 +1,7 @@
 (() => {
  'use strict';
  const $=s=>document.querySelector(s), workspace=$('.workspace'), left=$('.sidebar'), right=$('.inspector');
- const names=['properties','assets','connections','ai'], labels=['属性','素材','连线','AI 设置'];
+ const names=['properties','connections','ai'], labels=['属性','连线','AI 设置'];
  const key='figure-workbench-layout-v1', defaults={leftWidth:220,rightWidth:338,leftClosed:false,rightClosed:false,commentsClosed:false,panel:'properties'};
  let saved={};try{saved=JSON.parse(localStorage.getItem(key))||{};}catch{}
  const state={...defaults,leftClosed:window.innerWidth<=1000,rightClosed:window.innerWidth<=700};
@@ -19,10 +19,10 @@
  const leftToggle=toggleButton('left',left),rightToggle=toggleButton('right',right);
  const rail=document.createElement('nav');rail.className='project-rail';rail.setAttribute('aria-label','项目快捷栏');
  [['项目','▤','.paper-card'],['图层','▱','#layers'],['版本','◷','#versions']].forEach(([label,glyph,target])=>{const b=document.createElement('button');b.textContent=glyph;b.title=label;b.setAttribute('aria-label','展开'+label);b.onclick=()=>{state.leftClosed=false;apply();persist();$(target).scrollIntoView({block:'nearest'});};rail.append(b);});left.append(rail);
- names.forEach((name,i)=>{const b=$('#inspector-tab-'+name);b.innerHTML=symbols[i]+`<span>${labels[i]}</span>`;b.title=labels[i];b.setAttribute('aria-label',labels[i]);});
- function showPanel(name){if(!names.includes(name))return;state.panel=name;state.rightClosed=false;focus=false;apply();persist();}
+ names.forEach((name,i)=>{const b=$('#inspector-tab-'+name);b.innerHTML=symbols[[0,2,3][i]]+`<span>${labels[i]}</span>`;b.title=labels[i];b.setAttribute('aria-label',labels[i]);});
+ function showPanel(name){if(name==='assets'){window.dispatchEvent(new Event('figure-open-assets'));return;}if(!names.includes(name))return;state.panel=name;state.rightClosed=false;focus=false;apply();persist();}
  $('.inspector-nav').addEventListener('click',e=>{const b=e.target.closest('[data-inspector]');if(b)showPanel(b.dataset.inspector);});
- $('.inspector-nav').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key))return;const current=names.indexOf(e.target.dataset.inspector);if(current<0)return;e.preventDefault();e.stopPropagation();const i=e.key==='Home'?0:e.key==='End'?3:(current+(['ArrowRight','ArrowDown'].includes(e.key)?1:-1)+4)%4;showPanel(names[i]);$('#inspector-tab-'+names[i]).focus();});
+ $('.inspector-nav').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'].includes(e.key))return;const current=names.indexOf(e.target.dataset.inspector);if(current<0)return;e.preventDefault();e.stopPropagation();const i=e.key==='Home'?0:e.key==='End'?names.length-1:(current+(['ArrowRight','ArrowDown'].includes(e.key)?1:-1)+names.length)%names.length;showPanel(names[i]);$('#inspector-tab-'+names[i]).focus();});
  const commentToggle=document.createElement('button');commentToggle.id='comments-toggle';commentToggle.setAttribute('aria-controls','comment-list');$('.comment-board .section-heading').append(commentToggle);
  commentToggle.onclick=()=>{state.commentsClosed=!state.commentsClosed;apply();persist();};
  const focusButton=document.createElement('button');focusButton.id='focus-canvas';focusButton.title='专注画布 · Esc 退出';$('.toolbar-meta').append(focusButton);

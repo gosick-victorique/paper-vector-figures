@@ -13,6 +13,7 @@ function bbox(el){const b=el.getBBox();return{x:b.x,y:b.y,w:Math.max(1,b.width),
 initial=FigureScene.blank();state=M.clone(initial);
 try{workspace=W.load(JSON.parse(localStorage.getItem(storeKey)),initial,FigurePatch.validateScene);}catch{workspaceLoadFailed=true;workspace=W.load(null,initial,FigurePatch.validateScene);}
 state=M.clone(W.current(workspace).state);versions=M.clone(W.current(workspace).versions||[]);
+ for(const n of Object.values(state.nodes))if(n.chartContent&&state.nodes[n.parent]?.chart&&!n.markup?.includes('data-chart-part')){try{n.markup=FigureCharts.replaceMarkup(n.markup,FigureCharts.render(state.nodes[n.parent].chart).markup);}catch{}}
 state.selection=M.roots(state,state.selection.map(id=>M.idAtLevel(state,id,mode)).filter(Boolean));
 const groupTargets=se('g',{'data-editor':'true',id:'group-targets'},svg),scene=se('g',{id:'scene','font-family':'Arial, Helvetica, sans-serif','stroke-linejoin':'round','stroke-linecap':'round'},svg),overlay=se('g',{'data-editor':'true'},svg);
 let dom={},renderedMode=null;
@@ -110,7 +111,7 @@ function measureLeaf(id){const n=state.nodes[id],g=dom[id];if(!g||n.type!=='leaf
 function leafMarkup(n){return n.markup||assets[n.asset]?.markup||'';}
 for(const axis of ['width','height'])$('#object-'+axis).oninput=()=>{if(!$('#object-ratio').checked)return;const b=M.selectionBounds(state),v=Number($('#object-'+axis).value);if(b.w&&b.h)$('#object-'+(axis==='width'?'height':'width')).value=Number((axis==='width'?v*b.h/b.w:v*b.w/b.h).toFixed(2));};
 $('#object-resize').onclick=()=>{change(()=>{const ok=FigureObjectEdit.resize(state,selected(),Number($('#object-width').value),Number($('#object-height').value),leafMarkup);if(!ok)toast('尺寸无效、超出画布或选区已锁定');return ok;});};
-function paintSelected(options){change(()=>{if(!selected().length||selected().some(id=>[id,...M.descendants(state,id)].some(k=>M.locked(state,k))))return false;for(const id of FigureObjectEdit.leaves(state,selected())){const n=state.nodes[id];if(n.connection){if(options.stroke)n.connection.color=options.stroke;if(options.strokeWidth!=null)n.connection.width=options.strokeWidth;if(options.opacity!=null)n.connection.opacity=options.opacity;n.customPaint=true;continue;}const container=document.createElementNS(NS,'g');container.innerHTML=leafMarkup(n);if(n.appearance){FigureObjectEdit.paint(container,n.appearance);delete n.appearance;}let wrapper=container;if(container.children.length===1&&container.firstElementChild.hasAttribute('data-object-paint'))wrapper=container.firstElementChild;wrapper.setAttribute('data-object-paint','true');FigureObjectEdit.paint(wrapper,options);n.markup=new XMLSerializer().serializeToString(wrapper);n.customPaint=true;}return true;});}
+function paintSelected(options){change(()=>{if(!selected().length||selected().some(id=>[id,...M.descendants(state,id)].some(k=>M.locked(state,k))))return false;for(const id of FigureObjectEdit.leaves(state,selected())){const n=state.nodes[id];if(n.equationContent&&state.nodes[n.parent]?.equation&&/^#[0-9a-f]{6}$/i.test(options.fill||''))state.nodes[n.parent].equation.color=options.fill;if(n.connection){if(options.stroke)n.connection.color=options.stroke;if(options.strokeWidth!=null)n.connection.width=options.strokeWidth;if(options.opacity!=null)n.connection.opacity=options.opacity;n.customPaint=true;continue;}const container=document.createElementNS(NS,'g');container.innerHTML=leafMarkup(n);if(n.appearance){FigureObjectEdit.paint(container,n.appearance);delete n.appearance;}let wrapper=container;if(container.children.length===1&&container.firstElementChild.hasAttribute('data-object-paint'))wrapper=container.firstElementChild;wrapper.setAttribute('data-object-paint','true');FigureObjectEdit.paint(wrapper,options);n.markup=new XMLSerializer().serializeToString(wrapper);n.customPaint=true;}return true;});}
 $('#object-split').onclick=()=>{const ids=selected();if(ids.length!==1||state.nodes[ids[0]].type!=='leaf'){toast('请在图元模式选中一个含多个形状的图元');return;}const id=ids[0],n=state.nodes[id];if(n.connection){toast('绑定连线请通过模块接口调整');return;}if(!M.movable(state,ids)||state.comments.some(c=>c.targets.includes(id))){toast('请先解除锁定并处理该图元上的意见');return;}const pieces=[...dom[id].querySelectorAll('path,rect,circle,ellipse,line,polygon,polyline,text,image')].filter(e=>!e.closest('defs,clipPath,mask,marker'));if(pieces.length<2){toast('这个图元已经是单个形状');return;}if(dom[id].querySelector('defs,clipPath,mask,filter')||dom[id].querySelector('[clip-path],[mask],[filter]')){toast('含裁剪或特效，暂不支持拆分');return;}change(()=>{const parentWorld=n.parent?M.world(state,n.parent):{x:0,y:0,scale:1},newNodes=[];for(const e of pieces){const matrix=svg.getScreenCTM().inverse().multiply(e.getScreenCTM()),b=M.transformBox(bbox(e),matrix),copy=e.cloneNode(true);for(const attr of ['fill','fill-opacity','stroke','stroke-opacity','stroke-width','stroke-linejoin','stroke-linecap','font-size','font-family','font-weight','text-anchor'])copy.setAttribute(attr,getComputedStyle(e).getPropertyValue(attr));let opacity=1;for(let ancestor=e;ancestor&&ancestor!==dom[id];ancestor=ancestor.parentElement)opacity*=Number(getComputedStyle(ancestor).opacity)||0;copy.setAttribute('opacity',opacity);copy.removeAttribute('transform');const local=`matrix(${matrix.a/parentWorld.scale} ${matrix.b/parentWorld.scale} ${matrix.c/parentWorld.scale} ${matrix.d/parentWorld.scale} ${(matrix.e-parentWorld.x)/parentWorld.scale} ${(matrix.f-parentWorld.y)/parentWorld.scale})`,x=(b.x-parentWorld.x)/parentWorld.scale,y=(b.y-parentWorld.y)/parentWorld.scale,leafId='split-element-'+state.nextId++;newNodes.push({id:leafId,parent:n.parent,type:'leaf',kind:e.localName,name:e.localName==='text'?e.textContent:'拆分 · '+e.localName,x,y,w:b.w/parentWorld.scale,h:b.h/parentWorld.scale,originX:x,originY:y,scale:1,locked:false,customPaint:true,markup:`<g transform="${local}">${new XMLSerializer().serializeToString(copy)}</g>`});}const ordered={};for(const[k,v]of Object.entries(state.nodes)){if(k===id)newNodes.forEach(n=>ordered[n.id]=n);else ordered[k]=v;}state.nodes=ordered;state.selection=newNodes.map(n=>n.id);mode='primitive';});toast('图元已拆分');};
 $('#object-set-fill').onclick=()=>paintSelected({fill:$('#object-fill').value});$('#object-no-fill').onclick=()=>paintSelected({fill:'none'});
 $('#object-set-stroke').onclick=()=>paintSelected({stroke:$('#object-stroke').value});$('#object-set-text').onclick=()=>paintSelected({textColor:$('#object-text-color').value});
@@ -178,6 +179,43 @@ mountPaperInspiration($('#inspiration-gallery'),{
 // Agent integration uses the same scene model and undo stack as manual editing.
 $('#purpose').onchange=()=>{state.purpose=$('#purpose').value;renderUI();persist();};
 window.FigureBoard={
+ saveEquation(id,config,result){
+  const old=id?state.nodes[id]:null;if(id&&!old?.equation)throw Error('公式不存在');if(!M.movable(state,[id||'custom']))throw Error('公式或分组已锁定');
+  if(!result?.markup||![result.w,result.h].every(v=>Number.isFinite(v)&&v>0))throw Error('公式渲染无效');
+  const next=M.clone(state),componentId=id||'equation-component-'+next.nextId++;
+  if(!old){const p=M.world(next,'custom');next.nodes[componentId]={id:componentId,parent:'custom',type:'component',kind:'equation',name:'公式',x:(Math.max(0,Math.min(480,1200-result.w))-p.x)/p.scale,y:(Math.max(0,Math.min(300,740-result.h))-p.y)/p.scale,w:result.w,h:result.h,scale:1/p.scale,locked:false};}
+  const n=next.nodes[componentId],previous=Object.values(next.nodes).find(v=>v.parent===componentId&&v.equationContent),leafId=previous?.id||'equation-element-'+next.nextId++;
+  let markup=result.markup;
+  if(previous){const holder=se('g');holder.innerHTML=leafMarkup(state.nodes[leafId]);const original=holder.querySelector('svg'),fresh=se('g');fresh.innerHTML=markup;if(!original)throw Error('公式图元已改变，请重新插入');for(const attr of ['x','y','transform'])if(original.hasAttribute(attr))fresh.firstElementChild.setAttribute(attr,original.getAttribute(attr));original.replaceWith(fresh.firstElementChild);markup=holder.innerHTML;}
+  const leaf={id:leafId,parent:componentId,type:'leaf',kind:'svg',name:'公式',x:0,y:0,originX:0,originY:0,w:result.w,h:result.h,scale:1,locked:false,customPaint:true,...previous,equationContent:true,markup};delete leaf.appearance;
+  const scratch=se('g',{visibility:'hidden','pointer-events':'none'},svg);scratch.innerHTML=markup;const bounds=bbox(scratch);scratch.remove();leaf.x+=(bounds.x-(leaf.originX||0))*leaf.scale;leaf.y+=(bounds.y-(leaf.originY||0))*leaf.scale;leaf.originX=bounds.x;leaf.originY=bounds.y;leaf.w=bounds.w;leaf.h=bounds.h;
+  next.nodes[leafId]=leaf;n.equation=M.clone(config);n.name='公式 · '+String(config.source).slice(0,32);n.w=Math.max(1,leaf.x+leaf.w*leaf.scale);n.h=Math.max(1,leaf.y+leaf.h*leaf.scale);
+  const b=M.bounds(next,componentId);if(b.w>1200||b.h>740)throw Error('公式超出画板，请减小字号');M.move(next,[componentId],0,0);next.selection=[componentId];
+  drawController?.activate(null);change(()=>{state=next;mode='component';expanded.add(n.parent);});
+ },
+ arrangeCharts(ids,options){
+  ids=[...new Set(ids)];if(ids.some(id=>!state.nodes[id]?.chart))throw Error('请选择数据图表');
+  if(!M.movable(state,ids))throw Error('所选图表包含锁定对象');
+  const panels=FigureCharts.layout(ids.map(id=>state.nodes[id].chart),options),box=M.union(ids.map(id=>M.bounds(state,id))),width=Number(options.widthMm)*FigureCharts.unitsPerMm,height=Number(options.heightMm)*FigureCharts.unitsPerMm;
+  const x=Math.max(0,Math.min(box.x,1200-width)),y=Math.max(0,Math.min(box.y,740-height));
+  change(()=>{panels.forEach((p,i)=>writeSizedChart(state.nodes[ids[i]],p.config,p.result,x+p.x,y+p.y));state.selection=ids;mode='component';});
+ },
+ saveChart(id,config){
+  const result=FigureCharts.render(config),old=id?state.nodes[id]:null,resize=!!(config.publication||old?.chart?.publication);
+  if(id&&!old?.chart)throw Error('图表不存在');
+  if(M.locked(state,id||'custom')||old&&!M.movable(state,[id]))throw Error('图表已锁定');
+  drawController?.activate(null);
+  change(()=>{const componentId=id||'chart-component-'+state.nextId++;
+   if(!old)state.nodes[componentId]={id:componentId,parent:'custom',type:'component',kind:'chart',name:config.title||'数据图表',x:290,y:160,w:result.w,h:result.h,scale:1,locked:false};
+   const n=state.nodes[componentId];n.chart=M.clone(config);n.name=config.title||'数据图表';
+   if(resize){const p=M.world(state,componentId);writeSizedChart(n,config,result,Math.max(0,Math.min(p.x,1200-result.w)),Math.max(0,Math.min(p.y,740-result.h)));state.selection=[componentId];mode='component';expanded.add('custom');return;}
+   const leaf=Object.values(state.nodes).find(x=>x.parent===componentId&&x.chartContent),leafId=leaf?.id||'chart-element-'+state.nextId++;
+   let markup=result.markup;
+   if(leaf)markup=FigureCharts.replaceMarkup(leaf.markup,markup);
+   state.nodes[leafId]={id:leafId,parent:componentId,type:'leaf',kind:'svg',name:'图表数据',x:0,y:0,w:result.w,h:result.h,scale:1,locked:false,customPaint:true,chartContent:true,...leaf,markup};
+   state.selection=[componentId];mode='component';expanded.add('custom');
+  });
+ },
  setDocument(document){state.document={...state.document,...document};$('#project-title').textContent=state.document.title||'未命名';$('#paper-name').textContent=state.document.title||'未命名';persist();},
  editConnection(id,connection){
   const old=id?state.nodes[id]:null;
@@ -238,6 +276,11 @@ window.FigureBoard={
  },
  showTask,toast
 };
+function writeSizedChart(n,config,result,x,y){
+ const parent=n.parent?M.world(state,n.parent):{x:0,y:0,scale:1};n.x=(x-parent.x)/parent.scale;n.y=(y-parent.y)/parent.scale;n.scale=1/parent.scale;n.w=result.w;n.h=result.h;n.chart=M.clone(config);n.name=config.title||'数据图表';
+ const old=Object.values(state.nodes).find(v=>v.parent===n.id&&v.chartContent),id=old?.id||'chart-element-'+state.nextId++;
+ state.nodes[id]={id,parent:n.id,type:'leaf',kind:'svg',name:'图表数据',x:0,y:0,originX:0,originY:0,w:result.w,h:result.h,scale:1,locked:false,customPaint:true,chartContent:true,markup:result.markup};
+}
 render();renderTemplates();FigureCanvasView.mount();
 drawController=FigureCanvasDraw.mount({svg,toast,
  choose(id){templateId=id;const t=T.catalog.find(t=>t.id===id);$('#template-label').value=t.label||'';renderTemplates();drawController.activate(t);},

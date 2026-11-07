@@ -12,6 +12,7 @@ window.FigurePrimitiveEdit={mount(api,host){
   return children.find(n=>['path','line'].includes(drawable(api.dom(n.id))[0]?.localName));
  }
  function target(){const s=api.read(),ids=M.roots(s,s.selection);if(ids.length!==1)return null;let n=s.nodes[ids[0]],parts=[];
+  if(n.chart||n.chartContent||n.equation||n.equationContent)return null;
   if(n.type==='component'){const children=Object.values(s.nodes).filter(c=>c.parent===n.id);if(isConnector(n)){const shaft=connectorShaft(children);parts=[shaft,...children.filter(c=>c!==shaft)].filter(Boolean).flatMap(c=>drawable(api.dom(c.id)).map(el=>({id:c.id,el})));}
    else parts=M.descendants(s,n.id).filter(id=>s.nodes[id].type==='leaf'&&!s.nodes[id].connection).flatMap(id=>drawable(api.dom(id)).map(el=>({id,el})));}
   if(!parts.length){if(n.type!=='leaf'||n.connection)return null;parts=drawable(api.dom(n.id)).map(el=>({id:n.id,el}));}

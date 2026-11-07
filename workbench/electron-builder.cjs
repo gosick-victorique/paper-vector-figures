@@ -2,7 +2,7 @@ module.exports={
  appId:'org.figurestudio.workbench',productName:'Figure Studio',asar:false,npmRebuild:false,
  directories:{output:'desktop-dist'},
  files:[
-  'package.json','*.js','*.css','index.html','desktop/main.cjs','desktop/icon.png',
+  'package.json','*.js','*.css','index.html','desktop/main.cjs','desktop/icon.png','vendor/**/*',
   'agent/*.mjs','agent/*.cjs','agent/patch-contract.js','agent/client.js','agent/panel.css','agent/prompts/*.md',
   'external-icons/index.html','external-icons/catalog.js','external-icons/manifest.json','external-icons/svg/**/*','external-icons/licenses/**/*','external-icons/README.md',
   'foundations/*.svg','foundations/index.html','foundations/manifest.json',

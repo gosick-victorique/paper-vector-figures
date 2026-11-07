@@ -18,7 +18,7 @@
   function finish(e,cancel=false){if(!panning||e.pointerId!==panning.id)return;e.stopImmediatePropagation();if(cancel)view=panning.before;if(viewport.hasPointerCapture(e.pointerId))viewport.releasePointerCapture(e.pointerId);panning=null;draw();}
   viewport.addEventListener('pointerup',e=>finish(e),true);viewport.addEventListener('pointercancel',e=>finish(e,true),true);
   viewport.addEventListener('auxclick',e=>{if(e.button===1)e.preventDefault();});
-  const typing=e=>e.target.closest('input,textarea,select,[contenteditable="true"]')||document.querySelector('dialog[open]');
+  const typing=e=>e.target.closest('input,textarea,select,[contenteditable="true"],.app-menus')||document.querySelector('dialog[open]');
   document.addEventListener('keydown',e=>{if(typing(e))return;if(e.code==='Space'){e.preventDefault();space=true;draw();}if(e.key==='Escape'){space=false;hand=false;draw();}if(!e.ctrlKey&&!e.metaKey&&['+','=','-','0'].includes(e.key)){e.preventDefault();e.key==='0'?fit():zoom(view.z*(e.key==='-'?1/1.2:1.2));}},true);
   document.addEventListener('keyup',e=>{if(e.code==='Space'){space=false;draw();}});
   window.addEventListener('blur',()=>{space=false;panning=null;draw();});
