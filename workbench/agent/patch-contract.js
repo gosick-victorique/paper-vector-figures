@@ -4,7 +4,7 @@
  const fields=new Set(['x','y','w','h','scale','originX','originY','name','markup','textOverride','appearance']);
  const numeric=new Set(['x','y','w','h','scale','originX','originY']);
  function stable(v){if(Array.isArray(v))return '['+v.map(stable).join(',')+']';if(v&&typeof v==='object')return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}';return JSON.stringify(v);}
- function revision(state){return stable({nodes:state.nodes,palette:state.palette,comments:state.comments});}
+ function revision(state){return stable({nodes:state.nodes,palette:state.palette,comments:state.comments,canvas:M.canvas(state)});}
  function validateAppearance(a){const keys=['fill','stroke','textColor','strokeWidth','opacity'];if(!a||Array.isArray(a)||typeof a!=='object'||Object.keys(a).some(k=>!keys.includes(k)))throw Error('外观参数无效');for(const[k,v]of Object.entries(a)){if(['fill','stroke','textColor'].includes(k)&&!(typeof v==='string'&&/^(#[0-9a-f]{6}|none)$/i.test(v)))throw Error('颜色参数无效');if(k==='strokeWidth'&&(!Number.isFinite(v)||v<0||v>20)||k==='opacity'&&(!Number.isFinite(v)||v<0||v>1))throw Error('外观数值无效');}}
  function validateScene(nodes){
   if(!nodes||Array.isArray(nodes)||typeof nodes!=='object'||Object.keys(nodes).length>5000)throw Error('图稿结构无效');
@@ -75,7 +75,7 @@
   if(mode==='generate')for(const n of Object.values(next.nodes))if(!base.nodes[n.id]&&n.type==='component'&&!Object.values(next.nodes).some(c=>c.parent===n.id&&c.type==='leaf'))throw Error('生成的组件缺少图元');
   if(mode==='redraw')for(const id of scope){const a=M.bounds(base,id),b=M.bounds(next,id);if(b.x<a.x-1||b.y<a.y-1||b.x+b.w>a.x+a.w+1||b.y+b.h>a.y+a.h+1)throw Error('局部重绘超出原选区边界，请使用重新排布或调整选区');}
   const C=typeof module==='object'?require('../connections.js'):globalThis.FigureConnections;C?.sync(next);for(const n of Object.values(base.nodes))if(n.connection&&M.locked(base,n.id)&&stable(n)!==stable(next.nodes[n.id]))throw Error('绑定连线已锁定，不能移动关联接口');
-  const vb=task.canvas?.viewBox||[0,0,1200,740];
+  const vb=M.canvas(task).viewBox;
   for(const id of allowed){if(!next.nodes[id]||stable(next.nodes[id])===stable(base.nodes[id]))continue;const b=M.bounds(next,id);if(b.x<vb[0]-1||b.y<vb[1]-1||b.x+b.w>vb[0]+vb[2]+1||b.y+b.h>vb[1]+vb[3]+1)throw Error('修改后对象超出画布：'+id);}
   next.selection=(next.selection||[]).filter(id=>!removed.has(id));
   return next;

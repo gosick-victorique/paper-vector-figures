@@ -13,7 +13,7 @@ window.FigureEquation=(()=>{
   if(container.querySelector('[data-mml-node="merror"]'))throw Error('公式语法有误');const original=container.querySelector('svg');if(!original)throw Error('公式无法渲染');
   const svg=original.cloneNode(true),vb=svg.getAttribute('viewBox').split(/\s+/).map(Number);if(vb.length!==4||!vb.every(Number.isFinite)||vb[2]<=0||vb[3]<=0)throw Error('公式没有可见内容');
   const size=fontPt*25.4/72*(1200/180),w=vb[2]/1000*size,h=vb[3]/1000*size;
-  if(w>1200||h>740)throw Error('公式超出画板，请减小字号或分行');
+  if(w>3333.334||h>3333.334)throw Error('公式超出画板，请减小字号或分行');
   const allowed=new Set(['svg','g','path','rect','line','polygon','polyline','circle','ellipse','text','tspan','title','desc']);
   for(const el of [svg,...svg.querySelectorAll('*')]){
    if(!allowed.has(el.localName)){el.remove();continue;}

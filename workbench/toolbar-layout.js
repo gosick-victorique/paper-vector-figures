@@ -11,8 +11,8 @@
  function item(m,label,run,key=''){const b=document.createElement('button');b.textContent=label;if(key){const k=document.createElement('kbd');k.textContent=key;b.append(k);}b.setAttribute('role','menuitem');b.onclick=run;m.popup.append(b);return b;}
  function move(m,selector,label){const b=$(selector);if(!b)return;b.setAttribute('role','menuitem');if(label)b.textContent=label;m.popup.append(b);return b;}
  function sep(m){const el=document.createElement('div');el.className='app-menu-separator';el.setAttribute('role','separator');m.popup.append(el);}
- const file=menu('文件');move(file,'#new-board','新建画板');move(file,'#rename-board','重命名画板');move(file,'#save-version');sep(file);
- item(file,'导入画板…',()=>$('#agent-board-import').click());move(file,'#agent-board-export','下载画板');sep(file);move(file,'#reset-view');$('.project-files').hidden=true;
+ const file=menu('文件');move(file,'#new-board','新建画板');move(file,'#rename-board','重命名画板');move(file,'#canvas-settings-open');move(file,'#save-version');item(file,'导入论文正文…',()=>$('#agent-paper-file').click());sep(file);
+ move(file,'#figure-review-open');move(file,'#evidence-review-open');move(file,'#export-figure');sep(file);move(file,'#backup-project');move(file,'#restore-project');sep(file);item(file,'导入单张画板…',()=>$('#agent-board-import').click());move(file,'#agent-board-export','下载单张画板 JSON');sep(file);move(file,'#reset-view');$('.project-files').hidden=true;
  const insert=menu('插入');move(insert,'#import-media','图片 / SVG…');move(insert,'#new-chart','数据图表…');move(insert,'#new-equation','LaTeX 公式…');sep(insert);item(insert,'素材库',()=>openLeft('assets'));
  const arrange=menu('排列'),proxies=[];
  for(const [key,label]of [['left','左对齐'],['center','水平居中'],['right','右对齐'],['top','顶对齐'],['middle','垂直居中'],['bottom','底对齐'],['distribute-x','水平等距分布'],['distribute-y','垂直等距分布']]){const target=$('.canvas-tools [data-align="'+key+'"]');const b=item(arrange,label,()=>target.click());proxies.push([b,target]);}

@@ -9,6 +9,7 @@ app.setName('Figure Studio');
 app.setPath('userData',path.join(app.getPath('appData'),'FigureStudio'));
 const home='figure://studio/';
 const windows=new Set();
+const closingWindows=new WeakSet();
 let backend,baseUrl,mainWindow,quitting=false;
 const writeStatus=data=>fs.writeFile(path.join(app.getPath('userData'),'desktop-status.json'),JSON.stringify({version:app.getVersion(),pid:process.pid,time:new Date().toISOString(),...data},null,2)).catch(()=>{});
 const local=url=>{try{const u=new URL(url);return u.protocol==='figure:'&&u.hostname==='studio'&&!u.port&&!u.username&&!u.password;}catch{return false;}};
@@ -22,12 +23,25 @@ async function createWindow(url=home,primary=false){
  win.webContents.setWindowOpenHandler(({url})=>{if(local(url))void createWindow(url).catch(reportError);else void openExternal(url);return{action:'deny'};});
  win.webContents.on('will-navigate',(event,url)=>{if(!local(url)){event.preventDefault();void openExternal(url);}});
  win.webContents.on('will-attach-webview',event=>event.preventDefault());
- win.on('close',()=>{if(primary&&!win.isDestroyed()){const b=win.getNormalBounds();void fs.writeFile(path.join(app.getPath('userData'),'window.json'),JSON.stringify({width:b.width,height:b.height})).catch(()=>{});}});
+ win.on('close',event=>{
+  if(win.isDestroyed())return;
+  if(primary){const b=win.getNormalBounds();void fs.writeFile(path.join(app.getPath('userData'),'window.json'),JSON.stringify({width:b.width,height:b.height})).catch(()=>{});}
+  if(closingWindows.has(win))return;
+  event.preventDefault();void confirmSaved([win]).then(ok=>{if(ok){closingWindows.add(win);win.close();}});
+ });
  win.on('closed',()=>windows.delete(win));
  win.once('ready-to-show',()=>win.show());
  await win.loadURL(url);if(primary)await writeStatus({state:'ready',origin:home,service:baseUrl});return win;
 }
 function reportError(error){void writeStatus({state:'error'});dialog.showErrorBox('Figure Studio',error?.message||'应用启动失败');}
+async function flushWindow(win){
+ if(win.isDestroyed())return;
+ await win.webContents.executeJavaScript('window.FigureBoard ? window.FigureBoard.flush() : window.FigureBoardReady?.then(() => window.FigureBoard?.flush())');
+}
+async function confirmSaved(targets){
+ try{await Promise.all(targets.map(flushWindow));return true;}
+ catch(error){const result=await dialog.showMessageBox({type:'warning',title:'项目尚未保存',message:'项目保存失败。可返回下载完整项目备份，或放弃本次未保存的修改。',detail:error.message,buttons:['返回备份','放弃未保存修改并关闭'],defaultId:0,cancelId:0});return result.response===1;}
+}
 
 async function start(){
  const root=app.getAppPath();
@@ -58,7 +72,7 @@ async function start(){
   {label:'文件',submenu:[{label:'打开数据目录',click:()=>shell.openPath(app.getPath('userData'))},{type:'separator'},{label:'退出',role:'quit'}]},
   {label:'编辑',submenu:[{label:'剪切',role:'cut'},{label:'复制',role:'copy'},{label:'粘贴',role:'paste'},{label:'全选',role:'selectAll'}]},
   {label:'视图',submenu:[{label:'刷新',role:'reload'},{label:'全屏',role:'togglefullscreen'}]},
-  {label:'帮助',submenu:[{label:'导入网页版画板',click:()=>dialog.showMessageBox({type:'info',title:'导入画板',message:'在网页版下载画板 JSON，然后在桌面版左侧「导入 / 导出」中导入。'})},{label:'关于 Figure Studio',click:()=>dialog.showMessageBox({type:'info',title:'Figure Studio',message:`Figure Studio ${app.getVersion()}`,detail:'论文矢量绘图工作台\n内置英文核心指令与 paper-vector-figures skill。'})}]}
+  {label:'帮助',submenu:[{label:'导入网页版项目',click:()=>dialog.showMessageBox({type:'info',title:'导入项目',message:'在网页版「文件」菜单下载完整项目备份，然后在桌面版「文件 → 导入项目备份」中导入。'})},{label:'关于 Figure Studio',click:()=>dialog.showMessageBox({type:'info',title:'Figure Studio',message:`Figure Studio ${app.getVersion()}`,detail:'论文矢量绘图工作台\n内置英文核心指令与 paper-vector-figures skill。'})}]}
  ]));
  await createWindow(home,true);
 }
@@ -69,9 +83,12 @@ else{
  app.whenReady().then(start).catch(error=>{reportError(error);app.quit();});
  app.on('window-all-closed',()=>app.quit());
  app.on('before-quit',event=>{
-  if(quitting||!backend)return;
-  event.preventDefault();quitting=true;void writeStatus({state:'closed'});
-  const timer=setTimeout(()=>app.exit(),3000);
-  backend.close().finally(()=>{clearTimeout(timer);app.exit();});
+  if(!backend)return;
+  event.preventDefault();if(quitting)return;quitting=true;
+  confirmSaved([...windows]).then(ok=>{
+   if(!ok){quitting=false;return;}
+   void writeStatus({state:'closed'});const timer=setTimeout(()=>app.exit(),3000);
+   backend.close().finally(()=>{clearTimeout(timer);app.exit();});
+  });
  });
 }

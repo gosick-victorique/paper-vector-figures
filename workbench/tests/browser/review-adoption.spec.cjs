@@ -1,0 +1,32 @@
+const {test,expect}=require('@playwright/test');
+async function ready(page){await page.goto('/');await page.waitForFunction(()=>window.FigureReview&&window.FigureAdoption&&document.querySelector('.app-menus'));}
+async function sample(page){await page.evaluate(()=>{FigureBoard.insertComponent({name:'Module',w:200,h:100,leaves:[{type:'leaf',kind:'rect',name:'Box',x:0,y:0,w:200,h:100,originX:0,originY:0,scale:1,locked:false,markup:'<rect width="200" height="100" fill="#416f89"/>'},{type:'leaf',kind:'text',name:'Label',x:15,y:20,w:150,h:30,originX:15,originY:20,scale:1,locked:false,markup:'<text x="15" y="45" font-size="24" fill="white">Before</text>'}]});});}
+async function submit(page,instruction='Change label'){
+ await page.evaluate(()=>{document.querySelector('#agent-url').value='https://example.invalid/v1';document.querySelector('#agent-key').value='browser-test-only';document.querySelector('#agent-model').value='test-model';document.querySelector('#agent-connect').click();});await expect(page.locator('#agent-connection')).toHaveText('已配置');
+ await page.evaluate(()=>FigureAgent.edit('edit'));await page.locator('#agent-instruction').fill(instruction);await page.locator('#agent-preserve-labels').uncheck();const posted=page.waitForResponse(r=>r.url().endsWith('/api/jobs')&&r.request().method()==='POST');await page.locator('#agent-submit').click();await posted;
+}
+test('preflight uses rendered text and bounds, reports limitations and locates objects',async({page},info)=>{
+ await ready(page);await page.evaluate(()=>{
+  const t=FigureBoard.capture();for(const [id,x]of [['one',30],['two',35]])t.scene[id]={id,parent:'custom',type:'leaf',kind:'text',name:id,x,y:40,w:1,h:1,scale:1,locked:false,markup:'<text x="0" y="20" font-size="10" fill="#dddddd">Overlap label</text>'};
+  t.scene.outside={id:'outside',parent:'custom',type:'leaf',kind:'rect',name:'Outside',x:1180,y:300,w:80,h:30,scale:1,locked:false,markup:'<rect width="80" height="30" fill="#416f89"/>'};FigureBoard.importTask(t);
+ });const before=await page.evaluate(()=>FigureBoard.getState());await page.getByRole('button',{name:'文件',exact:true}).click();await page.locator('#figure-review-open').click();await expect(page.locator('#figure-review-status')).toContainText('发现');
+ const list=page.locator('#figure-review-issues');await expect(list).toContainText('超出画板');await expect(list).toContainText('pt');await expect(list).toContainText('可能重叠');await expect(list).toContainText('对比度');expect(await page.evaluate(()=>FigureBoard.getState())).toEqual(before);await page.screenshot({path:info.outputPath('preflight.png')});
+ await list.getByRole('button',{name:/定位：Outside/}).click();await expect(page.locator('#figure-review-dialog')).not.toBeVisible();expect(await page.evaluate(()=>FigureBoard.getState().selection)).toEqual(['outside']);
+ const report=await page.evaluate(async()=>{const s=FigureBoard.snapshot().replace('fill="#dddddd"','fill="url(#pattern)"');return FigureChecks.inspect(s);});expect(report.skipped).toBeGreaterThan(0);
+});
+test('new AI text overlap keeps the preview open and permits explicit adoption',async({page},info)=>{
+ await ready(page);await sample(page);await submit(page,'test-overlap');await expect(page.locator('#agent-state')).toContainText('待核对',{timeout:12000});await expect(page.locator('#agent-checks-list')).toContainText('可能重叠');await expect(page.locator('#agent-adopt')).toBeEnabled();
+ expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.markup?.includes('Alpha')))).toBe(false);await page.screenshot({path:info.outputPath('ai-checks.png')});await page.locator('#agent-close').click();await page.locator('#agent-result-open').click();await expect(page.locator('#agent-checks-list')).toContainText('可能重叠');await page.locator('#agent-adopt').click();await expect(page.locator('#agent-dialog')).not.toBeVisible();expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.markup?.includes('Alpha')))).toBe(true);
+});
+test('unrelated manual edits survive AI adoption, undo and reload',async({page})=>{
+ await ready(page);await sample(page);await submit(page);await page.evaluate(()=>FigureBoard.insertComponent({name:'Manual addition',w:60,h:40,leaves:[{type:'leaf',kind:'rect',name:'Manual box',x:0,y:0,w:60,h:40,originX:0,originY:0,scale:1,locked:false,markup:'<rect width="60" height="40" fill="#ce713a"/>'}]}));
+ await expect(page.locator('#agent-state')).toContainText('未选区域',{timeout:12000});await expect(page.locator('#agent-adopt')).toBeEnabled();await page.locator('#agent-adopt').click();await expect(page.locator('#agent-dialog')).not.toBeVisible();
+ expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.name==='Manual addition'))).toBe(true);expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.textOverride==='Edited'))).toBe(true);
+ await page.evaluate(()=>document.querySelector('#undo').click());expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.name==='Manual addition'))).toBe(true);expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.textOverride==='Edited'))).toBe(false);
+ await page.evaluate(()=>{document.querySelector('#redo').click();return FigureBoard.flush();});await page.reload();await page.waitForFunction(()=>window.FigureReview);expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.name==='Manual addition'))).toBe(true);expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.textOverride==='Edited'))).toBe(true);
+});
+test('selected geometry changed during an AI task is rejected by UI and board API',async({page})=>{
+ await ready(page);await sample(page);await page.evaluate(()=>{window.original=FigureBoard.capture();original.baseRevision='test';});await submit(page);
+ await page.evaluate(()=>{const x=document.querySelector('#position-x');x.value=Number(x.value)+30;x.dispatchEvent(new Event('change'));});const state=await page.evaluate(()=>FigureBoard.getState());
+ await expect(page.locator('#agent-state')).toContainText('关联对象已变化',{timeout:12000});await expect(page.locator('#agent-adopt')).toBeDisabled();expect(await page.evaluate(()=>{try{FigureBoard.adopt({baseRevision:'test',operations:[]},original);}catch(e){return e.message;}})).toContain('已变化');expect(await page.evaluate(()=>FigureBoard.getState())).toEqual(state);
+});

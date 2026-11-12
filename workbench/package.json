@@ -7,18 +7,33 @@
     "test:agent": "node --test agent/*.test.cjs agent/*.test.mjs",
     "desktop:prepare": "node desktop/prepare.cjs",
     "desktop:dev": "node desktop/prepare.cjs && electron .",
-    "desktop:build": "node desktop/prepare.cjs && electron-builder --config electron-builder.cjs --win portable --x64"
+    "desktop:build": "node desktop/prepare.cjs && electron-builder --config electron-builder.cjs --win portable --x64",
+    "test": "node --test *.test.cjs agent/*.test.cjs agent/*.test.mjs",
+    "test:browser": "playwright test",
+    "test:autonomous": "node agent/autonomous-transport-smoke.mjs",
+    "test:review": "node agent/review-transport-smoke.mjs",
+    "eval:prepare": "node agent/evaluate.mjs",
+    "eval:live": "node agent/evaluate.mjs --live"
   },
   "dependencies": {
     "@openai/codex-sdk": "0.163.0",
     "@xmldom/xmldom": "0.8.15",
-    "sharp": "0.35.5"
+    "pdfjs-dist": "6.5.438",
+    "pdfkit": "0.20.2",
+    "playwright-core": "1.65.0",
+    "sharp": "0.35.5",
+    "svg-to-pdfkit": "0.1.8"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.0",
     "electron": "45.0.0",
-    "electron-builder": "26.18.0"
+    "electron-builder": "26.18.0",
+    "fake-indexeddb": "6.2.7"
   },
   "main": "desktop/main.cjs",
   "description": "Editable research figure workbench",
-  "author": "Figure Studio"
+  "author": "Figure Studio",
+  "engines": {
+    "node": ">=22.13.0"
+  }
 }

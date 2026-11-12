@@ -16,7 +16,7 @@ window.FigureCanvasEdit={mount(api){
  <label>线宽<input type="number" data-number="strokeWidth" min="0" max="20" step="0.5" value="1.5"></label><label>不透明度 %<input type="number" data-number="opacity" min="0" max="100" value="100"></label>
  <label>字号<input type="number" data-number="fontSize" min="1" max="300" value="16"></label><label>旋转增量 °<input type="number" data-rotate min="-360" max="360" value="0"></label></div>
  <div class="canvas-actions"><button data-action="no-fill">无填充</button><button data-action="no-stroke">无描边</button><button data-action="rotate">旋转 90°</button></div>
- <div class="canvas-wire" hidden><label>连线路径 <select data-route><option value="elbow">折线</option><option value="straight">直线</option></select></label><button data-action="reverse">反向</button></div></div>
+ <div class="canvas-wire" hidden><label>连线路径 <select data-route><option value="elbow">折线</option><option value="straight">直线</option><option value="avoid">自动避障</option></select></label><button data-action="reverse">反向</button></div></div>
  <div class="canvas-popover" data-popover="arrange" hidden><div class="canvas-arrange-grid" role="group" aria-label="对齐与分布"><button data-align="left">左对齐</button><button data-align="center">水平居中</button><button data-align="right">右对齐</button><button data-align="top">顶对齐</button><button data-align="middle">垂直居中</button><button data-align="bottom">底对齐</button><button data-align="distribute-x">水平等距分布</button><button data-align="distribute-y">垂直等距分布</button></div></div><div class="canvas-popover" data-popover="comment" hidden><textarea rows="3" aria-label="选区修改意见" placeholder="描述要修改的地方"></textarea><button class="primary" data-action="comment">保存意见</button></div>
  <div class="canvas-popover" data-popover="more" hidden><div class="canvas-menu">
  <button data-action="duplicate">复制 <kbd>Ctrl D</kbd></button><button data-action="delete">删除 <kbd>Del</kbd></button>
@@ -77,7 +77,7 @@ window.FigureCanvasEdit={mount(api){
  svg.addEventListener('pointermove',e=>{if(!gesture)return;e.preventDefault();e.stopImmediatePropagation();const g=gesture,p=point(e),s=M.clone(g.before);let ok;
   if(g.handle==='rotate'){const c={x:g.box.x+g.box.w/2,y:g.box.y+g.box.h/2},angle=(Math.atan2(p.y-c.y,p.x-c.x)-Math.atan2(g.p.y-c.y,g.p.x-c.x))*180/Math.PI;ok=E.rotate(s,g.ids,e.shiftKey?Math.round(angle/15)*15:angle,api.markup);}
   else ok=E.resizeBox(s,g.ids,E.handleBox(g.box,g.handle,p.x-g.p.x,p.y-g.p.y,e.shiftKey),api.markup);
-  if(ok){g.changed=true;api.preview(s);}
+  if(ok&&api.preview(s)!==false)g.changed=true;
  },true);
  function finish(e,cancel=false){if(!gesture)return;e?.stopImmediatePropagation();const g=gesture;gesture=null;if(cancel||!g.changed)api.restore(g.before);else api.commit(g.before);if(e&&svg.hasPointerCapture(e.pointerId))svg.releasePointerCapture(e.pointerId);update();}
  svg.addEventListener('pointerup',e=>finish(e),true);svg.addEventListener('pointercancel',e=>finish(e,true),true);
@@ -123,7 +123,7 @@ window.FigureCanvasEdit={mount(api){
   comment(){const value=q('textarea').value.trim();if(!value)return;transaction(s=>!!M.addComment(s,ids(),value));q('textarea').value='';setPanel('');},
   reverse(){const n=activeWire();if(n)api.connection(n.id,{...n.connection,from:n.connection.to,to:n.connection.from});}
  };
- ui.addEventListener('click',e=>{const button=e.target.closest('button');if(!button)return;if(button.dataset.panel)setPanel(button.dataset.panel);if(button.dataset.action)actions[button.dataset.action]?.();if(button.dataset.align){api.change(()=>FigureArrange.arrange(api.read(),ids(),button.dataset.align));}});
+ ui.addEventListener('click',e=>{const button=e.target.closest('button');if(!button)return;if(button.dataset.panel)setPanel(button.dataset.panel);if(button.dataset.action)actions[button.dataset.action]?.();if(button.dataset.align){api.change(()=>{const s=api.read(),next=FigureCommands.execute(s,{type:'arrange',ids:ids(),action:button.dataset.align});if(!FigureCommands.diff(s,next).length)return false;s.nodes=next.nodes;});}});
  document.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable="true"],[role="menu"]')||document.querySelector('dialog[open]'))return;
   if(gesture){e.preventDefault();e.stopImmediatePropagation();if(e.key==='Escape')finish(null,true);return;}
   if(primitive?.busy())return;

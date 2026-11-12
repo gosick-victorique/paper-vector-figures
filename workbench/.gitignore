@@ -7,3 +7,7 @@ agent/live-smoke-result.json
 
 .desktop-resources/
 desktop-dist/
+test-results/
+playwright-report/
+
+evaluation-results/

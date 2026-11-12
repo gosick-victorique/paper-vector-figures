@@ -1,0 +1,7 @@
+// The scripted client must observe a crossing, repair it, then inspect again.
+const steps=[];let revision=0;
+for(const [id,x,y]of [['a',80,200],['b',600,200],['c',320,60],['d',320,400]])steps.push(['create_component',{requestId:'module-'+id,expectedRevision:revision++,id:'ai-'+id,parent:'custom',name:id,x,y,w:100,h:80,leaves:[{kind:'rect',markup:'<rect width="100" height="80" fill="#dfeaf0" stroke="#416f89"/>'},{kind:'text',markup:`<text x="20" y="45" font-size="24">${id}</text>`}]}]);
+for(const [id,from,to,side,endSide]of [['horizontal','a','b','right','left'],['vertical','c','d','bottom','top']])steps.push(['connect_objects',{requestId:id,expectedRevision:revision++,id:'ai-'+id,parent:'custom',connection:{from:{node:'ai-'+from,side,offset:.5},to:{node:'ai-'+to,side:endSide,offset:.5},route:'straight',label:id}}]);
+steps.push(['render_region',{}],['check_figure',{}],['render_region',{region:{x:362,y:232,w:16,h:16}}],['apply_ops',{requestId:'uncross',expectedRevision:revision++,operations:['c','d'].map(id=>({op:'update',id:'ai-'+id,payload:JSON.stringify({x:900})}))}],['render_region',{}],['check_figure',{}],['commit',{requestId:'finish',expectedRevision:revision,summary:'已观察连线交叉并移动模块，再次渲染检查后提交。',warnings:[]}]);
+export const connectionCheckSteps=steps;
+export const connectionRepairSteps=steps.map(([name,args])=>name==='apply_ops'?['repair_connections',{requestId:'repair-crossing',expectedRevision:6,ids:['ai-horizontal']}]:name==='commit'?[name,{...args,summary:'已调用连线修复工具，保留模块和端口并复查交叉已消除。'}]:[name,args]);

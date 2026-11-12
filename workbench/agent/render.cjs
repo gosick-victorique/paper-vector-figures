@@ -9,20 +9,20 @@ function render(task,state){
  const fresh=oldScene.cloneNode(false);oldScene.parentNode.replaceChild(fresh,oldScene);
  const byParent={};Object.values(state.nodes).sort((a,b)=>(a.zIndex||0)-(b.zIndex||0)).forEach(n=>(byParent[n.parent||'root']??=[]).push(n));
  function draw(n,parent){
-  const g=make('g',{'data-id':n.id,'data-type':n.type,transform:`translate(${n.x} ${n.y}) scale(${n.scale})`});parent.appendChild(g);
+  const g=make('g',{'data-id':n.id,'data-type':n.type,'data-name':n.name||n.id,transform:`translate(${n.x} ${n.y}) scale(${n.scale})`});if(n.connection){g.setAttribute('data-connection-from',n.connection.from.node);g.setAttribute('data-connection-to',n.connection.to.node);}parent.appendChild(g);
   if(n.type==='leaf'){
    let content;
    // Reuse the submitted rendered leaf when markup is unchanged (palette and inherited styles included).
    if(sourceGroups[n.id]&&n.markup===task.scene[n.id]?.markup){content=Array.from(sourceGroups[n.id].childNodes).find(e=>e.nodeType===1)?.cloneNode(true);}
    if(!content){content=make('g',{});const parsed=parse('<svg xmlns="http://www.w3.org/2000/svg">'+(n.markup||'')+'</svg>');for(const child of Array.from(parsed.documentElement.childNodes))content.appendChild(doc.importNode(child,true));}
    content.setAttribute('transform',`translate(${-n.originX||0} ${-n.originY||0})`);
-   if(n.textOverride!==undefined){const t=content.getElementsByTagName('text')[0];if(t)t.textContent=n.textOverride;}
+   if(n.textOverride!==undefined){const t=content.getElementsByTagName('text')[0];if(t)require('../canvas-text.js').write(t,n.textOverride);}
    const palettes=[['#416f89','#ce713a','#dfeaf0','#f7e8dc'],['#4d7360','#ba8746','#e1ebe1','#f6eddb'],['#636a94','#b96b7a','#e8e9f2','#f5e5ea']],p=palettes[state.palette]||palettes[0],colors=Object.fromEntries(palettes[0].map((c,i)=>[c,p[i]]));
    if(!n.customPaint)for(const el of Array.from(content.getElementsByTagName('*')))for(const a of ['fill','stroke']){const v=el.getAttribute(a);if(colors[v])el.setAttribute(a,colors[v]);}
    if(n.appearance)require('../object-edit.js').paint(content,n.appearance);
    g.appendChild(content);
   }else (byParent[n.id]||[]).forEach(c=>draw(c,g));
  }(byParent.root||[]).forEach(n=>draw(n,fresh));
- root.setAttribute('width','1200');root.setAttribute('height','740');return serialize(doc);
+ const canvas=require('../canvas-size.js').read(task);root.setAttribute('viewBox',canvas.viewBox.join(' '));root.setAttribute('width',canvas.widthMm+'mm');root.setAttribute('height',canvas.heightMm+'mm');const background=Array.from(root.childNodes).find(e=>e.nodeType===1&&e.tagName==='rect'&&e.getAttribute('fill')==='white');if(background){background.setAttribute('width',canvas.viewBox[2]);background.setAttribute('height',canvas.viewBox[3]);}return serialize(doc);
 }
 module.exports={render};

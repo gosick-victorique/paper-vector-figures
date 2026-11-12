@@ -7,7 +7,7 @@
   const updates=[];
   for(const id of scope(s,ids).filter(id=>s.nodes[id].type==='leaf')){
    const n=s.nodes[id],w=M.world(s,id),p=n.parent?M.world(s,n.parent):{x:0,y:0,scale:1},box=M.transformBox(M.bounds(s,id),m);
-   if(box.x<-.001||box.y<-.001||box.x+box.w>1200.001||box.y+box.h>740.001)return false;
+   if(box.x<-.001||box.y<-.001||box.x+box.w>M.canvas(s).width+.001||box.y+box.h>M.canvas(s).height+.001)return false;
    const ox=n.originX||0,oy=n.originY||0,e=(m.a*w.x+m.c*w.y+m.e-box.x)/w.scale-m.a*ox-m.c*oy,f=(m.b*w.x+m.d*w.y+m.f-box.y)/w.scale-m.b*ox-m.d*oy;
    updates.push({id,x:(box.x-p.x)/p.scale,y:(box.y-p.y)/p.scale,w:box.w/w.scale,h:box.h/w.scale,originX:0,originY:0,markup:`<g transform="matrix(${m.a} ${m.b} ${m.c} ${m.d} ${e} ${f})">${getMarkup(n)}</g>`});
   }

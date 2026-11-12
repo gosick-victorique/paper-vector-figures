@@ -11,7 +11,7 @@ test('generation uses original skill; modification and Q&A do not inherit its wo
  assert.match(generate.input,/ORIGINAL_SKILL_SENTINEL/);assert.match(generate.input,/FULL_GENERATION_REFERENCE/);
  for(const p of [edit,ask]){assert.doesNotMatch(p.instructions+p.input,/ORIGINAL_SKILL_SENTINEL|FULL_GENERATION_REFERENCE|OLD_INITIAL_REQUEST/);assert.notEqual(p.profile.sha256,generate.profile.sha256);}
  assert.match(edit.input,/skill\/references\/spatial-exploration.md/);assert.match(edit.instructions,/minimum necessary/);assert.match(edit.instructions,/never silently expand/);assert.match(ask.instructions,/Answer questions only/);assert.doesNotMatch(ask.input,/skill\/references/);
- for(const p of [generate,edit,ask]){assert.equal(p.profile.version,'2');assert.equal(p.profile.instructionLanguage,'en');}
+ for(const p of [generate,edit,ask]){assert.equal(p.profile.version,'3');assert.equal(p.profile.instructionLanguage,'en');}
  assert.ok(edit.input.includes('只重绘编码器'));assert.ok(ask.input.includes('解释这个模块'));
 });
 test('task materials remain in the input channel; output and editing boundaries are in developer instructions',()=>{
@@ -26,7 +26,7 @@ test('reference preparation copies main skill only for generation and keeps ordi
  for(const profile of ['generate','redraw','appearance','ask']){
   const task=profile==='generate'||profile==='ask'?{taskType:profile}:{taskType:'edit',editMode:profile},dir=path.join(root,profile);await fs.mkdir(dir);
   const skill=await prepareSkill(dir,task);
-  if(profile==='generate'){assert.match(skill.main,/Paper Vector Figures/);assert.ok(skill.references.length);assert.ok((await fs.stat(path.join(dir,'skill','SKILL.md'))).isFile());}
+  if(profile==='generate'){assert.match(skill.main,/Paper Vector Figures/);assert.ok(skill.references.length);assert.ok((await fs.stat(path.join(dir,'skill','SKILL.md'))).isFile());assert.ok((await fs.stat(path.join(dir,'skill','references','cases','gcd.md'))).isFile());assert.ok((await fs.stat(path.join(dir,'skill','references','recent-vision-reference-board.png'))).isFile());}
   else{assert.equal(skill.main,'');assert.deepEqual(skill.references,[]);await assert.rejects(fs.access(path.join(dir,'skill','SKILL.md')));if(profile==='redraw')assert.ok(skill.referenceIndex.length);else assert.deepEqual(skill.referenceIndex,[]);}
  }
 });

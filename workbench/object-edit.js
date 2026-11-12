@@ -2,7 +2,7 @@
  function leaves(s,ids){return [...new Set(M.roots(s,ids).flatMap(id=>[id,...M.descendants(s,id)]))].filter(id=>s.nodes[id].type==='leaf');}
  function resize(s,ids,width,height,getMarkup){
   if(!ids.length||!M.movable(s,ids)||![width,height].every(v=>Number.isFinite(v)&&v>0))return false;
-  const box=M.union(M.roots(s,ids).map(id=>M.bounds(s,id)));if(box.x+width>1200||box.y+height>740||box.w<=0||box.h<=0)return false;
+  const box=M.union(M.roots(s,ids).map(id=>M.bounds(s,id)));if(box.x+width>M.canvas(s).width||box.y+height>M.canvas(s).height||box.w<=0||box.h<=0)return false;
   const sx=width/box.w,sy=height/box.h,updates=[];
   for(const id of leaves(s,ids)){const n=s.nodes[id],w=M.world(s,id),p=n.parent?M.world(s,n.parent):{x:0,y:0,scale:1},ox=n.originX||0,oy=n.originY||0;
    updates.push({id,x:(box.x+(w.x-box.x)*sx-p.x)/p.scale,y:(box.y+(w.y-box.y)*sy-p.y)/p.scale,w:n.w*sx,h:n.h*sy,markup:`<g transform="translate(${ox} ${oy}) scale(${sx} ${sy}) translate(${-ox} ${-oy})">${getMarkup(n)}</g>`});

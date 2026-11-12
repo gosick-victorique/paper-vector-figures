@@ -82,7 +82,7 @@ window.FigurePrimitiveEdit={mount(api,host){
   for(const head of heads){if(M.locked(api.read(),head.id))return false;const end=head.which,near=end==='start'?'next':'previous',old=point({x:oldEnds[end][0],y:oldEnds[end][1]},t.matrix),next=point({x:newEnds[end][0],y:newEnds[end][1]},t.matrix),oldNear=point({x:oldEnds[near][0],y:oldEnds[near][1]},t.matrix),newNear=point({x:newEnds[near][0],y:newEnds[near][1]},t.matrix),angle=Math.atan2(next.y-newNear.y,next.x-newNear.x)-Math.atan2(old.y-oldNear.y,old.x-oldNear.x),a=Math.cos(angle),b=Math.sin(angle);
    if(!E.transform(api.read(),[head.id],{a,b,c:-b,d:a,e:next.x-a*old.x+b*old.y,f:next.y-b*old.x-a*old.y},api.markup))return false;
   }
-  api.remeasure(t.id);const bounds=M.bounds(api.read(),t.id);return bounds.x>=0&&bounds.y>=0&&bounds.x+bounds.w<=1200&&bounds.y+bounds.h<=740;
+  try{api.remeasure(t.id);FigureConnections.sync(api.read(),{baseline:before});}catch(error){api.restore(before);api.toast(error.message);return false;}const bounds=M.bounds(api.read(),t.id);return bounds.x>=0&&bounds.y>=0&&bounds.x+bounds.w<=M.canvas(api.read()).width&&bounds.y+bounds.h<=M.canvas(api.read()).height;
  }
  function changeAttrs(attrs){if(!current||!M.movable(api.read(),[current.id]))return;const t=current,before=M.clone(api.read()),heads=linkedHeads(t);if(apply(before,t,attrs,heads))api.commit(before);else{api.restore(before);api.toast('此操作受锁定或画板边界限制');}draw();}
  button.onclick=()=>{active=!active;panel.dataset.signature='';host.update();draw();};

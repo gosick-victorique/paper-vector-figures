@@ -23,7 +23,7 @@
  function publication(c){
   if(!c.publication)return null;
   const width=number(c.widthMm,'宽度'),height=number(c.heightMm,'高度'),pt=number(c.fontPt,'字号');
-  if(width<40||width>180||height<30||height>111||pt<6||pt>14)throw Error('宽 40–180 mm，高 30–111 mm，字号 6–14 pt');
+  if(width<40||width>500||height<30||height>500||pt<6||pt>14)throw Error('宽 40–500 mm，高 30–500 mm，字号 6–14 pt');
   return{w:width*unitsPerMm,h:height*unitsPerMm,font:pt*25.4/72*unitsPerMm};
  }
  function render(c){
@@ -82,7 +82,7 @@
   const count=configs.length,cols=Number(o.columns),width=Number(o.widthMm),height=Number(o.heightMm),gap=Number(o.gapMm),font=Number(o.fontPt);
   if(count<2||count>12||!Number.isInteger(cols)||cols<1||cols>count||!Number.isFinite(gap)||gap<0||gap>20)throw Error('选择 2–12 张图，列数不能超过图数，间距为 0–20 mm');
   const rows=Math.ceil(count/cols),w=(width-(cols-1)*gap)/cols,h=(height-(rows-1)*gap)/rows;
-  if(width>180||height>111)throw Error('排版总尺寸不能超过画板 180 × 111 mm');
+  if(width>(o.canvas?.widthMm||500)||height>(o.canvas?.heightMm||500))throw Error('排版总尺寸不能超过当前画板');
   const next=configs.map((c,i)=>({...JSON.parse(JSON.stringify(c)),layoutInsets:null,publication:true,widthMm:w,heightMm:h,fontPt:font,panelLabel:o.labels===false?'':`(${String.fromCharCode(97+i)})`}));
   if(o.sharedX){
    if(next.some(c=>c.type==='bar')&&!next.every(c=>c.type==='bar'))throw Error('分类轴与数值轴不能统一 X 范围');

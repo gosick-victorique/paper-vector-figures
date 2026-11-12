@@ -44,7 +44,7 @@ test('grid serialization round trips commas, quotes and line breaks',()=>{
 });
 test('publication dimensions and pt font match the 180 mm board coordinate system',()=>{
  const c={...base,publication:true,widthMm:85,heightMm:60,fontPt:8},r=C.render(c);assert.ok(Math.abs(r.w-85*1200/180)<1e-9);assert.equal(r.h,400);assert.match(r.markup,new RegExp('font-size="'+(8*25.4/72*C.unitsPerMm)));
- assert.throws(()=>C.render({...c,widthMm:20}),/40–180/);assert.throws(()=>C.render({...c,widthMm:40,heightMm:30,fontPt:14}),/放不下/);
+ assert.throws(()=>C.render({...c,widthMm:20}),/40–500/);assert.throws(()=>C.render({...c,widthMm:40,heightMm:30,fontPt:14}),/放不下/);
 });
 test('subplot layout aligns dimensions, shares ranges and preserves source data',()=>{
  const second={...base,text:'X,A,Error\n1,100,2\n2,120,3'},o={columns:2,widthMm:180,heightMm:70,gapMm:4,fontPt:8,sharedY:true},panels=C.layout([base,second],o);

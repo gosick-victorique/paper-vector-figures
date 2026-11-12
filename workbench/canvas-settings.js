@@ -1,0 +1,9 @@
+(()=>{
+ const B=FigureBoard,dialog=document.createElement('dialog');dialog.id='canvas-settings';
+ dialog.innerHTML='<form><h2>画板尺寸</h2><label class="field-label">预设<select id="canvas-preset"><option value="custom">自定义</option><option value="85,60">单栏 · 85 × 60 mm</option><option value="180,111">双栏 · 180 × 111 mm</option><option value="180,240">竖版 · 180 × 240 mm</option><option value="300,120">横向 · 300 × 120 mm</option></select></label><div class="geometry"><label>宽度 (mm)<input id="canvas-width" type="number" min="40" max="500" step="0.1" required></label><label>高度 (mm)<input id="canvas-height" type="number" min="30" max="500" step="0.1" required></label></div><p>元素的尺寸、位置和字号保持不变。缩小画板前，请先将内容移入新边界；修改可撤销。</p><p id="canvas-error" role="status"></p><div class="dialog-actions"><button id="canvas-cancel" type="button">取消</button><button type="submit" class="primary">应用尺寸</button></div></form>';document.body.append(dialog);
+ const $=s=>dialog.querySelector(s),button=document.createElement('button');button.id='canvas-settings-open';button.textContent='画板尺寸…';document.querySelector('.project-files').append(button);
+ button.onclick=()=>{const c=B.canvas();$('#canvas-width').value=c.widthMm;$('#canvas-height').value=c.heightMm;$('#canvas-preset').value='custom';$('#canvas-error').textContent='';dialog.showModal();};
+ $('#canvas-preset').onchange=e=>{if(e.target.value==='custom')return;const [w,h]=e.target.value.split(',');$('#canvas-width').value=w;$('#canvas-height').value=h;};
+ $('#canvas-cancel').onclick=()=>dialog.close();dialog.addEventListener('keydown',e=>e.stopPropagation());
+ dialog.querySelector('form').onsubmit=e=>{e.preventDefault();try{B.resizeCanvas(Number($('#canvas-width').value),Number($('#canvas-height').value));dialog.close();}catch(error){$('#canvas-error').textContent=error.message;}};
+})();

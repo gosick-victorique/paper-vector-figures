@@ -7,13 +7,16 @@ import {createWorkbenchServer,hash} from './server.mjs';
 import P from './patch-contract.js';
 import F from '../scene-factory.js';
 import M from '../model.js';
+import W from '../board-workspace.js';
 import {buildPrompt,buildQuestionPrompt} from './runner.mjs';
+import PDFDocument from 'pdfkit';
+import Canvas from '../canvas-size.js';
 async function harness(t,runner){const jobsDir=await fs.mkdtemp(path.join(os.tmpdir(),'figure-agent-test-'));const app=createWorkbenchServer({runner,jobsDir});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));t.after(()=>app.close());const base=`http://127.0.0.1:${app.server.address().port}`;const session=await(await fetch(base+'/api/session')).json();const request=(p,body,method=body?'POST':'GET',extra={})=>fetch(base+p,{method,headers:{'Content-Type':'application/json','X-Workbench-Token':session.token,...extra},...(body?{body:JSON.stringify(body)}:{})});return{...app,base,request,jobsDir};}
 function task(){const nodes={a:{id:'a',type:'component',parent:null,x:10,y:10,w:100,h:30,scale:1,locked:false,name:'A'},leaf:{id:'leaf',parent:'a',type:'leaf',kind:'text',name:'Label',x:0,y:0,w:60,h:20,originX:0,originY:0,scale:1,locked:false}};const t={scene:nodes,allComments:[],palette:0,scope:[{id:'a'}],canvas:{viewBox:[0,0,1200,740]},pendingSelectionNote:'把标签缩短为 AI',paperContent:'Test paper excerpt, schematic only.',paper:'Test',currentSvg:'<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="740" viewBox="0 0 1200 740"><rect width="1200" height="740" fill="white"/><g id="scene"><g data-id="a"><g data-id="leaf"><g><text x="0" y="20">Example</text></g></g></g></g></svg>'};t.baseRevision=hash(P.revision({nodes,palette:0,comments:[]}));return t;}
 async function terminal(h,id){for(let i=0;i<100;i++){const j=await(await h.request('/api/jobs/'+id)).json();if(!['queued','running','validating'].includes(j.status))return j;await new Promise(r=>setTimeout(r,50));}throw Error('Test timed out');}
 test('selection Q&A includes figure, paper and follow-ups; returns text only and creates no editing job',async t=>{
  const input={...task(),question:'这里如何突出重点？',history:[{role:'user',content:'讨论配色'},{role:'assistant',content:'减少辅助颜色'}]},original=JSON.stringify(input);
- const h=await harness(t,async({task,skill,dir})=>{assert.equal(task.taskType,'ask');assert.deepEqual(task.scope,input.scope);assert.equal(task.paperContent,input.paperContent);assert.deepEqual(task.history,input.history);assert.ok((await fs.stat(path.join(dir,'before.png'))).size>0);const prompt=buildQuestionPrompt(task,skill);assert.match(prompt,/只回答问题/);assert.match(prompt,/这里如何突出重点/);return{result:{answer:'测试回答：减少辅助元素的对比度。',operations:[{op:'remove',id:'leaf'}]}};});
+ const h=await harness(t,async({task,skill,dir})=>{assert.equal(task.taskType,'ask');assert.deepEqual(task.scope,input.scope);assert.equal(task.paperContent,input.paperContent);assert.deepEqual(task.history,input.history);assert.ok((await fs.stat(path.join(dir,'before.png'))).size>0);const prompt=buildQuestionPrompt(task,skill);assert.match(prompt,/Answer questions only/);assert.match(prompt,/这里如何突出重点/);return{result:{answer:'测试回答：减少辅助元素的对比度。',operations:[{op:'remove',id:'leaf'}]}};});
  assert.equal((await h.request('/api/ask',input)).status,409);
  await h.request('/api/config',{baseUrl:'https://api.openai.com/v1',model:'test-only-model',apiKey:'test-only-secret'});
  const response=await h.request('/api/ask',input);assert.equal(response.status,200);assert.deepEqual(await response.json(),{answer:'测试回答：减少辅助元素的对比度。'});assert.equal(h.jobs.size,0);assert.equal(JSON.stringify(input),original);
@@ -67,12 +70,12 @@ for(const withSketch of [false,true])test(`generation from document ${withSketch
  input.baseRevision=hash(P.revision(base));
  const component={id:'ai-fusion',parent:'custom',type:'component',kind:'network',name:'融合模块',x:400,y:200,w:120,h:100,scale:1,locked:false};
  const shape={id:'ai-face',parent:'ai-fusion',type:'leaf',kind:'rect',name:'主体',x:0,y:0,w:120,h:100,originX:0,originY:0,scale:1,locked:false,markup:'<rect width="120" height="100" fill="#dfeaf0"/>'};
- const h=await harness(t,async({task,skill})=>{assert.equal(task.paperContent,input.paperContent);assert.deepEqual(task.scene,input.scene);assert.equal(task.pendingSelectionNote,input.pendingSelectionNote);const prompt=buildPrompt(task,skill);assert.ok(prompt.includes(input.paperContent));assert.match(prompt,/任务：生成图片/);if(withSketch)assert.ok(prompt.includes('保留编码器位置'));return{result:{baseRevision:task.baseRevision,summary:'测试执行器，非模型绘制',warnings:[],operations:[component,shape].map(n=>({op:'insert',id:n.id,payload:JSON.stringify(n)}))}};});
+ const h=await harness(t,async({task,skill})=>{assert.equal(task.paperContent,input.paperContent);assert.deepEqual(task.scene,input.scene);assert.equal(task.pendingSelectionNote,input.pendingSelectionNote);const prompt=buildPrompt(task,skill);assert.ok(prompt.includes(input.paperContent));assert.match(prompt,/# Image generation/);if(withSketch)assert.ok(prompt.includes('保留编码器位置'));return{result:{baseRevision:task.baseRevision,summary:'测试执行器，非模型绘制',warnings:[],operations:[component,shape].map(n=>({op:'insert',id:n.id,payload:JSON.stringify(n)}))}};});
  await h.request('/api/config',{baseUrl:'https://api.openai.com/v1',model:'test-only-model',apiKey:'test-only-secret'});
+ assert.equal((await h.request('/api/jobs',{...input,paperContent:''})).status,400);
  const response=await h.request('/api/jobs',input);assert.equal(response.status,202);const end=await terminal(h,(await response.json()).id);assert.equal(end.status,'completed',end.error);
  const next=P.apply(base,input,end);assert.equal(next.nodes['ai-face'].parent,'ai-fusion');assert.equal(M.move(next,['ai-fusion'],20,10),true);if(withSketch)assert.deepEqual(next.nodes.seed,base.nodes.seed);
  assert.match(await(await h.request(`/api/jobs/${end.id}/after.svg`)).text(),/data-id="ai-fusion"/);
- assert.equal((await h.request('/api/jobs',{...input,paperContent:''})).status,400);
  assert.throws(()=>P.apply(base,{...input,taskType:'edit'},end),/模式/);
 });
 
@@ -80,7 +83,34 @@ test('appearance editing works without paper and uses edit prompt profile',async
  const input={...task(),taskType:'edit',editMode:'appearance',paperContent:'',pendingSelectionNote:'把文字改为蓝色'};
  const h=await harness(t,async({task,skill})=>{assert.equal(skill.main,'');assert.deepEqual(skill.referenceIndex,[]);return{result:{baseRevision:task.baseRevision,summary:'文字改为蓝色',warnings:[],operations:[{op:'update',id:'leaf',payload:JSON.stringify({appearance:{textColor:'#416f89'}})}]}};});
  await h.request('/api/config',{baseUrl:'https://api.openai.com/v1',model:'test-only-model',apiKey:'test-only-secret'});
+ assert.equal((await h.request('/api/jobs',{...input,taskType:'ask'})).status,400);
  const response=await h.request('/api/jobs',input);assert.equal(response.status,202);const end=await terminal(h,(await response.json()).id);assert.equal(end.status,'completed',end.error);assert.equal(end.promptProfile.name,'edit');assert.equal(end.promptProfile.skillMode,'none');assert.equal(end.skill,null);
  const profile=JSON.parse(await fs.readFile(path.join(h.jobsDir,end.id,'prompt-profile.json'),'utf8'));assert.equal(profile.sha256,end.promptProfile.sha256);
- assert.equal((await h.request('/api/jobs',{...input,taskType:'ask'})).status,400);
+});
+test('exports work without AI configuration and workspace validation checks saved versions',async t=>{
+ const h=await harness(t,async()=>{throw Error('must not call model');});
+ const exported=await h.request('/api/export',{svg:task().currentSvg,format:'svg'});assert.equal(exported.status,200);assert.match(await exported.text(),/<svg/);
+ assert.equal((await fetch(h.base+'/api/export',{method:'POST',body:JSON.stringify({svg:task().currentSvg,format:'svg'})})).status,403);
+ const workspace=W.load(null,F.blank(),P.validateScene);assert.equal((await h.request('/api/workspace/validate',{workspace})).status,200);
+ workspace.boards[0].versions=[{state:F.blank()}];workspace.boards[0].versions[0].state.svgDefs='<script>alert(1)</script>';
+ assert.equal((await h.request('/api/workspace/validate',{workspace})).status,400);
+});
+
+test('PDF import is local, requires a session token and honors page ranges',async t=>{
+ const h=await harness(t,async()=>{throw Error('must not call model');}),pdf=new PDFDocument(),chunks=[];
+ const data=new Promise(resolve=>{pdf.on('data',b=>chunks.push(b));pdf.on('end',()=>resolve(Buffer.concat(chunks).toString('base64')));});
+ pdf.text('Page one');pdf.addPage();pdf.text('Page two');pdf.end();const input={data:await data,from:2,to:2};
+ assert.equal((await fetch(h.base+'/api/document/import',{method:'POST',body:JSON.stringify(input)})).status,403);
+ const response=await h.request('/api/document/import',input);assert.equal(response.status,200);const result=await response.json();assert.equal(result.pageCount,2);assert.match(result.text,/Page two/);assert.doesNotMatch(result.text,/Page one/);
+ assert.equal((await h.request('/api/document/import',{...input,from:3,to:3})).status,400);
+});
+
+test('custom canvas survives the AI pipeline and stale dimensions cannot be submitted',async t=>{
+ const input={...task(),canvas:Canvas.fromMm(300,240),editMode:'layout'},h=await harness(t,async({task})=>({result:{baseRevision:task.baseRevision,summary:'Test layout',warnings:[],operations:[{op:'update',id:'a',payload:JSON.stringify({x:1450,y:1100})}]}}));
+ await h.request('/api/config',{baseUrl:'https://api.openai.com/v1',model:'test-only-model',apiKey:'test-only-secret'});
+ assert.equal((await h.request('/api/jobs',input)).status,400);
+ input.baseRevision=hash(P.revision({nodes:input.scene,palette:0,comments:[],canvas:input.canvas}));
+ const response=await h.request('/api/jobs',input);assert.equal(response.status,202);const result=await terminal(h,(await response.json()).id);assert.equal(result.status,'completed',result.error);
+ const svg=await(await h.request(`/api/jobs/${result.id}/after.svg`)).text();assert.match(svg,/width="300mm"/);assert.match(svg,/height="240mm"/);assert.match(svg,/viewBox="0 0 2000 1600"/);assert.match(svg,/translate\(1450 1100\)/);
+ assert.equal((await h.request('/api/scene/validate',{...input,canvas:{widthMm:85,heightMm:60,viewBox:[0,0,1200,740]}})).status,400);
 });

@@ -2,6 +2,7 @@ const {DOMParser,XMLSerializer}=require('@xmldom/xmldom');
 const tags=new Set('svg g defs marker linearGradient radialGradient stop clipPath mask path rect circle ellipse line polygon polyline text tspan title desc image'.split(' '));
 const attrs=new Set('xmlns xmlns:xlink version id class viewBox width height x y x1 x2 y1 y2 cx cy r rx ry d points transform fill fill-opacity fill-rule stroke stroke-width stroke-opacity stroke-dasharray stroke-dashoffset stroke-linecap stroke-linejoin stroke-miterlimit opacity font-family font-size font-weight font-style text-anchor dominant-baseline alignment-baseline letter-spacing marker-start marker-mid marker-end markerWidth markerHeight markerUnits refX refY orient preserveAspectRatio href xlink:href offset stop-color stop-opacity gradientUnits gradientTransform spreadMethod clip-path clipPathUnits mask maskUnits maskContentUnits style aria-label role'.split(' '));
 const styleProps=new Set('fill stroke fill-opacity stroke-opacity opacity stroke-width stroke-dasharray stroke-linejoin stroke-linecap font-size font-family font-weight font-style text-anchor pointer-events'.split(' '));
+for(const name of ['color','pointer-events','overflow'])attrs.add(name);styleProps.add('color');
 function parse(text){
  if(typeof text!=='string'||text.length>16000000||/<!DOCTYPE|<!ENTITY|<\?/i.test(text))throw Error('SVG 内容无效');
  let bad=false;const doc=new DOMParser({errorHandler:{warning:()=>bad=true,error:()=>bad=true,fatalError:()=>bad=true}}).parseFromString(text,'image/svg+xml');
@@ -12,6 +13,8 @@ function parse(text){
   for(const a of Array.from(e.attributes)){
    if(!attrs.has(a.name)&&!/^data-[\w-]+$/.test(a.name))throw Error('不支持的 SVG 属性：'+a.name);
    const v=a.value;
+   // Accessible labels and diagnostic object names are inert text, including LaTeX.
+   if(a.name==='aria-label'||a.name==='data-name')continue;
    if(/[\\\u0000-\u0008]/.test(v)||/javascript:|@import|expression\s*\(/i.test(v))throw Error('SVG 包含主动内容');
    if(a.name==='href'||a.name==='xlink:href'){if(!/^#[\w-]+$/.test(v)&&!(e.tagName==='image'&&/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=\s]+$/.test(v)))throw Error('SVG 不能引用外部资源');}
    if(/url\s*\(/i.test(v)&&!/^url\(#[\w-]+\)$/.test(v.trim()))throw Error('SVG 资源引用无效');
