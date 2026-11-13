@@ -13,3 +13,11 @@ test('contrast is measured only against a known opaque background',()=>{
 test('checks return explicit partial status instead of silently dropping findings',()=>{
  const report=C.analyze({width:100,height:100,leaves:Array.from({length:5},(_,i)=>({id:String(i),box:{x:110,y:0,w:20,h:20}}))},{maxIssues:2});assert.equal(report.issues.length,2);assert.equal(report.truncated,true);
 });
+test('checks flag explanatory prose and excessive equations while allowing concise labels',()=>{
+ const ok=C.analyze({width:1200,height:740,texts:[text('title',{x:10,y:10,w:220,h:24},{text:'Multi-Scale Feature Alignment'}),text('abbr',{x:10,y:50,w:180,h:24},{text:'Fig. 1. Overview (vs. Baseline)'}),text('zh',{x:10,y:90,w:180,h:24},{text:'多尺度时空特征融合模块'})],equations:[{id:'eq1'},{id:'eq2'}]});
+ assert.deepEqual(ok.issues,[]);assert.equal(ok.counts.equations,2);
+ const bloated=C.analyze({width:1200,height:740,texts:[text('prose-en',{x:10,y:10,w:400,h:30},{text:'We encode the input tokens into latent features and apply cross-attention.'}),text('prose-zh',{x:10,y:50,w:400,h:30},{text:'通过跨模态注意力权重抑制背景噪声干扰。'})],equations:[{id:'eq1'},{id:'eq2'},{id:'eq3'}]});
+ assert.deepEqual(bloated.issues.map(i=>i.code),['long-text','long-text','excessive-equations']);assert.equal(bloated.issues[2].severity,'warning');assert.deepEqual(bloated.issues[2].ids,['eq1','eq2','eq3']);
+ const grown=C.analyze({width:1200,height:740,texts:[text('prose-en',{x:10,y:10,w:400,h:30},{text:'We encode the input tokens into latent features and apply cross-attention across every spatial layer.'})]});
+ assert.equal(C.regressions(bloated,grown).some(i=>i.code==='long-text'),true);
+});

@@ -42,3 +42,11 @@ test('runner supplies distinct developer instructions to SDK and keeps paper in 
  assert.equal(options.config.model_providers.figure_api.base_url,'https://example.invalid/v1');
  assert.ok(!JSON.stringify(options.config).includes('fake-test-key'));
 });
+test('autonomous instructions enforce minimal text and omit formulas by default across generate and edit',()=>{
+ for(const task of [{taskType:'generate',executionMode:'autonomous',reviewPolicy:'independent',paperContent:'paper'},{taskType:'edit',editMode:'redraw',executionMode:'autonomous',reviewPolicy:'independent',pendingSelectionNote:'重绘模块'}]){
+  const p=buildAgentPrompt(task,original);
+  assert.match(p.instructions,/Omit formulas by default/i);
+  assert.match(p.instructions,/never add explanatory prose/i);
+  assert.match(p.instructions,/Evidence binding lives in metadata/i);
+ }
+});

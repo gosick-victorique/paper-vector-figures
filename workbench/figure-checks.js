@@ -1,11 +1,19 @@
 (function(root,factory){const api=factory(typeof module==='object'?require('./connection-checks.js'):root.FigureConnectionChecks);if(typeof module==='object')module.exports=api;else root.FigureChecks=api;})(typeof window==='object'?window:globalThis,function(ConnectionChecks){
  'use strict';
- const limits={minFontPt:6,minContrast:3,maxElements:6000,maxText:1200,maxIssues:150};
+ const limits={minFontPt:6,minContrast:3,maxTextChars:70,maxTextWords:10,maxTextCjk:25,maxSentenceChars:12,maxEquations:2,maxElements:6000,maxText:1200,maxIssues:150};
  const intersect=(a,b)=>Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y));
+ function textBloatMagnitude(text,config){
+  const s=String(text||'').replace(/\s+/g,' ').trim();
+  if(!s)return 0;
+  const words=s.split(/\s+/).length,cjk=(s.match(/[\u4e00-\u9fff]/g)||[]).length;
+  const sentence=/[。！？；]/.test(s)&&s.length>config.maxSentenceChars||words>4&&/[!?]/.test(s)||words>=6&&/\.\s*$/.test(s)&&!/\b(?:et al|e\.g|i\.e|vs|etc)\.\s*$/i.test(s)||words>=8&&/\.\s+[A-Z]/.test(s)&&!/\b(?:Fig|Eq|Sec|Tab|Alg|No|vs)\.\s+/i.test(s);
+  if(!sentence&&s.length<=config.maxTextChars&&words<=config.maxTextWords&&cjk<=config.maxTextCjk)return 0;
+  return Math.max(1,(s.length-config.maxTextChars)/10,words-config.maxTextWords,cjk-config.maxTextCjk);
+ }
  function rgb(value){const m=String(value).match(/^rgba?\(\s*([\d.]+)[, ]+([\d.]+)[, ]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)$/);return m&&(!m[4]||Number(m[4])===1)?m.slice(1,4).map(Number):null;}
  function contrast(a,b){const luminance=c=>c.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0),x=luminance(a),y=luminance(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
  function analyze(measurement,options={}){
-  const {width,height,leaves=[],texts=[],skipped=0,truncated=false}=measurement;
+  const {width,height,leaves=[],texts=[],equations=[],skipped=0,truncated=false}=measurement;
   const config={...limits,...options},issues=[],keys=new Set();let capped=false;
   function add(code,severity,ids,message,magnitude=1){const key=code+':'+[...ids].sort().join(',');if(keys.has(key)){const old=issues.find(i=>i.key===key);if(old&&magnitude>old.magnitude)Object.assign(old,{message,magnitude});return;}keys.add(key);if(issues.length>=config.maxIssues){capped=true;return;}issues.push({key,code,severity,ids,message,magnitude});}
   for(const leaf of leaves){const b=leaf.box;if(b.x<-.5||b.y<-.5||b.x+b.w>width+.5||b.y+b.h>height+.5)add('outside','error',[leaf.id],`${leaf.name||leaf.id} 超出画板，导出时可能被裁切`,Math.max(0,-b.x,-b.y,b.x+b.w-width,b.y+b.h-height));}
@@ -14,18 +22,21 @@
    const t=sorted[i],label=t.text.replace(/\s+/g,' ').slice(0,40);
    if(t.fontPt<config.minFontPt)add('small-text','warning',[t.id],`“${label}”约 ${t.fontPt.toFixed(1)} pt，小于 ${config.minFontPt} pt 检查阈值`,config.minFontPt-t.fontPt);
    if(t.foreground&&t.background){const ratio=contrast(t.foreground,t.background);if(ratio<config.minContrast)add('contrast','warning',[t.id],`“${label}”与已知纯色背景对比度约 ${ratio.toFixed(1)}:1，建议检查可读性`,config.minContrast-ratio);}
+   const bloat=textBloatMagnitude(t.text,config);
+   if(bloat>0)add('long-text','warning',[t.id],`“${label}”包含较长说明文字，论文图建议仅保留简短标签并用图形表达机制，详细解释留给正文或图注`,bloat);
    for(let j=i+1;j<sorted.length&&sorted[j].box.x<t.box.x+t.box.w;j++){
     const other=sorted[j];if(t.owner===other.owner)continue;
     const area=intersect(t.box,other.box),minArea=Math.min(t.box.w*t.box.h,other.box.w*other.box.h);
     if(area>4&&area/minArea>.2)add('text-overlap','warning',[...new Set([t.id,other.id])],`“${label}”与“${other.text.replace(/\s+/g,' ').slice(0,40)}”的文字区域可能重叠`,area/minArea);
    }
   }
+  if(equations.length>config.maxEquations)add('excessive-equations','warning',equations.map(e=>e.id),`图内包含 ${equations.length} 个公式（超过建议上限 ${config.maxEquations} 个），建议默认省略推导与冗余公式，仅保留不可替代的核心算子`,equations.length-config.maxEquations);
   const connections=ConnectionChecks.analyze(measurement,{...options,maxIssues:Math.max(0,config.maxIssues-issues.length)});issues.push(...connections.issues);
   const origin=measurement.origin||{x:0,y:0};for(const issue of connections.issues){const r=issue.region,x=Math.max(0,Math.min(width-1,r.x)),y=Math.max(0,Math.min(height-1,r.y));issue.region={x:x+origin.x,y:y+origin.y,w:Math.max(1,Math.min(width,r.x+r.w)-x),h:Math.max(1,Math.min(height,r.y+r.h)-y)};}
-  return{issues,skipped:skipped+connections.skipped,truncated:truncated||capped||connections.truncated,counts:{leaves:leaves.length,texts:texts.length,connections:connections.counts.connections},limits:config,connections:{...connections,issues:undefined}};
+  return{issues,skipped:skipped+connections.skipped,truncated:truncated||capped||connections.truncated,counts:{leaves:leaves.length,texts:texts.length,equations:equations.length,connections:connections.counts.connections},limits:config,connections:{...connections,issues:undefined}};
  }
  function measure(svg){
-  const vb=svg.viewBox.baseVal,rootInverse=svg.getScreenCTM().inverse(),leaves=[],texts=[],backgrounds=[],modules=[],connections=[];let skipped=0,truncated=false,order=0;
+  const vb=svg.viewBox.baseVal,rootInverse=svg.getScreenCTM().inverse(),leaves=[],texts=[],equations=[],backgrounds=[],modules=[],connections=[];let skipped=0,truncated=false,order=0;const equationIds=new Set();
   const ancestors=el=>{const ids=[];for(let p=el.parentElement;p&&p!==svg;p=p.parentElement)if(p.hasAttribute('data-id')&&p.getAttribute('data-type')!=='leaf')ids.push(p.getAttribute('data-id'));return ids;};
   const wireElements=[...svg.querySelectorAll('[data-type="leaf"][data-connection-from]')],boundWires=wireElements.map(el=>({id:el.getAttribute('data-id'),parent:el.parentElement.closest('[data-id]')?.getAttribute('data-id')}));
   const elements=[...svg.querySelectorAll('*')];if(elements.length>limits.maxElements)truncated=true;
@@ -37,6 +48,7 @@
    if(opacity===0)continue;
    let m,b;try{m=rootInverse.multiply(el.getScreenCTM());b=box(el,m);}catch{skipped++;continue;}
    const id=el.closest('[data-type="leaf"][data-id]')?.getAttribute('data-id');
+   if(el.localName==='svg'&&id&&el.querySelector('[data-mml-node="math"]')){const cid=el.closest('[data-type="component"][data-id]')?.getAttribute('data-id')||id;if(!equationIds.has(cid)){equationIds.add(cid);equations.push({id:cid,leafId:id,source:el.getAttribute('aria-label')||''});}}
    if(el.matches('[data-type="leaf"],[data-type="component"]')){const record={id:el.getAttribute('data-id'),name:el.getAttribute('data-name')||el.getAttribute('data-id'),parent:el.parentElement.closest('[data-id]')?.getAttribute('data-id'),ancestors:ancestors(el),box:b};if(el.matches('[data-type="leaf"]'))leaves.push(record);else modules.push(record);
     if(el.hasAttribute('data-connection-from')){try{const path=el.querySelector('path'),css=path&&getComputedStyle(path),points=path&&ConnectionChecks.parsePolyline(path.getAttribute('d'));let visible=true;for(let p=path;p&&p!==el;p=p.parentElement){const style=getComputedStyle(p);if(style.display==='none'||style.visibility==='hidden'||Number(style.opacity)===0||style.filter!=='none'||style.clipPath!=='none'||style.maskImage!=='none')visible=false;}if(points&&visible&&!complex&&css.stroke!=='none'&&parseFloat(css.strokeWidth)>0&&Number(css.strokeOpacity)>0){const matrix=rootInverse.multiply(path.getScreenCTM());connections.push({...record,from:el.getAttribute('data-connection-from'),to:el.getAttribute('data-connection-to'),points:points.map(p=>({x:matrix.a*p.x+matrix.c*p.y+matrix.e-vb.x,y:matrix.b*p.x+matrix.d*p.y+matrix.f-vb.y}))});}}catch{}}
    }
@@ -50,7 +62,7 @@
    if(unknown)skipped++;
    texts.push({id,owner:order,box:b,text:el.textContent,fontPt,foreground:solid&&!unknown?rgb(fill):null,background:unknown?null:background});
   }
-  return{width:vb.width,height:vb.height,origin:{x:vb.x,y:vb.y},leaves,texts,modules,connections,boundWires,connectionSkipped:wireElements.length-connections.length,skipped,truncated};
+  return{width:vb.width,height:vb.height,origin:{x:vb.x,y:vb.y},leaves,texts,equations,modules,connections,boundWires,connectionSkipped:wireElements.length-connections.length,skipped,truncated};
  }
  async function inspect(source,{includeMeasurement=false}={}){
   const doc=new DOMParser().parseFromString(source,'image/svg+xml');if(doc.querySelector('parsererror')||doc.documentElement.localName!=='svg')throw Error('图稿无法读取');

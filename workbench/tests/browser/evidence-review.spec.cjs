@@ -18,3 +18,18 @@ test('unstructured source data remains unverified and pauses automatic adoption'
  await page.evaluate(()=>FigureAgent.edit('generate'));await page.locator('#agent-execution-mode').selectOption('autonomous');await page.locator('#agent-paper').fill('Input is passed to the Encoder; y = f(x). Measurements in prose: Step 1 has Value 2; Step 2 has Value 4; Step 3 has Value 3.');await expect(page.locator('#agent-auto-apply')).toBeChecked();await page.locator('#agent-submit').click();
  await expect(page.locator('#agent-state')).toContainText('尚未逐值核验',{timeout:25000});await expect(page.locator('#agent-independent-content')).toContainText('0/1 项逐值一致');await expect(page.locator('#agent-dialog')).toBeVisible();expect(await page.evaluate(()=>FigureBoard.getState().nodes['ai-chart'])).toBeUndefined();await expect(page.locator('#agent-adopt')).toBeEnabled();
 });
+test('follow-up selection edits default independent review off while initial generation keeps it on',async({page})=>{
+ await page.goto('/');await page.waitForFunction(()=>window.FigureAgent&&window.FigureBoard);
+ await page.evaluate(()=>{FigureBoard.insertComponent({name:'Module',w:120,h:60,leaves:[{type:'leaf',kind:'text',name:'Label',x:0,y:0,w:100,h:30,originX:0,originY:0,scale:1,locked:false,markup:'<text x="10" y="24" font-size="22">Before</text>'}]});});
+ await page.evaluate(()=>FigureAgent.edit('generate'));
+ await page.locator('#agent-execution-mode').selectOption('autonomous');
+ await expect(page.locator('#agent-independent')).toBeChecked();
+ await page.locator('#agent-task-type').selectOption('edit');
+ await expect(page.locator('#agent-independent')).not.toBeChecked();
+ await page.locator('#agent-independent').check();
+ await page.locator('#agent-edit-mode').selectOption('appearance');
+ await expect(page.locator('#agent-independent')).not.toBeChecked();
+ await page.locator('#agent-close').click();
+ await page.evaluate(()=>FigureAgent.edit('edit'));
+ await expect(page.locator('#agent-independent')).not.toBeChecked();
+});

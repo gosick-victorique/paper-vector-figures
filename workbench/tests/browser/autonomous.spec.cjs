@@ -25,3 +25,21 @@ test('shared manual commands keep chart, equation, connection editing and undo u
  });expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).find(n=>n.connection).connection.route)).toBe('elbow');expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.equation))).toBe(true);
  await page.evaluate(()=>document.querySelector('#undo').click());expect(await page.evaluate(()=>Object.values(FigureBoard.getState().nodes).some(n=>n.equation))).toBe(false);
 });
+test('browser checks detect real MathJax equation piles and long explanatory text',async({page})=>{
+ await page.goto('/');await page.waitForFunction(()=>window.FigureEquation&&window.FigureChecks&&window.FigureBoard);
+ const summary=await page.evaluate(async()=>{
+  const cfg={source:'y = f(x)',fontPt:10,color:'#23313c'};
+  const rendered=await FigureEquation.render(cfg);
+  FigureBoard.saveEquation(null,{...cfg,source:'a = b'},rendered);
+  FigureBoard.saveEquation(null,{...cfg,source:'c = d'},rendered);
+  const two=await FigureChecks.inspect(FigureBoard.snapshot());
+  FigureBoard.saveEquation(null,{...cfg,source:'e = f'},rendered);
+  FigureBoard.insertComponent({name:'Note',w:300,h:40,leaves:[{type:'leaf',kind:'text',name:'Prose',x:0,y:0,w:300,h:30,originX:0,originY:0,scale:1,locked:false,markup:'<text x="0" y="24" font-size="22" fill="#23313c">This explanatory paragraph repeats the derivation from the main paper.</text>'}]});
+  const three=await FigureChecks.inspect(FigureBoard.snapshot());
+  return{twoCodes:two.issues.map(i=>i.code),threeCodes:three.issues.map(i=>i.code),eqCount:three.counts.equations};
+ });
+ expect(summary.twoCodes).not.toContain('excessive-equations');
+ expect(summary.threeCodes).toContain('excessive-equations');
+ expect(summary.threeCodes).toContain('long-text');
+ expect(summary.eqCount).toBe(3);
+});
